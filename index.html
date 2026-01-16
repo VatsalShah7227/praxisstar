@@ -1,47 +1,178 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>PraxisStar – Coming Soon 2027</title>
+  <meta charset="UTF-8" />
+  <title>PraxisStar – A Playful Dating App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    body {
+    * {
       margin: 0;
-      height: 100vh;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #fff0f6, #ffffff);
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    section {
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
-      background-color: #ffffff;
-      font-family: Arial, Helvetica, sans-serif;
+      justify-content: center;
+      padding: 60px 20px;
     }
 
     .container {
+      max-width: 1100px;
+      width: 100%;
       text-align: center;
     }
 
-    h1 {
+    /* HERO */
+    .hero h1 {
       font-size: 72px;
+      color: #ff2f92;
       font-weight: 900;
-      color: #ff2f92; /* pink */
+      animation: fadeUp 1s ease forwards;
+    }
+
+    .hero p {
+      font-size: 28px;
+      margin-top: 20px;
+      color: #ff2f92;
+      animation: fadeUp 1.4s ease forwards;
+    }
+
+    .hero span {
+      display: block;
+      margin-top: 10px;
+      font-size: 20px;
+      color: #666;
+      animation: fadeUp 1.8s ease forwards;
+    }
+
+    /* FEATURES */
+    .features {
+      background: #ffffff;
+    }
+
+    .features h2 {
+      font-size: 48px;
+      margin-bottom: 40px;
+      color: #ff2f92;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      padding: 30px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+      transform: translateY(40px);
+      opacity: 0;
+      animation: fadeUp 1s ease forwards;
+    }
+
+    .card:nth-child(1) { animation-delay: .2s; }
+    .card:nth-child(2) { animation-delay: .4s; }
+    .card:nth-child(3) { animation-delay: .6s; }
+
+    .card h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #ff2f92;
+    }
+
+    .card p {
+      font-size: 16px;
+      color: #555;
+    }
+
+    /* CTA */
+    .cta {
+      background: linear-gradient(135deg, #ff2f92, #ff6fb3);
+      color: white;
+    }
+
+    .cta h2 {
+      font-size: 48px;
       margin-bottom: 20px;
     }
 
-    h2 {
-      font-size: 36px;
-      font-weight: bold;
-      color: #ff2f92;
-      margin-bottom: 15px;
+    .cta p {
+      font-size: 22px;
+      opacity: 0.9;
     }
 
-    p {
-      font-size: 28px;
-      font-weight: bold;
-      color: #ff2f92;
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 48px; }
+      .hero p { font-size: 22px; }
+      .features h2,
+      .cta h2 { font-size: 36px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>PraxisStar</h1>
-    <p>Coming Soon in 2027</p>
-  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <h1>PraxisStar</h1>
+      <p>A Playful Dating App</p>
+      <span>Launching in 2027 ✨</span>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="container">
+      <h2>Why PraxisStar?</h2>
+      <div class="feature-grid">
+        <div class="card">
+          <h3>💖 Playful Matches</h3>
+          <p>Dating should feel fun, light, and exciting — not stressful.</p>
+        </div>
+        <div class="card">
+          <h3>✨ Real Connections</h3>
+          <p>Designed to encourage meaningful conversations.</p>
+        </div>
+        <div class="card">
+          <h3>🚀 Modern Experience</h3>
+          <p>Clean design, smooth animations, and a fresh vibe.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <h2>Coming Soon</h2>
+      <p>PraxisStar launches in 2027. Stay tuned 💕</p>
+    </div>
+  </section>
+
 </body>
 </html>
