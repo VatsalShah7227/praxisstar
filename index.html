@@ -408,6 +408,93 @@ h2{
 }
 .waitlist-btn:hover{transform:translateY(-1px);}
 
+/* ANIMATED HERO CANVAS */
+#hero-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
+.hero-inner{position:relative;z-index:1;}
+
+/* PRIVACY */
+.privacy-section{padding:120px 0;}
+.privacy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:52px;}
+.priv-card{
+  padding:30px;border-radius:32px;
+  border:1px solid var(--line);
+  background:linear-gradient(160deg,rgba(255,255,255,.065),rgba(255,255,255,.025));
+  transition:.3s;
+}
+.priv-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.18);}
+.priv-icon{
+  width:52px;height:52px;border-radius:18px;font-size:22px;
+  display:grid;place-items:center;
+  background:rgba(56,217,245,.1);border:1px solid rgba(56,217,245,.2);
+  margin-bottom:22px;
+}
+.priv-card h3{font-family:'Syne',sans-serif;font-size:20px;letter-spacing:-.04em;margin-bottom:10px;}
+.priv-card p{color:var(--muted);line-height:1.65;font-size:15px;}
+
+/* FAQ */
+.faq-section{padding:120px 0;}
+.faq-list{margin-top:52px;display:grid;gap:12px;max-width:780px;margin-left:auto;margin-right:auto;}
+.faq-item{
+  border:1px solid var(--line);border-radius:24px;
+  background:var(--glass);overflow:hidden;
+  transition:.2s;
+}
+.faq-item:hover{border-color:rgba(255,255,255,.18);}
+.faq-q{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:22px 28px;background:none;border:none;color:#fff;
+  font:inherit;font-size:16px;font-weight:600;text-align:left;cursor:pointer;
+  gap:16px;
+}
+.faq-arrow{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:rgba(255,255,255,.08);
+  display:grid;place-items:center;
+  font-size:14px;transition:.3s;
+}
+.faq-item.open .faq-arrow{transform:rotate(45deg);background:rgba(255,61,154,.2);}
+.faq-a{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s cubic-bezier(.22,1,.36,1);
+}
+.faq-a-inner{padding:0 28px 22px;color:var(--muted);line-height:1.7;font-size:15px;}
+
+/* CONTACT */
+.contact-section{padding:80px 0;}
+.contact-card{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;
+  padding:36px 44px;border-radius:32px;
+  border:1px solid var(--line);background:var(--glass);
+}
+.contact-left h3{font-family:'Syne',sans-serif;font-size:24px;letter-spacing:-.04em;margin-bottom:8px;}
+.contact-left p{color:var(--muted);font-size:15px;}
+.contact-right{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.contact-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;border-radius:999px;
+  background:var(--glass);border:1px solid var(--line);
+  font-size:14px;font-weight:600;color:rgba(255,255,255,.82);
+  text-decoration:none;transition:.2s;
+}
+.contact-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.22);}
+.contact-btn.primary{
+  background:linear-gradient(135deg,var(--pink),var(--violet));
+  border:none;color:#fff;
+  box-shadow:0 8px 28px rgba(255,61,154,.3);
+}
+.contact-btn.primary:hover{transform:translateY(-1px);box-shadow:0 12px 36px rgba(255,61,154,.4);}
+
+/* SOCIAL LINKS IN FOOTER */
+.foot-social{display:flex;gap:10px;}
+.soc-btn{
+  width:36px;height:36px;border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--glass);border:1px solid var(--line);
+  color:var(--faint);text-decoration:none;font-size:15px;
+  transition:.2s;
+}
+.soc-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:var(--line);}
+
 /* FOOTER */
 footer{
   padding:28px 0 44px;
@@ -468,7 +555,9 @@ footer{
   <div class="nav-mid">
     <a href="#experience">Experience</a>
     <a href="#features">Features</a>
-    <a href="#launch">Early access</a>
+    <a href="#privacy">Privacy</a>
+    <a href="#faq">FAQ</a>
+    <a href="#contact">Contact</a>
   </div>
   <div class="nav-right">
     <div class="live-chip"><span class="live-dot"></span>In development</div>
@@ -478,7 +567,8 @@ footer{
 
 <!-- HERO -->
 <main id="top">
-<section class="hero">
+<section class="hero" style="position:relative;">
+  <canvas id="hero-canvas"></canvas>
   <div class="wrap">
     <div class="hero-inner">
       <div class="reveal">
@@ -649,6 +739,109 @@ footer{
   </div>
 </section>
 
+<!-- PRIVACY & TRUST -->
+<section class="privacy-section" id="privacy">
+  <div class="wrap">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <div class="kicker">Privacy & trust</div>
+      <h2>Built with your safety in mind.</h2>
+      <p class="section-sub" style="margin:18px auto 0;">Praxis is location-based — so we designed privacy and trust into the product from day one, not as an afterthought.</p>
+    </div>
+    <div class="privacy-grid reveal" style="transition-delay:.1s;">
+      <div class="priv-card">
+        <div class="priv-icon">🔒</div>
+        <h3>You control your visibility</h3>
+        <p>You choose who can discover you nearby. Your location is never stored or shared with third parties.</p>
+      </div>
+      <div class="priv-card">
+        <div class="priv-icon">🛡️</div>
+        <h3>Report & block anyone</h3>
+        <p>Every profile has a clear report and block flow. Our team reviews reports and takes action fast.</p>
+      </div>
+      <div class="priv-card">
+        <div class="priv-icon">👤</div>
+        <h3>Real identity, real trust</h3>
+        <p>Praxis uses phone verification to keep the community genuine and reduce fake or anonymous accounts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="wrap">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <div class="kicker">Questions</div>
+      <h2>Everything you need to know.</h2>
+    </div>
+    <div class="faq-list reveal" style="transition-delay:.1s;">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          When does Praxis launch?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Praxis is currently in development and is planned to launch in 2027. Join the waitlist to be among the first to get access when we go live.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Which cities will Praxis launch in first?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Praxis will launch first in London and Ahmedabad. These are our two launch cities where we'll be growing the community from the ground up before expanding further.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is Praxis free to use?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Yes — Praxis is completely free for everyone. No subscriptions, no paywalls, no hidden charges. We want the whole community to have access from day one.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What platforms will Praxis be available on?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Praxis will launch on iOS first via the App Store. Android support is something we're planning for after the initial launch.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How does nearby discovery work?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Praxis uses Bluetooth to detect people nearby in real time. You stay in control — you choose when to be discoverable, and you decide who can connect with you.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is my location data private?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Absolutely. Your precise location is never stored on our servers or shared with anyone. Nearby detection is done on-device via Bluetooth, so your location stays private.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="wrap">
+    <div class="contact-card reveal">
+      <div class="contact-left">
+        <h3>Get in touch</h3>
+        <p>Press enquiries, partnerships, or just want to say hello — we'd love to hear from you.</p>
+      </div>
+      <div class="contact-right">
+        <a class="contact-btn" href="https://instagram.com/praxis_official_" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          @praxis_official_
+        </a>
+        <a class="contact-btn primary" href="mailto:hello@praxisapp.com">
+          ✉ hello@praxisapp.com
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- CTA -->
 <div class="cta-wrap" id="launch">
   <div class="wrap">
@@ -674,6 +867,11 @@ footer{
         <span class="foot-logo">✦</span>
         PRAXIS
       </div>
+      <div class="foot-social">
+        <a class="soc-btn" href="https://instagram.com/praxis_official_" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+      </div>
       <span>© 2026 Praxis. All rights reserved.</span>
       <span>Made for real-world connection.</span>
     </div>
@@ -681,20 +879,109 @@ footer{
 </footer>
 
 <script>
-// Scroll reveals
+// ── ANIMATED HERO CANVAS ──
+const canvas = document.getElementById('hero-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize(){
+  W = canvas.width = canvas.offsetWidth;
+  H = canvas.height = canvas.offsetHeight;
+}
+
+function randomBetween(a,b){return a+Math.random()*(b-a);}
+
+function makeParticle(){
+  const colors = ['255,61,154','124,58,255','56,217,245','255,203,71'];
+  return {
+    x: randomBetween(0,W),
+    y: randomBetween(0,H),
+    r: randomBetween(1,3.5),
+    color: colors[Math.floor(Math.random()*colors.length)],
+    alpha: randomBetween(.15,.55),
+    vx: randomBetween(-.25,.25),
+    vy: randomBetween(-.25,.25),
+    life: randomBetween(0,Math.PI*2)
+  };
+}
+
+function initParticles(){
+  particles = [];
+  const count = Math.floor((W*H)/8000);
+  for(let i=0;i<count;i++) particles.push(makeParticle());
+}
+
+function drawParticles(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{
+    p.life += .012;
+    p.x += p.vx;
+    p.y += p.vy;
+    if(p.x<0) p.x=W;
+    if(p.x>W) p.x=0;
+    if(p.y<0) p.y=H;
+    if(p.y>H) p.y=0;
+    const a = p.alpha * (.5+.5*Math.sin(p.life));
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle = `rgba(${p.color},${a})`;
+    ctx.fill();
+  });
+
+  // draw faint connection lines
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle = `rgba(255,255,255,${.04*(1-dist/120)})`;
+        ctx.lineWidth = .5;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+}
+
+window.addEventListener('resize',()=>{resize();initParticles();});
+resize();
+initParticles();
+drawParticles();
+
+// ── SCROLL REVEALS ──
 const obs = new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');}});
 },{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
-// Trigger hero on load
 window.addEventListener('load',()=>{
   document.querySelectorAll('.hero .reveal').forEach((el,i)=>{
     setTimeout(()=>el.classList.add('visible'),i*120);
   });
 });
 
-// Waitlist form
+// ── FAQ TOGGLE ──
+function toggleFaq(btn){
+  const item = btn.closest('.faq-item');
+  const answer = item.querySelector('.faq-a');
+  const isOpen = item.classList.contains('open');
+
+  document.querySelectorAll('.faq-item.open').forEach(el=>{
+    el.classList.remove('open');
+    el.querySelector('.faq-a').style.maxHeight = '0';
+  });
+
+  if(!isOpen){
+    item.classList.add('open');
+    answer.style.maxHeight = answer.scrollHeight + 'px';
+  }
+}
+
+// ── WAITLIST FORM ──
 function handleSubmit(e){
   e.preventDefault();
   const input = e.target.querySelector('input');
