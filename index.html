@@ -1,558 +1,710 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Praxis is a premium social app for nearby discovery, photo sharing, real plans, and meaningful real-world connections." />
-  <title>Praxis — Nearby social, reimagined</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="description" content="Praxis — discover nearby people, share moments, and make real plans."/>
+<title>Praxis — Nearby social, reimagined</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#05050e;
+  --bg1:#090916;
+  --bg2:#0d0d1f;
+  --text:#ffffff;
+  --muted:rgba(255,255,255,.6);
+  --faint:rgba(255,255,255,.35);
+  --line:rgba(255,255,255,.1);
+  --line2:rgba(255,255,255,.06);
+  --pink:#ff3d9a;
+  --violet:#7c3aff;
+  --cyan:#38d9f5;
+  --gold:#ffcb47;
+  --green:#1ddb8b;
+  --glass:rgba(255,255,255,.055);
+  --glass2:rgba(255,255,255,.032);
+  --r:44px;
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
 
-  <style>
-    :root {
-      --bg: #070711;
-      --bg-soft: #10101f;
-      --text: #ffffff;
-      --muted: rgba(255,255,255,.68);
-      --muted-2: rgba(255,255,255,.48);
-      --line: rgba(255,255,255,.12);
-      --pink: #ff3d9a;
-      --violet: #8c5cff;
-      --cyan: #54e8ff;
-      --gold: #ffd36e;
-      --glass: rgba(255,255,255,.08);
-      --shadow: 0 30px 90px rgba(0,0,0,.45);
-    }
+/* ── CANVAS ── */
+.canvas{
+  position:fixed;inset:0;z-index:-3;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 10%,rgba(255,61,154,.22),transparent),
+    radial-gradient(ellipse 50% 40% at 85% 5%,rgba(56,217,245,.14),transparent),
+    radial-gradient(ellipse 70% 60% at 55% 80%,rgba(124,58,255,.2),transparent),
+    linear-gradient(160deg,#04040d,#080818 50%,#050510);
+}
+.grain{
+  position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.055;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+}
+.grid-overlay{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:80px 80px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,black,transparent);
+}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+/* ── NAV ── */
+nav{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  z-index:100;
+  width:min(1140px,calc(100% - 32px));
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 10px 10px 20px;
+  background:rgba(6,6,16,.7);
+  backdrop-filter:blur(28px) saturate(180%);
+  border:1px solid var(--line);
+  border-radius:999px;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.02em;
+}
+.logo{
+  width:36px;height:36px;border-radius:13px;
+  background:linear-gradient(135deg,var(--pink),var(--violet));
+  display:grid;place-items:center;font-size:16px;
+  box-shadow:0 0 28px rgba(255,61,154,.4);
+  flex-shrink:0;
+}
+.nav-mid{display:flex;gap:28px;color:var(--muted);font-size:14px;}
+.nav-mid a{transition:.2s;text-decoration:none;color:inherit;}
+.nav-mid a:hover{color:#fff;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.live-chip{
+  display:flex;align-items:center;gap:7px;
+  padding:8px 14px;border-radius:999px;
+  background:rgba(29,219,139,.1);border:1px solid rgba(29,219,139,.25);
+  font-size:12px;font-weight:600;color:var(--green);letter-spacing:.02em;
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.8s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 10px var(--green);}50%{opacity:.3;box-shadow:none;}}
+.btn-nav{
+  padding:9px 20px;border-radius:999px;
+  background:linear-gradient(135deg,var(--pink),var(--violet));
+  font-size:13px;font-weight:700;color:#fff;border:none;cursor:pointer;
+  text-decoration:none;
+  box-shadow:0 8px 28px rgba(255,61,154,.3);
+  transition:.2s;
+}
+.btn-nav:hover{transform:translateY(-1px);box-shadow:0 12px 36px rgba(255,61,154,.4);}
 
-    html { scroll-behavior: smooth; }
-
-    body {
-      min-height: 100vh;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -3;
-      background:
-        radial-gradient(circle at 12% 18%, rgba(255,61,154,.35), transparent 32%),
-        radial-gradient(circle at 84% 10%, rgba(84,232,255,.22), transparent 26%),
-        radial-gradient(circle at 62% 72%, rgba(140,92,255,.32), transparent 34%),
-        linear-gradient(145deg, #05050c, #0b081a 48%, #060813);
-    }
-
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      opacity: .36;
-      background-image:
-        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
-      background-size: 72px 72px;
-      mask-image: radial-gradient(circle at center, black, transparent 78%);
-    }
-
-    a { color: inherit; text-decoration: none; }
-
-    .noise {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      opacity: .08;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E");
-    }
-
-    .wrap { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
-
-    .nav {
-      position: fixed;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      width: min(1160px, calc(100% - 32px));
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px 12px 18px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(9,9,20,.66);
-      backdrop-filter: blur(24px);
-      box-shadow: 0 18px 60px rgba(0,0,0,.22);
-    }
-
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.03em; }
-
-    .logo-mark {
-      width: 34px;
-      height: 34px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--pink), var(--violet));
-      box-shadow: 0 0 34px rgba(255,61,154,.45);
-    }
-
-    .nav-links { display: flex; align-items: center; gap: 20px; color: var(--muted); font-size: 14px; }
-    .nav-links a:hover { color: #fff; }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid var(--line);
-      color: rgba(255,255,255,.82);
-      font-size: 14px;
-    }
-
-    .hero { min-height: 100vh; display: grid; align-items: center; padding: 132px 0 70px; }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.04fr .96fr;
-      gap: 72px;
-      align-items: center;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: rgba(255,255,255,.78);
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.07);
-      border-radius: 999px;
-      padding: 10px 15px;
-      backdrop-filter: blur(20px);
-      margin-bottom: 26px;
-    }
-
-    .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 22px var(--gold); }
-
-    h1 {
-      font-size: clamp(54px, 8vw, 108px);
-      line-height: .88;
-      letter-spacing: -.085em;
-      max-width: 780px;
-    }
-
-    .gradient-text {
-      background: linear-gradient(105deg, #fff 4%, #ffd8ee 27%, #ff3d9a 48%, #8c5cff 75%, #54e8ff 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .lead {
-      margin-top: 28px;
-      max-width: 640px;
-      color: var(--muted);
-      font-size: clamp(18px, 2.1vw, 23px);
-      line-height: 1.55;
-    }
-
-    .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
-
-    .btn {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 52px;
-      padding: 0 22px;
-      border-radius: 999px;
-      font-weight: 800;
-      border: 1px solid var(--line);
-      transition: .25s ease;
-    }
-
-    .btn.primary {
-      border: 0;
-      background: linear-gradient(135deg, var(--pink), var(--violet));
-      box-shadow: 0 20px 60px rgba(255,61,154,.32);
-    }
-    .btn.secondary { background: rgba(255,255,255,.07); color: rgba(255,255,255,.84); }
-    .btn:hover { transform: translateY(-2px); }
-
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 42px; max-width: 650px; }
-    .stat { padding: 18px; border: 1px solid var(--line); border-radius: 24px; background: rgba(255,255,255,.06); backdrop-filter: blur(18px); }
-    .stat strong { display: block; font-size: 26px; letter-spacing: -.04em; }
-    .stat span { display: block; margin-top: 4px; color: var(--muted-2); font-size: 13px; }
-
-    .phone-scene { position: relative; min-height: 620px; display: grid; place-items: center; }
-    .orb { position: absolute; border-radius: 50%; filter: blur(2px); animation: float 7s ease-in-out infinite; }
-    .orb.one { width: 120px; height: 120px; left: 7%; top: 15%; background: rgba(255,61,154,.22); }
-    .orb.two { width: 88px; height: 88px; right: 6%; top: 8%; background: rgba(84,232,255,.18); animation-delay: -2s; }
-    .orb.three { width: 140px; height: 140px; right: 8%; bottom: 12%; background: rgba(140,92,255,.24); animation-delay: -4s; }
-
-    .phone {
-      position: relative;
-      width: 306px;
-      height: 620px;
-      border-radius: 48px;
-      padding: 14px;
-      background: linear-gradient(145deg, rgba(255,255,255,.28), rgba(255,255,255,.05));
-      border: 1px solid rgba(255,255,255,.2);
-      box-shadow: var(--shadow), inset 0 0 0 1px rgba(255,255,255,.08);
-      transform: rotate(3deg);
-    }
-
-    .screen {
-      height: 100%;
-      overflow: hidden;
-      border-radius: 38px;
-      background: #0b0b16;
-      border: 1px solid rgba(255,255,255,.1);
-      position: relative;
-    }
-
-    .screen::before {
-      content: "";
-      position: absolute;
-      top: 10px; left: 50%; transform: translateX(-50%);
-      width: 94px; height: 26px;
-      border-radius: 999px;
-      background: #06060d;
-      z-index: 2;
-    }
-
-    .app-top { padding: 48px 20px 16px; display: flex; justify-content: space-between; align-items: center; }
-    .app-title { font-size: 22px; font-weight: 900; letter-spacing: -.05em; }
-    .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--pink), var(--cyan)); }
-
-    .story-row { display: flex; gap: 10px; padding: 0 18px 18px; }
-    .story { width: 52px; height: 52px; border-radius: 19px; background: linear-gradient(135deg, rgba(255,61,154,.9), rgba(140,92,255,.9)); border: 2px solid rgba(255,255,255,.2); }
-    .story:nth-child(2) { background: linear-gradient(135deg, #54e8ff, #8c5cff); }
-    .story:nth-child(3) { background: linear-gradient(135deg, #ffd36e, #ff3d9a); }
-    .story:nth-child(4) { background: linear-gradient(135deg, #fff, #8c5cff); }
-
-    .feed-card { margin: 0 16px 16px; padding: 14px; border-radius: 28px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1); }
-    .feed-image { height: 210px; border-radius: 22px; background: radial-gradient(circle at 30% 20%, #fff, transparent 22%), linear-gradient(135deg, #ff3d9a, #8c5cff 55%, #54e8ff); }
-    .feed-meta { display: flex; justify-content: space-between; gap: 12px; padding-top: 13px; color: rgba(255,255,255,.74); font-size: 13px; }
-    .mini-card { margin: 0 16px; padding: 16px; border-radius: 26px; background: linear-gradient(135deg, rgba(255,61,154,.20), rgba(84,232,255,.10)); border: 1px solid rgba(255,255,255,.12); }
-    .mini-card strong { display: block; margin-bottom: 6px; }
-    .mini-card span { color: var(--muted); font-size: 13px; line-height: 1.5; }
-
-    .floating-card {
-      position: absolute;
-      padding: 16px 18px;
-      border-radius: 24px;
-      border: 1px solid var(--line);
-      background: rgba(12,12,26,.72);
-      backdrop-filter: blur(22px);
-      box-shadow: 0 24px 70px rgba(0,0,0,.3);
-      animation: float 6s ease-in-out infinite;
-    }
-    .floating-card.left { left: 0; bottom: 135px; }
-    .floating-card.right { right: -4px; top: 210px; animation-delay: -2.5s; }
-    .floating-card b { display: block; font-size: 14px; }
-    .floating-card small { color: var(--muted-2); }
-
-    section.block { padding: 110px 0; }
-    .section-head { max-width: 760px; margin-bottom: 36px; }
-    .section-head.center { margin: 0 auto 46px; text-align: center; }
-    .kicker { color: var(--cyan); font-weight: 900; letter-spacing: .14em; text-transform: uppercase; font-size: 12px; margin-bottom: 14px; }
-    h2 { font-size: clamp(34px, 5vw, 62px); line-height: 1; letter-spacing: -.06em; }
-    .section-head p { margin-top: 18px; color: var(--muted); font-size: 18px; line-height: 1.65; }
-
-    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-    .feature {
-      padding: 28px;
-      min-height: 260px;
-      border-radius: 34px;
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.095), rgba(255,255,255,.045));
-      box-shadow: 0 22px 70px rgba(0,0,0,.22);
-    }
-    .icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 18px; background: rgba(255,255,255,.09); border: 1px solid var(--line); font-size: 24px; margin-bottom: 22px; }
-    .feature h3 { font-size: 24px; letter-spacing: -.04em; margin-bottom: 12px; }
-    .feature p { color: var(--muted); line-height: 1.65; }
-
-    .showcase {
-      display: grid;
-      grid-template-columns: .9fr 1.1fr;
-      gap: 28px;
-      align-items: stretch;
-    }
-    .panel {
-      border: 1px solid var(--line);
-      border-radius: 38px;
-      background: rgba(255,255,255,.07);
-      backdrop-filter: blur(22px);
-      overflow: hidden;
-      box-shadow: 0 25px 80px rgba(0,0,0,.24);
-    }
-    .panel.large { padding: 34px; }
-    .map {
-      height: 100%;
-      min-height: 460px;
-      position: relative;
-      background:
-        radial-gradient(circle at 18% 22%, rgba(255,61,154,.26), transparent 26%),
-        radial-gradient(circle at 70% 72%, rgba(84,232,255,.18), transparent 28%),
-        linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
-    }
-    .route { position: absolute; inset: 48px; border: 1px dashed rgba(255,255,255,.23); border-radius: 45% 55% 50% 50%; transform: rotate(-12deg); }
-    .pin { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 0 12px rgba(255,61,154,.12), 0 0 26px rgba(255,61,154,.9); }
-    .pin.a { left: 27%; top: 30%; } .pin.b { left: 64%; top: 42%; background: var(--cyan); box-shadow: 0 0 0 12px rgba(84,232,255,.12), 0 0 26px rgba(84,232,255,.9); } .pin.c { left: 48%; top: 68%; background: var(--gold); box-shadow: 0 0 0 12px rgba(255,211,110,.12), 0 0 26px rgba(255,211,110,.9); }
-    .plan-list { display: grid; gap: 14px; margin-top: 28px; }
-    .plan { display: flex; gap: 14px; align-items: center; padding: 16px; border-radius: 24px; background: rgba(255,255,255,.065); border: 1px solid var(--line); }
-    .plan-dot { width: 42px; height: 42px; border-radius: 15px; background: linear-gradient(135deg, var(--pink), var(--violet)); display: grid; place-items: center; }
-    .plan b { display: block; margin-bottom: 3px; }
-    .plan span { color: var(--muted-2); font-size: 14px; }
-
-    .final {
-      padding: 120px 0;
-      text-align: center;
-    }
-    .final-card {
-      position: relative;
-      overflow: hidden;
-      padding: 70px 28px;
-      border-radius: 44px;
-      border: 1px solid var(--line);
-      background: linear-gradient(135deg, rgba(255,61,154,.20), rgba(140,92,255,.14), rgba(84,232,255,.10));
-      box-shadow: var(--shadow);
-    }
-    .final-card::before { content: ""; position: absolute; inset: -40%; background: conic-gradient(from 180deg, transparent, rgba(255,255,255,.15), transparent 30%); animation: spin 10s linear infinite; }
-    .final-card > * { position: relative; }
-    .final p { max-width: 650px; margin: 18px auto 0; color: var(--muted); font-size: 18px; line-height: 1.65; }
-
-    footer { padding: 30px 0 46px; color: var(--muted-2); font-size: 14px; }
-    .foot { display: flex; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line); padding-top: 22px; }
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:grid;align-items:center;
+  padding:130px 0 80px;
+}
+.wrap{width:min(1140px,calc(100% - 40px));margin:0 auto;}
+.hero-inner{
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:9px 16px;border-radius:999px;
+  background:var(--glass);border:1px solid var(--line);
+  font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.75);margin-bottom:24px;
+}
+.eyebrow-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gold);box-shadow:0 0 16px var(--gold);
+}
+h1{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(52px,7vw,96px);
+  line-height:.9;letter-spacing:-.07em;font-weight:800;
+  margin-bottom:24px;
+}
+.h1-line2{
+  display:block;
+  background:linear-gradient(95deg,#fff 10%,#ffc8e2 35%,var(--pink) 55%,var(--violet) 80%,var(--cyan));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{
+  font-size:clamp(16px,1.8vw,20px);line-height:1.65;
+  color:var(--muted);max-width:560px;margin-bottom:36px;
+}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:44px;}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 28px;border-radius:999px;
+  background:linear-gradient(135deg,var(--pink),var(--violet));
+  font-size:15px;font-weight:700;color:#fff;text-decoration:none;
+  box-shadow:0 16px 48px rgba(255,61,154,.35);
+  transition:.25s;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 22px 56px rgba(255,61,154,.45);}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 28px;border-radius:999px;
+  background:var(--glass);border:1px solid var(--line);
+  font-size:15px;font-weight:600;color:rgba(255,255,255,.82);
+  text-decoration:none;transition:.25s;
+}
+.btn-ghost:hover{background:rgba(255,255,255,.1);color:#fff;}
 
 
 
-    .halo-ring {
-      position: absolute;
-      width: 520px;
-      height: 520px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 50%;
-      animation: slowPulse 4.8s ease-in-out infinite;
-    }
-    .halo-ring.two { width: 410px; height: 410px; animation-delay: -1.6s; opacity: .7; }
-    .halo-ring.three { width: 300px; height: 300px; animation-delay: -3.2s; opacity: .55; }
+/* ── PHONE ── */
+.phone-wrap{
+  position:relative;display:flex;justify-content:center;align-items:center;
+  min-height:640px;
+}
+.halo{
+  position:absolute;border-radius:50%;
+  border:1px solid rgba(255,255,255,.09);
+  animation:pulse 5s ease-in-out infinite;
+}
+.h1r{width:540px;height:540px;}
+.h2r{width:420px;height:420px;animation-delay:-1.7s;border-color:rgba(255,255,255,.06);}
+.h3r{width:300px;height:300px;animation-delay:-3.4s;border-color:rgba(255,255,255,.04);}
+@keyframes pulse{0%,100%{transform:scale(.94);opacity:.5;}50%{transform:scale(1.04);opacity:1;}}
 
-    .social-proof {
-      margin-top: 26px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--muted-2);
-      font-size: 14px;
-    }
-    .face-stack { display: flex; }
-    .face {
-      width: 30px; height: 30px; margin-left: -8px;
-      border-radius: 50%; border: 2px solid rgba(8,8,18,.9);
-      background: linear-gradient(135deg, var(--pink), var(--violet));
-    }
-    .face:first-child { margin-left: 0; }
-    .face:nth-child(2) { background: linear-gradient(135deg, var(--cyan), var(--violet)); }
-    .face:nth-child(3) { background: linear-gradient(135deg, var(--gold), var(--pink)); }
-    .face:nth-child(4) { background: linear-gradient(135deg, #fff, var(--cyan)); }
+.phone{
+  position:relative;z-index:2;
+  width:300px;height:618px;
+  border-radius:52px;
+  background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 40px 120px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.07);
+  padding:14px;
+  transform:rotate(2.5deg);
+}
+.screen{
+  height:100%;border-radius:40px;overflow:hidden;
+  background:#080814;
+  border:1px solid rgba(255,255,255,.08);
+  position:relative;
+}
+.notch{
+  position:absolute;top:10px;left:50%;transform:translateX(-50%);
+  width:88px;height:24px;border-radius:999px;background:#030308;z-index:5;
+}
+.s-top{padding:46px 18px 14px;display:flex;justify-content:space-between;align-items:center;}
+.s-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.04em;}
+.s-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--cyan));}
+.s-tabs{display:flex;gap:6px;padding:0 16px 12px;}
+.s-tab{flex:1;padding:8px 0;text-align:center;border-radius:999px;font-size:10px;font-weight:800;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);}
+.s-tab.on{background:rgba(255,61,154,.2);color:#fff;border:1px solid rgba(255,61,154,.3);}
+.s-stories{display:flex;gap:9px;padding:0 16px 14px;}
+.s-story{
+  width:50px;height:50px;border-radius:17px;flex-shrink:0;
+  border:2px solid rgba(255,255,255,.18);
+}
+.ss1{background:linear-gradient(135deg,var(--pink),var(--violet));}
+.ss2{background:linear-gradient(135deg,var(--cyan),var(--violet));}
+.ss3{background:linear-gradient(135deg,var(--gold),var(--pink));}
+.ss4{background:linear-gradient(135deg,rgba(255,255,255,.9),var(--cyan));}
+.s-card{
+  margin:0 14px 12px;padding:12px;
+  border-radius:26px;background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.09);
+}
+.s-img{
+  height:150px;border-radius:20px;
+  background:radial-gradient(circle at 25% 25%,rgba(255,255,255,.6),transparent 30%),
+    linear-gradient(135deg,var(--pink),var(--violet) 55%,var(--cyan));
+}
+.s-meta{display:flex;justify-content:space-between;padding-top:10px;font-size:11px;color:rgba(255,255,255,.65);}
+.s-event{
+  margin:0 14px;padding:14px;
+  border-radius:24px;
+  background:linear-gradient(135deg,rgba(255,61,154,.18),rgba(56,217,245,.1));
+  border:1px solid rgba(255,255,255,.1);
+}
+.s-event strong{display:block;font-size:12px;margin-bottom:4px;}
+.s-event span{color:var(--muted);font-size:11px;line-height:1.5;}
+.s-bar{
+  position:absolute;bottom:9px;left:50%;transform:translateX(-50%);
+  width:104px;height:4px;border-radius:999px;background:rgba(255,255,255,.25);
+}
+.fc{
+  position:absolute;z-index:3;
+  padding:14px 16px;border-radius:22px;
+  background:rgba(10,10,22,.8);backdrop-filter:blur(20px);
+  border:1px solid var(--line);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+  animation:float 6s ease-in-out infinite;
+}
+.fc-left{left:-60px;bottom:160px;}
+.fc-right{right:-52px;top:190px;animation-delay:-3s;}
+.fc b{display:block;font-size:13px;margin-bottom:3px;}
+.fc small{color:var(--faint);font-size:11px;}
+.fc-dot{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+  display:inline-block;margin-right:6px;
+}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
 
-    .inside-tabs { display: flex; gap: 8px; padding: 0 18px 14px; }
-    .inside-tab { flex: 1; padding: 9px 0; text-align: center; border-radius: 999px; background: rgba(255,255,255,.07); color: rgba(255,255,255,.62); font-size: 11px; font-weight: 800; }
-    .inside-tab.active { background: rgba(255,61,154,.22); color: #fff; border: 1px solid rgba(255,61,154,.34); }
-    .gesture-bar { position:absolute; left:50%; bottom:10px; transform:translateX(-50%); width:108px; height:4px; border-radius:999px; background:rgba(255,255,255,.28); }
+/* ── STRIP ── */
+.strip{
+  border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);
+  overflow:hidden;
+  background:rgba(255,255,255,.025);
+}
+.marquee{
+  display:flex;gap:48px;padding:18px 0;white-space:nowrap;
+  color:rgba(255,255,255,.4);font-size:11px;font-weight:800;
+  letter-spacing:.14em;text-transform:uppercase;
+  animation:marquee 24s linear infinite;
+}
+.marquee span{flex-shrink:0;}
+.marquee-dot{color:var(--pink);opacity:.7;}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%)}}
 
-    .brand-strip {
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      background: rgba(255,255,255,.045);
-      backdrop-filter: blur(18px);
-      overflow: hidden;
-    }
-    .marquee { display: flex; gap: 42px; padding: 18px 0; white-space: nowrap; color: rgba(255,255,255,.54); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; font-size: 12px; animation: marquee 22s linear infinite; }
+/* ── SECTIONS ── */
+section.block{padding:120px 0;}
+.kicker{
+  font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--cyan);margin-bottom:16px;
+}
+h2{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(36px,5vw,64px);
+  line-height:.95;letter-spacing:-.06em;font-weight:800;
+}
+.section-sub{
+  margin-top:18px;max-width:580px;
+  color:var(--muted);font-size:18px;line-height:1.65;
+}
 
-    .split-line {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-top: 26px;
-    }
-    .micro {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.055);
-      border-radius: 24px;
-      padding: 18px;
-    }
-    .micro b { display:block; font-size: 15px; margin-bottom: 6px; }
-    .micro span { color: var(--muted-2); font-size: 13px; line-height: 1.45; }
+/* EXPERIENCE */
+.exp-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:24px;margin-top:52px;align-items:stretch;}
+.exp-visual{
+  border-radius:var(--r);overflow:hidden;
+  background:rgba(255,255,255,.06);border:1px solid var(--line);
+  min-height:480px;position:relative;
+  box-shadow:0 30px 90px rgba(0,0,0,.28);
+}
+.map-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 28% 32%,rgba(255,61,154,.28),transparent 28%),
+    radial-gradient(circle at 68% 68%,rgba(56,217,245,.2),transparent 26%),
+    radial-gradient(circle at 50% 50%,rgba(124,58,255,.18),transparent 40%),
+    linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+}
+.route-ring{
+  position:absolute;inset:52px;
+  border:1px dashed rgba(255,255,255,.18);
+  border-radius:42% 58% 55% 45%;
+  transform:rotate(-8deg);
+}
+.pin{
+  position:absolute;width:20px;height:20px;border-radius:50%;
+  box-shadow:0 0 0 14px rgba(255,61,154,.12),0 0 30px rgba(255,61,154,.8);
+  background:var(--pink);
+}
+.pin.b{left:62%;top:40%;background:var(--cyan);box-shadow:0 0 0 14px rgba(56,217,245,.12),0 0 30px rgba(56,217,245,.8);}
+.pin.c{left:46%;top:66%;background:var(--gold);box-shadow:0 0 0 14px rgba(255,203,71,.12),0 0 30px rgba(255,203,71,.8);}
+.pin.a{left:24%;top:28%;}
+.pin-pulse{
+  position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid rgba(255,61,154,.4);
+  animation:pinpulse 2s ease-out infinite;
+}
+@keyframes pinpulse{0%{transform:scale(.8);opacity:.8;}100%{transform:scale(2.2);opacity:0;}}
 
-    .waitlist-form { margin: 28px auto 0; max-width: 560px; display: flex; gap: 10px; padding: 8px; border-radius: 999px; background: rgba(0,0,0,.22); border: 1px solid var(--line); }
-    .waitlist-form input { flex: 1; min-width: 0; border: 0; outline: 0; padding: 0 18px; background: transparent; color: #fff; font: inherit; }
-    .waitlist-form input::placeholder { color: rgba(255,255,255,.42); }
+.exp-content{
+  background:rgba(255,255,255,.04);border:1px solid var(--line);
+  border-radius:var(--r);padding:40px;
+  box-shadow:0 30px 90px rgba(0,0,0,.2);
+}
+.plan-list{display:grid;gap:12px;margin-top:32px;}
+.plan-item{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;border-radius:22px;
+  background:rgba(255,255,255,.05);border:1px solid var(--line2);
+  transition:.2s;
+}
+.plan-item:hover{background:rgba(255,255,255,.08);border-color:var(--line);}
+.plan-icon{
+  width:44px;height:44px;border-radius:16px;flex-shrink:0;
+  display:grid;place-items:center;font-size:20px;
+  background:linear-gradient(135deg,var(--pink),var(--violet));
+}
+.plan-text b{display:block;font-size:15px;margin-bottom:3px;}
+.plan-text span{color:var(--muted);font-size:13px;}
+.micro-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:24px;}
+.micro{
+  padding:18px;border-radius:20px;
+  background:rgba(255,255,255,.04);border:1px solid var(--line2);
+}
+.micro b{display:block;font-size:14px;margin-bottom:5px;}
+.micro span{color:var(--faint);font-size:13px;line-height:1.4;}
 
-    @keyframes slowPulse { 0%,100% { transform: scale(.96); opacity:.28; } 50% { transform: scale(1.04); opacity:.65; } }
-    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:52px;}
+.feat{
+  padding:30px;border-radius:32px;min-height:240px;
+  border:1px solid var(--line);
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+  transition:.3s;
+}
+.feat:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.18);}
+.feat-icon{
+  width:52px;height:52px;border-radius:18px;
+  display:grid;place-items:center;font-size:22px;
+  background:rgba(255,255,255,.08);border:1px solid var(--line);
+  margin-bottom:24px;
+}
+.feat h3{font-family:'Syne',sans-serif;font-size:22px;letter-spacing:-.04em;margin-bottom:10px;}
+.feat p{color:var(--muted);line-height:1.65;font-size:15px;}
 
-    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
-    @keyframes spin { to { transform: rotate(360deg); } }
 
-    @media (max-width: 940px) {
-      .hero-grid, .showcase { grid-template-columns: 1fr; gap: 44px; }
-      .phone-scene { min-height: 570px; }
-      .feature-grid { grid-template-columns: 1fr; }
-      .split-line { grid-template-columns: repeat(2, 1fr); }
-      .nav-links a { display: none; }
-      .floating-card.right { right: 8px; }
-    }
 
-    @media (max-width: 620px) {
-      .wrap { width: min(100% - 28px, 1160px); }
-      .nav { top: 12px; width: calc(100% - 22px); }
-      .pill { display: none; }
-      .hero { padding-top: 116px; }
-      .hero-actions { align-items: stretch; }
-      .btn { width: 100%; }
-      .stats { grid-template-columns: 1fr; }
-      .phone { width: 276px; height: 560px; }
-      .phone-scene { min-height: 530px; }
-      .floating-card { display: none; }
-      section.block, .final { padding: 82px 0; }
-      .foot { flex-direction: column; }
-      .split-line { grid-template-columns: 1fr; }
-      .waitlist-form { border-radius: 28px; flex-direction: column; padding: 12px; }
-      .waitlist-form input { min-height: 48px; }
-    }
-  </style>
+/* CTA */
+.cta-wrap{padding:120px 0;text-align:center;}
+.cta-card{
+  position:relative;overflow:hidden;
+  padding:80px 32px;border-radius:52px;
+  border:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(255,61,154,.16),rgba(124,58,255,.12),rgba(56,217,245,.08));
+  box-shadow:0 40px 120px rgba(0,0,0,.4);
+}
+.cta-card::before{
+  content:"";position:absolute;inset:-60%;
+  background:conic-gradient(from 0deg,transparent,rgba(255,255,255,.1),transparent 25%);
+  animation:spin 14s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.cta-card>*{position:relative;}
+.cta-card h2{font-size:clamp(38px,5vw,68px);}
+.cta-card p{max-width:580px;margin:20px auto 0;color:var(--muted);font-size:18px;line-height:1.65;}
+.waitlist{
+  display:flex;gap:10px;margin:36px auto 0;max-width:520px;
+  padding:8px;border-radius:999px;
+  background:rgba(0,0,0,.3);border:1px solid var(--line);
+}
+.waitlist input{
+  flex:1;min-width:0;border:none;outline:none;
+  padding:0 20px;background:transparent;color:#fff;font:inherit;font-size:15px;
+}
+.waitlist input::placeholder{color:rgba(255,255,255,.35);}
+.waitlist-btn{
+  padding:12px 24px;border-radius:999px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--pink),var(--violet));
+  color:#fff;font:inherit;font-size:14px;font-weight:700;
+  box-shadow:0 8px 28px rgba(255,61,154,.35);
+  transition:.2s;white-space:nowrap;
+}
+.waitlist-btn:hover{transform:translateY(-1px);}
+
+/* FOOTER */
+footer{
+  padding:28px 0 44px;
+  border-top:1px solid var(--line2);
+}
+.foot{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  color:var(--faint);font-size:13px;
+}
+.foot-brand{
+  display:flex;align-items:center;gap:9px;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:15px;
+  color:rgba(255,255,255,.7);
+}
+.foot-logo{
+  width:28px;height:28px;border-radius:10px;
+  background:linear-gradient(135deg,var(--pink),var(--violet));
+  display:grid;place-items:center;font-size:12px;
+}
+
+/* SCROLL REVEALS */
+.reveal{opacity:0;transform:translateY(28px);transition:.7s cubic-bezier(.22,1,.36,1);}
+.reveal.visible{opacity:1;transform:none;}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .hero-inner,.exp-grid{grid-template-columns:1fr;gap:48px;}
+  .phone-wrap{min-height:520px;}
+  .feat-grid{grid-template-columns:1fr 1fr;}
+  .fc-left,.fc-right{display:none;}
+  .nav-mid a{display:none;}
+  .h1r,.h2r,.h3r{width:90vw;height:90vw;max-width:500px;max-height:500px;}
+}
+@media(max-width:640px){
+  .feat-grid{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:1fr;gap:0;}
+  .stat-div{display:none;}
+  .micro-grid{grid-template-columns:1fr;}
+  .waitlist{flex-direction:column;border-radius:28px;padding:12px;}
+  .waitlist input{min-height:46px;}
+  .waitlist-btn{width:100%;padding:14px;}
+  .foot{flex-direction:column;text-align:center;}
+  .live-chip{display:none;}
+}
+</style>
 </head>
 <body>
-  <div class="noise"></div>
+<div class="canvas"></div>
+<div class="grain"></div>
+<div class="grid-overlay"></div>
 
-  <header class="nav">
-    <a class="brand" href="#top" aria-label="Praxis home">
-      <span class="logo-mark">✦</span>
-      <span>PRAXIS</span>
-    </a>
-    <nav class="nav-links" aria-label="Main navigation">
-      <a href="#experience">Experience</a>
-      <a href="#features">Features</a>
-      <a href="#launch">Launch</a>
-      <span class="pill">Launching 2027</span>
-    </nav>
-  </header>
+<!-- NAV -->
+<nav>
+  <a class="brand" href="#top" style="text-decoration:none;color:inherit;">
+    <span class="logo">✦</span>
+    PRAXIS
+  </a>
+  <div class="nav-mid">
+    <a href="#experience">Experience</a>
+    <a href="#features">Features</a>
+    <a href="#launch">Early access</a>
+  </div>
+  <div class="nav-right">
+    <div class="live-chip"><span class="live-dot"></span>In development</div>
+    <a class="btn-nav" href="#launch">Join waitlist</a>
+  </div>
+</nav>
 
-  <main id="top">
-    <section class="hero">
-      <div class="wrap hero-grid">
-        <div>
-          <div class="eyebrow"><span class="pulse"></span> Nearby social, reimagined</div>
-          <h1>Meet nearby. Share moments. Make real plans.</h1>
-          <p class="lead">Praxis is a new social experience for discovering people around you, posting beautiful moments, and turning online connection into real-world plans.</p>
-          <div class="hero-actions">
-            <a class="btn primary" href="#launch">Get ready for launch</a>
-            <a class="btn secondary" href="#features">Explore the vision</a>
-          </div>
-          <div class="social-proof"><div class="face-stack"><span class="face"></span><span class="face"></span><span class="face"></span><span class="face"></span></div><span>Built for people who want real-world social connection, not just another scroll feed.</span></div>
-          <div class="stats" aria-label="Praxis highlights">
-            <div class="stat"><strong>Nearby</strong><span>Discover people around you</span></div>
-            <div class="stat"><strong>Events</strong><span>Create plans with friends</span></div>
-            <div class="stat"><strong>Photos</strong><span>Share your real moments</span></div>
-          </div>
+<!-- HERO -->
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="reveal">
+        <div class="eyebrow"><span class="eyebrow-dot"></span>Nearby social, reimagined</div>
+        <h1>Meet nearby.<br><span class="h1-line2">Make real plans.</span></h1>
+        <p class="hero-sub">Praxis is the social app for discovering people around you, sharing beautiful moments, and turning online connection into real-world plans.</p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="#launch">Get early access ↗</a>
+          <a class="btn-ghost" href="#features">Explore features</a>
         </div>
 
-        <div class="phone-scene" aria-hidden="true">
-          <span class="halo-ring"></span><span class="halo-ring two"></span><span class="halo-ring three"></span><span class="orb one"></span><span class="orb two"></span><span class="orb three"></span>
-          <div class="floating-card left"><b>3 friends nearby</b><small>Ready to make plans</small></div>
-          <div class="floating-card right"><b>Live event card</b><small>Going · Maybe · Decline</small></div>
-          <div class="phone">
-            <div class="screen">
-              <div class="app-top"><div class="app-title">Praxis</div><div class="avatar"></div></div>
-              <div class="inside-tabs"><span class="inside-tab active">Nearby</span><span class="inside-tab">Feed</span><span class="inside-tab">Plans</span></div><div class="story-row"><div class="story"></div><div class="story"></div><div class="story"></div><div class="story"></div></div>
-              <div class="feed-card">
-                <div class="feed-image"></div>
-                <div class="feed-meta"><span>Checked in nearby</span><span>2m ago</span></div>
-              </div>
-              <div class="mini-card"><strong>Tonight at 8:30 PM</strong><span>Share an event with friends and see who is going, maybe, or declining in real time.</span></div>
-            <div class="gesture-bar"></div>
+      </div>
+
+      <div class="phone-wrap reveal" style="transition-delay:.15s;">
+        <span class="halo h1r"></span>
+        <span class="halo h2r"></span>
+        <span class="halo h3r"></span>
+
+        <div class="fc fc-left">
+          <b><span class="fc-dot"></span>4 friends nearby</b>
+          <small>Ready to make plans</small>
+        </div>
+        <div class="fc fc-right">
+          <b>🎟 Tonight · 8:30 PM</b>
+          <small>Going · Maybe · Decline</small>
+        </div>
+
+        <div class="phone">
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="s-top">
+              <span class="s-title">Praxis</span>
+              <span class="s-av"></span>
             </div>
+            <div class="s-tabs">
+              <span class="s-tab on">Nearby</span>
+              <span class="s-tab">Feed</span>
+              <span class="s-tab">Plans</span>
+            </div>
+            <div class="s-stories">
+              <span class="s-story ss1"></span>
+              <span class="s-story ss2"></span>
+              <span class="s-story ss3"></span>
+              <span class="s-story ss4"></span>
+            </div>
+            <div class="s-card">
+              <div class="s-img"></div>
+              <div class="s-meta"><span>📍 Checked in nearby</span><span>2m ago</span></div>
+            </div>
+            <div class="s-event">
+              <strong>Tonight at 8:30 PM</strong>
+              <span>Invite friends and track RSVP responses live.</span>
+            </div>
+            <div class="s-bar"></div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <div class="brand-strip" aria-hidden="true"><div class="marquee"><span>Nearby discovery</span><span>Photo sharing</span><span>RSVP events</span><span>Restaurant check-ins</span><span>Private chat</span><span>Safety-first</span><span>Nearby discovery</span><span>Photo sharing</span><span>RSVP events</span><span>Restaurant check-ins</span><span>Private chat</span><span>Safety-first</span></div></div>
+<!-- STRIP -->
+<div class="strip">
+  <div class="marquee">
+    <span>Nearby discovery</span><span class="marquee-dot">✦</span>
+    <span>Photo sharing</span><span class="marquee-dot">✦</span>
+    <span>RSVP events</span><span class="marquee-dot">✦</span>
+    <span>Restaurant check-ins</span><span class="marquee-dot">✦</span>
+    <span>Private chat</span><span class="marquee-dot">✦</span>
+    <span>Safety-first</span><span class="marquee-dot">✦</span>
+    <span>Bluetooth discovery</span><span class="marquee-dot">✦</span>
+    <span>Real connections</span><span class="marquee-dot">✦</span>
+    <span>Nearby discovery</span><span class="marquee-dot">✦</span>
+    <span>Photo sharing</span><span class="marquee-dot">✦</span>
+    <span>RSVP events</span><span class="marquee-dot">✦</span>
+    <span>Restaurant check-ins</span><span class="marquee-dot">✦</span>
+    <span>Private chat</span><span class="marquee-dot">✦</span>
+    <span>Safety-first</span><span class="marquee-dot">✦</span>
+    <span>Bluetooth discovery</span><span class="marquee-dot">✦</span>
+    <span>Real connections</span><span class="marquee-dot">✦</span>
+  </div>
+</div>
 
-    <section class="block" id="experience">
-      <div class="wrap showcase">
-        <div class="panel map" aria-hidden="true">
-          <div class="route"></div>
-          <span class="pin a"></span><span class="pin b"></span><span class="pin c"></span>
+<!-- EXPERIENCE -->
+<section class="block" id="experience">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="kicker">The Praxis idea</div>
+      <h2>Less scrolling.<br>More real life.</h2>
+      <p class="section-sub">Praxis is built around what actually matters — nearby people, real places, and plans that get made.</p>
+    </div>
+    <div class="exp-grid reveal" style="transition-delay:.1s;">
+      <div class="exp-visual">
+        <div class="map-bg"></div>
+        <div class="route-ring"></div>
+        <span class="pin a"><span class="pin-pulse"></span></span>
+        <span class="pin b"></span>
+        <span class="pin c"></span>
+      </div>
+      <div class="exp-content">
+        <div class="kicker">How it works</div>
+        <h2 style="font-size:clamp(28px,3.5vw,44px);">Everything in one place</h2>
+        <div class="plan-list">
+          <div class="plan-item">
+            <div class="plan-icon">📍</div>
+            <div class="plan-text"><b>Discover what is around you</b><span>Nearby people, places, and real-time activity.</span></div>
+          </div>
+          <div class="plan-item">
+            <div class="plan-icon">📸</div>
+            <div class="plan-text"><b>Share moments beautifully</b><span>Clean photo posts with location and check-in context.</span></div>
+          </div>
+          <div class="plan-item">
+            <div class="plan-icon">✨</div>
+            <div class="plan-text"><b>Create plans instantly</b><span>Invite friends and track responses live in real time.</span></div>
+          </div>
         </div>
-        <div class="panel large">
-          <div class="section-head">
-            <div class="kicker">The Praxis idea</div>
-            <h2>Less endless scrolling. More real connection.</h2>
-            <p>Praxis is designed around nearby discovery, friend activity, restaurant check-ins, and simple event planning — so the app feels social, alive, and connected to the real world.</p>
-          </div>
-          <div class="plan-list">
-            <div class="plan"><div class="plan-dot">📍</div><div><b>Discover what is around you</b><span>Nearby people, places, and activity.</span></div></div>
-            <div class="plan"><div class="plan-dot">📸</div><div><b>Share moments beautifully</b><span>Clean photo posts with location context.</span></div></div>
-            <div class="plan"><div class="plan-dot">✨</div><div><b>Create plans instantly</b><span>Invite friends and track responses live.</span></div></div>
-          </div>
-          <div class="split-line">
-            <div class="micro"><b>Local</b><span>Built around what is happening near you.</span></div>
-            <div class="micro"><b>Visual</b><span>Photos, places, and plans feel polished.</span></div>
-            <div class="micro"><b>Social</b><span>Friend activity makes the app feel alive.</span></div>
-            <div class="micro"><b>Real</b><span>Designed to move people from chat to plans.</span></div>
-          </div>
+        <div class="micro-grid">
+          <div class="micro"><b>Local</b><span>Built around what's happening near you right now.</span></div>
+          <div class="micro"><b>Visual</b><span>Photos, places, and plans that feel polished.</span></div>
+          <div class="micro"><b>Social</b><span>Friend activity makes the app feel genuinely alive.</span></div>
+          <div class="micro"><b>Real</b><span>Designed to move people from chat to actual plans.</span></div>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <section class="block" id="features">
-      <div class="wrap">
-        <div class="section-head center">
-          <div class="kicker">Built for a premium social experience</div>
-          <h2>Everything feels simple, modern, and intentional.</h2>
-          <p>From nearby discovery to event cards, Praxis is built to feel polished from the first tap.</p>
-        </div>
-        <div class="feature-grid">
-          <article class="feature"><div class="icon">🛰️</div><h3>Nearby discovery</h3><p>Meet and discover people around you with a real-world social layer, not just another feed.</p></article>
-          <article class="feature"><div class="icon">🌃</div><h3>Restaurant check-ins</h3><p>Share where you are, see venue activity, and make places feel alive through social context.</p></article>
-          <article class="feature"><div class="icon">💬</div><h3>Private conversations</h3><p>Move from a moment to a message with a clean, focused chat experience for real connections.</p></article>
-          <article class="feature"><div class="icon">🎟️</div><h3>Live RSVP events</h3><p>Create an event, send it to friends, and see Going, Maybe, and Decline update in real time.</p></article>
-          <article class="feature"><div class="icon">🛡️</div><h3>Safety-first direction</h3><p>Designed with trust, reporting, privacy, and verification paths in mind as the product grows.</p></article>
-          <article class="feature"><div class="icon">⚡</div><h3>Fast, premium UI</h3><p>Modern visuals, smooth interactions, and a brand that feels global — not cheap or generic.</p></article>
-        </div>
+<!-- FEATURES -->
+<section class="block" id="features">
+  <div class="wrap">
+    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
+      <div class="kicker">Built for a premium social experience</div>
+      <h2>Everything feels intentional.</h2>
+      <p class="section-sub" style="margin:18px auto 0;">From nearby discovery to event cards, Praxis is built to feel polished from the very first tap.</p>
+    </div>
+    <div class="feat-grid reveal" style="transition-delay:.1s;">
+      <article class="feat">
+        <div class="feat-icon">🛰️</div>
+        <h3>Nearby discovery</h3>
+        <p>Find and connect with people around you using a real-world social layer, not just another scroll feed.</p>
+      </article>
+      <article class="feat">
+        <div class="feat-icon">🌃</div>
+        <h3>Restaurant check-ins</h3>
+        <p>Share where you are, see venue activity, and make places feel alive through real social context.</p>
+      </article>
+      <article class="feat">
+        <div class="feat-icon">💬</div>
+        <h3>Private conversations</h3>
+        <p>Move from a moment to a message with a clean, focused chat experience built for real connections.</p>
+      </article>
+      <article class="feat">
+        <div class="feat-icon">🎟️</div>
+        <h3>Live RSVP events</h3>
+        <p>Create an event, send it to friends, and watch Going, Maybe, and Decline update in real time.</p>
+      </article>
+      <article class="feat">
+        <div class="feat-icon">🛡️</div>
+        <h3>Safety-first design</h3>
+        <p>Built with trust, reporting, privacy, and verification paths in mind from day one.</p>
+      </article>
+      <article class="feat">
+        <div class="feat-icon">⚡</div>
+        <h3>Premium native feel</h3>
+        <p>Modern visuals, fluid interactions, and a brand that feels global — not cheap or generic.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-wrap" id="launch">
+  <div class="wrap">
+    <div class="cta-card reveal">
+      <div class="kicker">Coming soon</div>
+      <h2>Be the first to experience Praxis.</h2>
+      <p>Join the waitlist for early access when we launch on the App Store.</p>
+      <form class="waitlist" onsubmit="handleSubmit(event)">
+        <input type="email" placeholder="Enter your email for early access" aria-label="Email for early access" required/>
+        <button class="waitlist-btn" type="submit">Join early access</button>
+      </form>
+      <p id="form-success" style="margin-top:18px;color:var(--green);font-weight:600;display:none;">✓ You're on the list! We'll be in touch.</p>
+    </div>
+  </div>
+</div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="foot-brand">
+        <span class="foot-logo">✦</span>
+        PRAXIS
       </div>
-    </section>
-
-    <section class="final" id="launch">
-      <div class="wrap">
-        <div class="final-card">
-          <div class="kicker">Coming soon</div>
-          <h2>Praxis launches in 2027.</h2>
-          <p>A social app for nearby people, beautiful photo sharing, restaurant activity, and real plans with friends.</p>
-          <form class="waitlist-form" action="mailto:hello@praxisstar.com" method="post" enctype="text/plain">
-            <input type="email" name="email" placeholder="Enter your email for early access" aria-label="Email for early access" />
-            <button class="btn primary" type="submit">Join early access</button>
-          </form>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="wrap foot">
       <span>© 2026 Praxis. All rights reserved.</span>
       <span>Made for real-world connection.</span>
     </div>
-  </footer>
+  </div>
+</footer>
+
+<script>
+// Scroll reveals
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Trigger hero on load
+window.addEventListener('load',()=>{
+  document.querySelectorAll('.hero .reveal').forEach((el,i)=>{
+    setTimeout(()=>el.classList.add('visible'),i*120);
+  });
+});
+
+// Waitlist form
+function handleSubmit(e){
+  e.preventDefault();
+  const input = e.target.querySelector('input');
+  const success = document.getElementById('form-success');
+  if(input.value){
+    input.value='';
+    success.style.display='block';
+    setTimeout(()=>success.style.display='none',5000);
+  }
+}
+</script>
 </body>
 </html>
