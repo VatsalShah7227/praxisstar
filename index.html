@@ -981,15 +981,50 @@ function toggleFaq(btn){
   }
 }
 
-// ── WAITLIST FORM ──
-function handleSubmit(e){
+// ── WAITLIST FORM WITH GOOGLE SHEETS ──
+const SCRIPT_URL = https://script.google.com/macros/s/AKfycbzGAwChD7TBBqgP2pLN0OZhMQe3AuncGXaGstUsigReWS1hCkH9dZQKGXd35vDelB5d8w/exec
+
+async function handleSubmit(e){
   e.preventDefault();
   const input = e.target.querySelector('input');
   const success = document.getElementById('form-success');
-  if(input.value){
-    input.value='';
-    success.style.display='block';
-    setTimeout(()=>success.style.display='none',5000);
+  const submitBtn = e.target.querySelector('button');
+  const email = input.value.trim();
+  
+  // Validate email
+  if(!email || !email.includes('@')){
+    alert('Please enter a valid email address');
+    return;
+  }
+  
+  // Show loading state
+  const originalText = submitBtn.innerHTML;
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '⏳ Joining...';
+  
+  try {
+    const formData = new FormData();
+    formData.append('email', email);
+    
+    // Send to Google Sheets
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: formData,
+      mode: 'no-cors'
+    });
+    
+    // Show success
+    input.value = '';
+    success.style.display = 'block';
+    setTimeout(() => success.style.display = 'none', 6000);
+    
+  } catch (err) {
+    console.error('Submission error:', err);
+    alert('Oops! Something went wrong. Please try again or email us at hello@praxisapp.com');
+  } finally {
+    // Reset button
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalText;
   }
 }
 </script>
