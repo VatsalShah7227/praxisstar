@@ -408,6 +408,36 @@ h2{
 }
 .waitlist-btn:hover{transform:translateY(-1px);}
 
+
+/* LIVE WAITLIST SOCIAL PROOF */
+.waitlist-proof{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin-top:28px;
+  padding:12px 18px;
+  border-radius:999px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.82);
+  font-size:14px;
+  font-weight:600;
+  backdrop-filter:blur(18px);
+}
+.waitlist-proof .proof-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+  animation:blink 1.8s ease-in-out infinite;
+  flex-shrink:0;
+}
+#waitlist-count{
+  color:#fff;
+  font-weight:800;
+}
+
 /* ANIMATED HERO CANVAS */
 #hero-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
 .hero-inner{position:relative;z-index:1;}
@@ -859,6 +889,10 @@ footer{
       <div class="kicker">Coming soon</div>
       <h2>Be the first to experience Praxis.</h2>
       <p>Join the waitlist for early access when we launch on the App Store.</p>
+      <div class="waitlist-proof" aria-live="polite">
+        <span class="proof-dot"></span>
+        <span><span id="waitlist-count">0</span>+ people already joined the waitlist</span>
+      </div>
       <form class="waitlist" onsubmit="handleSubmit(event)">
         <input type="email" placeholder="Enter your email for early access" aria-label="Email for early access" required/>
         <button class="waitlist-btn" type="submit">Join early access</button>
@@ -997,6 +1031,20 @@ function toggleFaq(btn){
 // ── WAITLIST FORM WITH GOOGLE SHEETS ──
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGAwChD7TBBqgP2pLN0OZhMQe3AuncGXaGstUsigReWS1hCkH9dZQKGXd35vDelB5d8w/exec';
 
+
+async function loadWaitlistCount(){
+  try {
+    const response = await fetch(SCRIPT_URL);
+    const data = await response.json();
+
+    if(data.success && data.count !== undefined){
+      document.getElementById('waitlist-count').innerText = data.count;
+    }
+  } catch (err) {
+    console.error('Failed to load waitlist count:', err);
+  }
+}
+
 async function handleSubmit(e){
   e.preventDefault();
   const input = e.target.querySelector('input');
@@ -1030,6 +1078,9 @@ async function handleSubmit(e){
     input.value = '';
     success.style.display = 'block';
     setTimeout(() => success.style.display = 'none', 6000);
+
+    // Refresh live waitlist count after successful signup
+    loadWaitlistCount();
     
   } catch (err) {
     console.error('Submission error:', err);
@@ -1040,6 +1091,10 @@ async function handleSubmit(e){
     submitBtn.innerHTML = originalText;
   }
 }
+
+// Load live waitlist count when page opens
+loadWaitlistCount();
 </script>
 </body>
 </html>
+
