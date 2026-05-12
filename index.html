@@ -199,8 +199,25 @@ h1{
 .s-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.04em;}
 .s-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--cyan));}
 .s-tabs{display:flex;gap:6px;padding:0 16px 12px;}
-.s-tab{flex:1;padding:8px 0;text-align:center;border-radius:999px;font-size:10px;font-weight:800;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);}
+.s-tab{
+  flex:1;padding:8px 0;text-align:center;border-radius:999px;
+  font-size:10px;font-weight:800;color:rgba(255,255,255,.5);
+  background:rgba(255,255,255,.06);
+  transition:all .4s ease;
+  cursor:pointer;
+}
 .s-tab.on{background:rgba(255,61,154,.2);color:#fff;border:1px solid rgba(255,61,154,.3);}
+
+/* Animated Content Views */
+.s-content{position:relative;min-height:450px;}
+.s-view{
+  position:absolute;inset:0;
+  opacity:0;
+  transition:opacity .6s ease;
+  pointer-events:none;
+}
+.s-view.active{opacity:1;pointer-events:all;}
+
 .s-stories{display:flex;gap:9px;padding:0 16px 14px;}
 .s-story{
   width:50px;height:50px;border-radius:17px;flex-shrink:0;
@@ -221,14 +238,39 @@ h1{
     linear-gradient(135deg,var(--pink),var(--violet) 55%,var(--cyan));
 }
 .s-meta{display:flex;justify-content:space-between;padding-top:10px;font-size:11px;color:rgba(255,255,255,.65);}
+
+/* Feed View Styles */
+.feed-item{
+  margin:0 14px 12px;padding:14px;
+  border-radius:24px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+}
+.feed-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.feed-av{width:36px;height:36px;border-radius:50%;}
+.av1{background:linear-gradient(135deg,var(--pink),var(--violet));}
+.av2{background:linear-gradient(135deg,var(--cyan),var(--gold));}
+.feed-name{font-weight:700;font-size:13px;}
+.feed-time{font-size:11px;color:rgba(255,255,255,.5);}
+.feed-text{font-size:13px;line-height:1.5;color:rgba(255,255,255,.8);margin-bottom:8px;}
+.feed-photo{height:120px;border-radius:16px;background:linear-gradient(135deg,var(--violet),var(--pink));}
+
+/* Plans View Styles */
 .s-event{
-  margin:0 14px;padding:14px;
+  margin:0 14px 12px;padding:14px;
   border-radius:24px;
   background:linear-gradient(135deg,rgba(255,61,154,.18),rgba(56,217,245,.1));
   border:1px solid rgba(255,255,255,.1);
 }
 .s-event strong{display:block;font-size:12px;margin-bottom:4px;}
 .s-event span{color:var(--muted);font-size:11px;line-height:1.5;}
+.rsvp-stats{display:flex;gap:8px;margin-top:12px;}
+.rsvp-badge{
+  flex:1;padding:8px;border-radius:12px;text-align:center;
+  font-size:11px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+}
+.rsvp-number{display:block;font-size:16px;font-weight:800;margin-bottom:2px;}
 .s-bar{
   position:absolute;bottom:9px;left:50%;transform:translateX(-50%);
   width:104px;height:4px;border-radius:999px;background:rgba(255,255,255,.25);
@@ -359,7 +401,11 @@ h2{
   box-shadow:0 20px 60px rgba(0,0,0,.2);
   transition:.3s;
 }
-.feat:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.18);}
+.feat:hover{
+  transform:translateY(-4px);
+  border-color:rgba(255,255,255,.18);
+  box-shadow:0 0 40px rgba(255,61,154,.12);
+}
 .feat-icon{
   width:52px;height:52px;border-radius:18px;
   display:grid;place-items:center;font-size:22px;
@@ -369,7 +415,20 @@ h2{
 .feat h3{font-family:'Syne',sans-serif;font-size:22px;letter-spacing:-.04em;margin-bottom:10px;}
 .feat p{color:var(--muted);line-height:1.65;font-size:15px;}
 
-
+/* Quote Source Badge */
+.quote-source{
+  display:inline-block;
+  margin-top:14px;
+  padding:5px 12px;
+  border-radius:999px;
+  background:rgba(255,61,154,.1);
+  border:1px solid rgba(255,61,154,.2);
+  color:var(--pink);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
 
 /* CTA */
 .cta-wrap{padding:120px 0;text-align:center;}
@@ -408,6 +467,18 @@ h2{
 }
 .waitlist-btn:hover{transform:translateY(-1px);}
 
+/* Success Checkmark Animation */
+.success-check{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  animation:successPop .5s cubic-bezier(.68,-.55,.27,1.55);
+}
+@keyframes successPop{
+  0%{transform:scale(0);opacity:0;}
+  50%{transform:scale(1.1);}
+  100%{transform:scale(1);opacity:1;}
+}
 
 /* LIVE WAITLIST SOCIAL PROOF */
 .waitlist-proof{
@@ -569,6 +640,11 @@ footer{
   .foot{flex-direction:column;text-align:center;}
   .live-chip{display:none;}
 }
+
+.feat{
+  position:relative;
+  overflow:hidden;
+}
 </style>
 </head>
 <body>
@@ -634,24 +710,89 @@ footer{
               <span class="s-av"></span>
             </div>
             <div class="s-tabs">
-              <span class="s-tab on">Nearby</span>
-              <span class="s-tab">Feed</span>
-              <span class="s-tab">Plans</span>
+              <span class="s-tab on" data-view="nearby">Nearby</span>
+              <span class="s-tab" data-view="feed">Feed</span>
+              <span class="s-tab" data-view="plans">Plans</span>
             </div>
-            <div class="s-stories">
-              <span class="s-story ss1"></span>
-              <span class="s-story ss2"></span>
-              <span class="s-story ss3"></span>
-              <span class="s-story ss4"></span>
+
+            <div class="s-content">
+              <div class="s-view active" id="nearby-view">
+                <div class="s-stories">
+                  <span class="s-story ss1"></span>
+                  <span class="s-story ss2"></span>
+                  <span class="s-story ss3"></span>
+                  <span class="s-story ss4"></span>
+                </div>
+                <div class="s-card">
+                  <div class="s-img"></div>
+                  <div class="s-meta"><span>📍 Checked in nearby</span><span>2m ago</span></div>
+                </div>
+              </div>
+
+              <div class="s-view" id="feed-view">
+                <div class="feed-item">
+                  <div class="feed-header">
+                    <div class="feed-av av1"></div>
+                    <div>
+                      <div class="feed-name">Sarah M.</div>
+                      <div class="feed-time">12m ago</div>
+                    </div>
+                  </div>
+                  <div class="feed-text">Just discovered an amazing coffee spot in Shoreditch ☕</div>
+                  <div class="feed-photo"></div>
+                </div>
+                <div class="feed-item">
+                  <div class="feed-header">
+                    <div class="feed-av av2"></div>
+                    <div>
+                      <div class="feed-name">Alex K.</div>
+                      <div class="feed-time">28m ago</div>
+                    </div>
+                  </div>
+                  <div class="feed-text">Anyone up for drinks tonight? 🍻</div>
+                </div>
+              </div>
+
+              <div class="s-view" id="plans-view">
+                <div class="s-event">
+                  <strong>🎟 Tonight at 8:30 PM</strong>
+                  <span>Dinner at The Ivy • Shoreditch</span>
+                  <div class="rsvp-stats">
+                    <div class="rsvp-badge">
+                      <span class="rsvp-number">8</span>
+                      Going
+                    </div>
+                    <div class="rsvp-badge">
+                      <span class="rsvp-number">3</span>
+                      Maybe
+                    </div>
+                    <div class="rsvp-badge">
+                      <span class="rsvp-number">2</span>
+                      Declined
+                    </div>
+                  </div>
+                </div>
+                <div class="s-event">
+                  <strong>🎨 Tomorrow at 2:00 PM</strong>
+                  <span>Tate Modern visit with friends</span>
+                  <div class="rsvp-stats">
+                    <div class="rsvp-badge">
+                      <span class="rsvp-number">5</span>
+                      Going
+                    </div>
+                    <div class="rsvp-badge">
+                      <span class="rsvp-number">1</span>
+                      Maybe
+                    </div>
+                    <div class="rsvp-badge">
+                      <span class="rsvp-number">0</span>
+                      Declined
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="s-card">
-              <div class="s-img"></div>
-              <div class="s-meta"><span>📍 Checked in nearby</span><span>2m ago</span></div>
-            </div>
-            <div class="s-event">
-              <strong>Tonight at 8:30 PM</strong>
-              <span>Invite friends and track RSVP responses live.</span>
-            </div>
+
             <div class="s-bar"></div>
           </div>
         </div>
@@ -1139,7 +1280,32 @@ async function handleSubmit(e){
 
 // Load live waitlist count when page opens
 loadWaitlistCount();
+
+// Animated phone mockup tab switching
+let currentPhoneView = 0;
+const phoneViews = ['nearby', 'feed', 'plans'];
+
+function switchPhoneView(index) {
+  document.querySelectorAll('.s-tab').forEach((tab, i) => {
+    tab.classList.toggle('on', i === index);
+  });
+
+  document.querySelectorAll('.s-view').forEach((view, i) => {
+    view.classList.toggle('active', i === index);
+  });
+}
+
+document.querySelectorAll('.s-tab').forEach((tab, index) => {
+  tab.addEventListener('click', () => {
+    currentPhoneView = index;
+    switchPhoneView(index);
+  });
+});
+
+setInterval(() => {
+  currentPhoneView = (currentPhoneView + 1) % phoneViews.length;
+  switchPhoneView(currentPhoneView);
+}, 5000);
 </script>
 </body>
 </html>
-
