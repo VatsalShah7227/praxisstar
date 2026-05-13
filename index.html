@@ -232,28 +232,194 @@ h1{
   border-radius:26px;background:rgba(255,255,255,.07);
   border:1px solid rgba(255,255,255,.09);
 }
-.s-img{
-  height:150px;border-radius:20px;
-  background:radial-gradient(circle at 25% 25%,rgba(255,255,255,.6),transparent 30%),
-    linear-gradient(135deg,var(--pink),var(--violet) 55%,var(--cyan));
-}
 .s-meta{display:flex;justify-content:space-between;padding-top:10px;font-size:11px;color:rgba(255,255,255,.65);}
 
-/* Feed View Styles */
-.feed-item{
-  margin:0 14px 12px;padding:14px;
+/* Premium abstract hero phone UI */
+.hero-map-card,
+.hero-feed-card,
+.hero-discovery-card{
+  margin:0 14px 12px;
+  border-radius:30px;
+  border:1px solid rgba(255,255,255,.09);
+  background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.035));
+  box-shadow:0 22px 70px rgba(0,0,0,.32);
+  backdrop-filter:blur(18px);
+  overflow:hidden;
+}
+
+.hero-map-card{padding:14px;}
+
+.hero-card-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.hero-card-title{
+  font-size:17px;
+  font-weight:800;
+  letter-spacing:-.04em;
+}
+
+.hero-card-sub{
+  margin-top:4px;
+  color:rgba(255,255,255,.55);
+  font-size:11px;
+  line-height:1.35;
+}
+
+.hero-live-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 18px var(--green);
+  margin-top:4px;
+  flex-shrink:0;
+}
+
+.hero-map-area{
+  position:relative;
+  height:260px;
   border-radius:24px;
-  background:rgba(255,255,255,.05);
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 30% 25%,rgba(255,61,154,.28),transparent 28%),
+    radial-gradient(circle at 68% 62%,rgba(56,217,245,.2),transparent 30%),
+    linear-gradient(135deg,#101023,#070713);
   border:1px solid rgba(255,255,255,.08);
 }
-.feed-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.feed-av{width:36px;height:36px;border-radius:50%;}
-.av1{background:linear-gradient(135deg,var(--pink),var(--violet));}
-.av2{background:linear-gradient(135deg,var(--cyan),var(--gold));}
-.feed-name{font-weight:700;font-size:13px;}
-.feed-time{font-size:11px;color:rgba(255,255,255,.5);}
-.feed-text{font-size:13px;line-height:1.5;color:rgba(255,255,255,.8);margin-bottom:8px;}
-.feed-photo{height:120px;border-radius:16px;background:linear-gradient(135deg,var(--violet),var(--pink));}
+
+.hero-map-line{
+  position:absolute;
+  inset:44px 34px;
+  border:1px dashed rgba(255,255,255,.18);
+  border-radius:44% 56% 52% 48%;
+  transform:rotate(-12deg);
+}
+
+.hero-map-pin,
+.hero-map-person{
+  position:absolute;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--pink),var(--violet));
+  box-shadow:0 0 0 10px rgba(255,61,154,.1),0 0 26px rgba(255,61,154,.55);
+}
+
+.hero-map-pin{width:18px;height:18px;left:44px;top:72px;}
+.hero-map-person{width:34px;height:34px;right:52px;top:96px;background:linear-gradient(135deg,var(--cyan),var(--violet));}
+.hero-map-person.two{left:92px;bottom:52px;top:auto;right:auto;background:linear-gradient(135deg,var(--gold),var(--pink));}
+
+.hero-map-pulse{
+  position:absolute;
+  width:112px;
+  height:112px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.1);
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  animation:heroPulse 2.8s ease-out infinite;
+}
+
+@keyframes heroPulse{
+  0%{transform:translate(-50%,-50%) scale(.75);opacity:.7;}
+  100%{transform:translate(-50%,-50%) scale(1.55);opacity:0;}
+}
+
+.hero-pill-row{display:flex;gap:8px;margin-top:12px;}
+.hero-pill{
+  flex:1;
+  text-align:center;
+  padding:9px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.78);
+  font-size:11px;
+  font-weight:700;
+}
+
+.hero-feed-card{padding:14px;}
+.hero-feed-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.hero-user{display:flex;align-items:center;gap:10px;}
+.hero-user-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--cyan));}
+.hero-user-name{font-size:13px;font-weight:800;}
+.hero-user-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;}
+.hero-more{width:7px;height:7px;border-radius:50%;background:var(--pink);box-shadow:0 0 14px rgba(255,61,154,.7);}
+.hero-photo-card{
+  height:270px;
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.08);
+  background:
+    radial-gradient(circle at 22% 20%,rgba(255,255,255,.38),transparent 22%),
+    linear-gradient(135deg,#ff3d9a,#7c3aff 55%,#38d9f5);
+  box-shadow:inset 0 -80px 80px rgba(0,0,0,.28);
+}
+.hero-feed-actions{display:flex;justify-content:space-between;margin-top:14px;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;}
+
+.hero-discovery-card{
+  position:relative;
+  height:390px;
+  margin-top:2px;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at center,rgba(124,58,255,.24),transparent 62%),
+    linear-gradient(180deg,#0b0b1a,#06060f);
+}
+
+.hero-radar-ring{
+  position:absolute;
+  width:240px;
+  height:240px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.11);
+  box-shadow:
+    0 0 0 42px rgba(255,255,255,.025),
+    0 0 0 84px rgba(255,255,255,.015);
+  animation:radarFloat 5s ease-in-out infinite;
+}
+
+@keyframes radarFloat{
+  0%,100%{transform:scale(1);opacity:.9;}
+  50%{transform:scale(1.04);opacity:1;}
+}
+
+.hero-center-person,
+.hero-orbit-person{
+  position:absolute;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--pink),var(--cyan));
+}
+
+.hero-center-person{
+  width:74px;
+  height:74px;
+  z-index:2;
+  box-shadow:0 0 45px rgba(255,61,154,.45);
+}
+
+.hero-orbit-person{width:46px;height:46px;box-shadow:0 0 24px rgba(56,217,245,.32);}
+.hero-orbit-person.one{top:70px;left:62px;}
+.hero-orbit-person.two{top:130px;right:54px;background:linear-gradient(135deg,var(--gold),var(--pink));}
+.hero-orbit-person.three{bottom:74px;left:88px;background:linear-gradient(135deg,var(--violet),var(--cyan));}
+
+.hero-discovery-label{
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:18px;
+  padding:14px;
+  border-radius:20px;
+  background:rgba(255,255,255,.065);
+  border:1px solid rgba(255,255,255,.09);
+  backdrop-filter:blur(16px);
+}
+.hero-discovery-label strong{display:block;font-size:13px;margin-bottom:4px;}
+.hero-discovery-label span{font-size:11px;color:rgba(255,255,255,.55);}
 
 /* Plans View Styles */
 .s-event{
@@ -430,6 +596,97 @@ h2{
   text-transform:uppercase;
 }
 
+/* INSIDE PRAXIS */
+
+.inside-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin-top:56px;
+}
+
+.inside-card{
+  position:relative;
+  overflow:hidden;
+  border-radius:34px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  height:560px;
+
+  box-shadow:
+    0 24px 80px rgba(0,0,0,.28),
+    inset 0 0 0 1px rgba(255,255,255,.04);
+
+  transition:.35s ease;
+}
+
+
+.inside-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(255,255,255,.16);
+  box-shadow:
+    0 30px 90px rgba(0,0,0,.34),
+    0 0 40px rgba(255,61,154,.08);
+}
+
+.inside-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:top center;
+  display:block;
+}
+
+.inside-overlay{
+  position:absolute;
+  inset:auto 0 0 0;
+  padding:26px;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(0,0,0,.78),
+      rgba(0,0,0,.28),
+      transparent
+    );
+}
+
+.inside-overlay span{
+  display:inline-block;
+
+  padding:7px 12px;
+  border-radius:999px;
+
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
+
+  color:rgba(255,255,255,.72);
+
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+
+  margin-bottom:12px;
+}
+
+.inside-overlay h3{
+  font-family:'Syne',sans-serif;
+  font-size:28px;
+  line-height:1;
+  letter-spacing:-.05em;
+}
+
+@media(max-width:960px){
+
+  .inside-grid{
+    grid-template-columns:1fr;
+  }
+
+  .inside-card{
+    height:560px;
+  }
+}
 /* CTA */
 .cta-wrap{padding:120px 0;text-align:center;}
 .cta-card{
@@ -712,82 +969,68 @@ footer{
             <div class="s-tabs">
               <span class="s-tab on" data-view="nearby">Nearby</span>
               <span class="s-tab" data-view="feed">Feed</span>
-              <span class="s-tab" data-view="plans">Plans</span>
+              <span class="s-tab" data-view="discovery">Discovery</span>
             </div>
 
             <div class="s-content">
               <div class="s-view active" id="nearby-view">
-                <div class="s-stories">
-                  <span class="s-story ss1"></span>
-                  <span class="s-story ss2"></span>
-                  <span class="s-story ss3"></span>
-                  <span class="s-story ss4"></span>
-                </div>
-                <div class="s-card">
-                  <div class="s-img"></div>
-                  <div class="s-meta"><span>📍 Checked in nearby</span><span>2m ago</span></div>
+                <div class="hero-map-card">
+                  <div class="hero-card-top">
+                    <div>
+                      <div class="hero-card-title">Nearby, right now</div>
+                      <div class="hero-card-sub">Live people, places, and plans around you.</div>
+                    </div>
+                    <span class="hero-live-dot"></span>
+                  </div>
+
+                  <div class="hero-map-area">
+                    <div class="hero-map-line"></div>
+                    <span class="hero-map-pulse"></span>
+                    <span class="hero-map-pin"></span>
+                    <span class="hero-map-person"></span>
+                    <span class="hero-map-person two"></span>
+                  </div>
+
+                  <div class="hero-pill-row">
+                    <span class="hero-pill">12 nearby</span>
+                    <span class="hero-pill">4 friends</span>
+                  </div>
                 </div>
               </div>
 
               <div class="s-view" id="feed-view">
-                <div class="feed-item">
-                  <div class="feed-header">
-                    <div class="feed-av av1"></div>
-                    <div>
-                      <div class="feed-name">Sarah M.</div>
-                      <div class="feed-time">12m ago</div>
+                <div class="hero-feed-card">
+                  <div class="hero-feed-head">
+                    <div class="hero-user">
+                      <div class="hero-user-avatar"></div>
+                      <div>
+                        <div class="hero-user-name">Sophia Bennett</div>
+                        <div class="hero-user-sub">London · 2m ago</div>
+                      </div>
                     </div>
+                    <span class="hero-more"></span>
                   </div>
-                  <div class="feed-text">Just discovered an amazing coffee spot in Shoreditch ☕</div>
-                  <div class="feed-photo"></div>
-                </div>
-                <div class="feed-item">
-                  <div class="feed-header">
-                    <div class="feed-av av2"></div>
-                    <div>
-                      <div class="feed-name">Alex K.</div>
-                      <div class="feed-time">28m ago</div>
-                    </div>
+
+                  <div class="hero-photo-card"></div>
+
+                  <div class="hero-feed-actions">
+                    <span>♡ 128</span>
+                    <span>✦ Nearby moment</span>
                   </div>
-                  <div class="feed-text">Anyone up for drinks tonight? 🍻</div>
                 </div>
               </div>
 
-              <div class="s-view" id="plans-view">
-                <div class="s-event">
-                  <strong>🎟 Tonight at 8:30 PM</strong>
-                  <span>Dinner at The Ivy • Shoreditch</span>
-                  <div class="rsvp-stats">
-                    <div class="rsvp-badge">
-                      <span class="rsvp-number">8</span>
-                      Going
-                    </div>
-                    <div class="rsvp-badge">
-                      <span class="rsvp-number">3</span>
-                      Maybe
-                    </div>
-                    <div class="rsvp-badge">
-                      <span class="rsvp-number">2</span>
-                      Declined
-                    </div>
-                  </div>
-                </div>
-                <div class="s-event">
-                  <strong>🎨 Tomorrow at 2:00 PM</strong>
-                  <span>Tate Modern visit with friends</span>
-                  <div class="rsvp-stats">
-                    <div class="rsvp-badge">
-                      <span class="rsvp-number">5</span>
-                      Going
-                    </div>
-                    <div class="rsvp-badge">
-                      <span class="rsvp-number">1</span>
-                      Maybe
-                    </div>
-                    <div class="rsvp-badge">
-                      <span class="rsvp-number">0</span>
-                      Declined
-                    </div>
+              <div class="s-view" id="discovery-view">
+                <div class="hero-discovery-card">
+                  <span class="hero-radar-ring"></span>
+                  <span class="hero-center-person"></span>
+                  <span class="hero-orbit-person one"></span>
+                  <span class="hero-orbit-person two"></span>
+                  <span class="hero-orbit-person three"></span>
+
+                  <div class="hero-discovery-label">
+                    <strong>Discovery mode active</strong>
+                    <span>Bluetooth-powered nearby social layer.</span>
                   </div>
                 </div>
               </div>
@@ -910,6 +1153,64 @@ footer{
   </div>
 </section>
 
+<!-- INSIDE PRAXIS -->
+<section class="block" id="inside">
+  <div class="wrap">
+
+    <div class="reveal" style="text-align:center;max-width:760px;margin:0 auto;">
+      <div class="kicker">Inside Praxis</div>
+      <h2>Designed to feel alive.</h2>
+
+      <p class="section-sub" style="margin:18px auto 0;">
+        Nearby discovery, real-world plans, beautiful moments, and social experiences built with a premium native feel.
+      </p>
+    </div>
+
+    <div class="inside-grid reveal">
+
+      <div class="inside-card">
+        <img src="feed1.png" alt="Praxis feed"/>
+        <div class="inside-overlay">
+          <span>Social Feed</span>
+          <h3>Beautiful photo sharing</h3>
+        </div>
+      </div>
+
+      <div class="inside-card">
+        <img src="discovery1.png" alt="Praxis discovery"/>
+        <div class="inside-overlay">
+          <span>Discovery</span>
+          <h3>See who’s nearby</h3>
+        </div>
+      </div>
+
+      <div class="inside-card">
+        <img src="restaurant1.png" alt="Praxis restaurant"/>
+        <div class="inside-overlay">
+          <span>Check-ins</span>
+          <h3>Restaurants feel social</h3>
+        </div>
+      </div>
+
+      <div class="inside-card">
+        <img src="qr1.png" alt="Praxis QR"/>
+        <div class="inside-overlay">
+          <span>QR Check-in</span>
+          <h3>Instant venue access</h3>
+        </div>
+      </div>
+
+      <div class="inside-card">
+        <img src="meetup1.png" alt="Praxis meetup"/>
+        <div class="inside-overlay">
+          <span>Plans & Events</span>
+          <h3>Make real plans</h3>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
   <!-- COMMUNITY EXCITEMENT -->
 <section class="block" id="community">
   <div class="wrap">
@@ -1283,7 +1584,7 @@ loadWaitlistCount();
 
 // Animated phone mockup tab switching
 let currentPhoneView = 0;
-const phoneViews = ['nearby', 'feed', 'plans'];
+const phoneViews = ['nearby', 'feed', 'discovery'];
 
 function switchPhoneView(index) {
   document.querySelectorAll('.s-tab').forEach((tab, i) => {
