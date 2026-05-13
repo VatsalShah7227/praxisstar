@@ -924,12 +924,39 @@ footer{
     padding:9px 9px 9px 16px;
   }
 
-  .nav-mid{display:none;}
   .live-chip{display:none;}
+
+  .nav-mid{
+    position:absolute;
+    left:0;
+    right:0;
+    top:58px;
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:2px 2px 10px;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .nav-mid::-webkit-scrollbar{
+    display:none;
+  }
+
+  .nav-mid a{
+    flex:0 0 auto;
+    padding:8px 13px;
+    border-radius:999px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
+    color:rgba(255,255,255,.72);
+    font-size:12px;
+    backdrop-filter:blur(18px);
+  }
 
   .hero{
     min-height:auto;
-    padding:118px 0 72px;
+    padding:154px 0 72px;
   }
 
   .hero-inner,.exp-grid{
@@ -1002,8 +1029,19 @@ footer{
     font-size:12px;
   }
 
+  .nav-mid{
+    top:56px;
+    padding-left:0;
+    padding-right:0;
+  }
+
+  .nav-mid a{
+    font-size:11px;
+    padding:8px 12px;
+  }
+
   .hero{
-    padding:104px 0 62px;
+    padding:150px 0 62px;
   }
 
   .eyebrow{
@@ -1168,6 +1206,15 @@ footer{
 }
 
 @media(max-width:390px){
+  .nav-mid a{
+    font-size:10px;
+    padding:7px 10px;
+  }
+
+  .hero{
+    padding-top:144px;
+  }
+
   .phone{
     width:272px;
     height:570px;
@@ -1951,5 +1998,8 @@ setInterval(() => {
   switchPhoneView(currentPhoneView);
 }, 5000);
 </script>
+</body>
+</html>
+
 </body>
 </html>
