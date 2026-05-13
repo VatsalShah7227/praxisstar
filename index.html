@@ -7,1435 +7,1452 @@
 <title>Praxis — Nearby social, reimagined</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+/* ──────────────────────────────────────────────────────────
+   PRAXIS — design system tokens
+   ────────────────────────────────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#05050e;
-  --bg1:#090916;
-  --bg2:#0d0d1f;
-  --text:#ffffff;
-  --muted:rgba(255,255,255,.6);
-  --faint:rgba(255,255,255,.35);
-  --line:rgba(255,255,255,.1);
-  --line2:rgba(255,255,255,.06);
-  --pink:#ff3d9a;
-  --violet:#7c3aff;
-  --cyan:#38d9f5;
-  --gold:#ffcb47;
-  --green:#1ddb8b;
-  --glass:rgba(255,255,255,.055);
-  --glass2:rgba(255,255,255,.032);
-  --r:44px;
+  /* Surfaces */
+  --bg:           #08080d;
+  --bg-soft:      #0c0c14;
+  --surface-1:    rgba(255,255,255,.025);
+  --surface-2:    rgba(255,255,255,.045);
+  --surface-3:    rgba(255,255,255,.07);
+
+  /* Lines (hairlines) */
+  --line:         rgba(255,255,255,.07);
+  --line-strong:  rgba(255,255,255,.13);
+
+  /* Text */
+  --text:         #f6f6f8;
+  --muted:        rgba(246,246,248,.62);
+  --faint:        rgba(246,246,248,.42);
+
+  /* Accent — single brand gradient, used sparingly */
+  --pink:         #ff3d9a;
+  --violet:       #7c3aff;
+  --accent:       linear-gradient(120deg,#ff3d9a 0%,#a04bff 50%,#7c3aff 100%);
+  --accent-glow:  rgba(255,61,154,.35);
+
+  /* Status (kept minimal) */
+  --green:        #29d985;
+
+  /* Radius scale (4 values total — disciplined) */
+  --r-xs:         6px;
+  --r-sm:         14px;
+  --r-md:         24px;
+  --r-pill:       999px;
+
+  /* Type scale */
+  --t-display:    clamp(44px, 8.4vw, 112px);
+  --t-h2:         clamp(30px, 4.6vw, 60px);
+  --t-h3:         22px;
+  --t-body:       17px;
+  --t-small:      14px;
+  --t-mono:       12px;
+
+  /* Section rhythm */
+  --section-y:    clamp(80px,11vw,160px);
+  --container:    1180px;
 }
+
+/* Tweakable knobs — direct manipulation targets */
+:root[data-accent="pink"]{
+  --accent: linear-gradient(120deg,#ff3d9a,#ff3d9a);
+  --accent-glow: rgba(255,61,154,.35);
+}
+:root[data-accent="violet"]{
+  --accent: linear-gradient(120deg,#7c3aff,#7c3aff);
+  --accent-glow: rgba(124,58,255,.4);
+}
+:root[data-accent="white"]{
+  --accent: linear-gradient(120deg,#ffffff,#ffffff);
+  --accent-glow: rgba(255,255,255,.18);
+  --pink: #ffffff;
+  --violet: #ffffff;
+}
+:root[data-radius="sharp"]{
+  --r-xs: 2px;
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-pill: 4px;
+}
+:root[data-motion="off"] *{
+  animation: none !important;
+  transition: none !important;
+}
+
 html{scroll-behavior:smooth;}
 body{
-  font-family:'DM Sans',sans-serif;
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;
   background:var(--bg);
   color:var(--text);
-  overflow-x:hidden;
+  font-size:var(--t-body);
+  line-height:1.55;
   -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+  letter-spacing:-.005em;
 }
 
-/* ── CANVAS ── */
-.canvas{
-  position:fixed;inset:0;z-index:-3;
+/* ──────────────────────────────────────────────────────────
+   Atmosphere — quiet, not noisy
+   ────────────────────────────────────────────────────────── */
+.atmosphere{
+  position:fixed;inset:0;z-index:-2;pointer-events:none;
   background:
-    radial-gradient(ellipse 60% 50% at 15% 10%,rgba(255,61,154,.22),transparent),
-    radial-gradient(ellipse 50% 40% at 85% 5%,rgba(56,217,245,.14),transparent),
-    radial-gradient(ellipse 70% 60% at 55% 80%,rgba(124,58,255,.2),transparent),
-    linear-gradient(160deg,#04040d,#080818 50%,#050510);
+    radial-gradient(ellipse 70% 50% at 20% -10%, rgba(255,61,154,.16), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 90% 0%,  rgba(124,58,255,.13), transparent 60%),
+    linear-gradient(180deg,#080810 0%, #050509 100%);
 }
 .grain{
-  position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.055;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:200px 200px;
-}
-.grid-overlay{
-  position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
-  background-size:80px 80px;
-  mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,black,transparent);
+  position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.04;
+  background-image:url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode:overlay;
 }
 
-/* ── NAV ── */
+/* ──────────────────────────────────────────────────────────
+   Utilities
+   ────────────────────────────────────────────────────────── */
+.wrap{
+  width:min(var(--container), calc(100% - 40px));
+  margin:0 auto;
+}
+.kicker{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono', monospace;
+  font-size:var(--t-mono); font-weight:500;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--faint);
+}
+.kicker::before{
+  content:"";
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 12px var(--accent-glow);
+}
+h1,h2,h3{
+  font-family:'Syne', sans-serif;
+  font-weight:700;
+  letter-spacing:-.04em;
+  line-height:1;
+  text-wrap:balance;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+h2{ font-size:var(--t-h2); line-height:1.02; }
+h3{ font-size:var(--t-h3); letter-spacing:-.02em; line-height:1.1; }
+p { color:var(--muted); }
+
+.gradient-text{
+  background:var(--accent);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent;
+}
+
+/* Reveals */
+.reveal{
+  opacity:0;
+  transform:translateY(20px);
+  transition: opacity .9s cubic-bezier(.2,.6,.2,1), transform .9s cubic-bezier(.2,.6,.2,1);
+}
+.reveal.visible{ opacity:1; transform:translateY(0); }
+
+/* ──────────────────────────────────────────────────────────
+   NAV — calm, single accent button
+   ────────────────────────────────────────────────────────── */
 nav{
-  position:fixed;top:20px;left:50%;transform:translateX(-50%);
-  z-index:100;
-  width:min(1140px,calc(100% - 32px));
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  z-index:80;
+  width:min(var(--container), calc(100% - 32px));
   display:flex;align-items:center;justify-content:space-between;
-  padding:10px 10px 10px 20px;
-  background:rgba(6,6,16,.7);
-  backdrop-filter:blur(28px) saturate(180%);
+  padding:8px 8px 8px 18px;
+  background:rgba(10,10,16,.62);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
   border:1px solid var(--line);
-  border-radius:999px;
-  box-shadow:0 20px 60px rgba(0,0,0,.3);
+  border-radius:var(--r-pill);
 }
 .brand{
   display:flex;align-items:center;gap:10px;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.02em;
-}
-.logo{
-  width:36px;height:36px;border-radius:13px;
-  background:linear-gradient(135deg,var(--pink),var(--violet));
-  display:grid;place-items:center;font-size:16px;
-  box-shadow:0 0 28px rgba(255,61,154,.4);
-  flex-shrink:0;
-}
-.nav-mid{display:flex;gap:28px;color:var(--muted);font-size:14px;}
-.nav-mid a{transition:.2s;text-decoration:none;color:inherit;}
-.nav-mid a:hover{color:#fff;}
-.nav-right{display:flex;align-items:center;gap:10px;}
-.live-chip{
-  display:flex;align-items:center;gap:7px;
-  padding:8px 14px;border-radius:999px;
-  background:rgba(29,219,139,.1);border:1px solid rgba(29,219,139,.25);
-  font-size:12px;font-weight:600;color:var(--green);letter-spacing:.02em;
-}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.8s ease-in-out infinite;}
-@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 10px var(--green);}50%{opacity:.3;box-shadow:none;}}
-.btn-nav{
-  padding:9px 20px;border-radius:999px;
-  background:linear-gradient(135deg,var(--pink),var(--violet));
-  font-size:13px;font-weight:700;color:#fff;border:none;cursor:pointer;
-  text-decoration:none;
-  box-shadow:0 8px 28px rgba(255,61,154,.3);
-  transition:.2s;
-}
-.btn-nav:hover{transform:translateY(-1px);box-shadow:0 12px 36px rgba(255,61,154,.4);}
-
-/* ── HERO ── */
-.hero{
-  min-height:100vh;display:grid;align-items:center;
-  padding:130px 0 80px;
-}
-.wrap{width:min(1140px,calc(100% - 40px));margin:0 auto;}
-.hero-inner{
-  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
-}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:9px;
-  padding:9px 16px;border-radius:999px;
-  background:var(--glass);border:1px solid var(--line);
-  font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.75);margin-bottom:24px;
-}
-.eyebrow-dot{
-  width:7px;height:7px;border-radius:50%;
-  background:var(--gold);box-shadow:0 0 16px var(--gold);
-}
-h1{
   font-family:'Syne',sans-serif;
-  font-size:clamp(52px,7vw,96px);
-  line-height:.9;letter-spacing:-.07em;font-weight:800;
-  margin-bottom:24px;
+  font-weight:700; font-size:15px; letter-spacing:.04em;
+  color:var(--text); text-decoration:none;
 }
-.h1-line2{
-  display:block;
-  background:linear-gradient(95deg,#fff 10%,#ffc8e2 35%,var(--pink) 55%,var(--violet) 80%,var(--cyan));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
+.brand-mark{
+  width:28px;height:28px;border-radius:8px;
+  background:var(--accent);
+  display:grid;place-items:center;
+  font-size:13px; color:#fff;
+  box-shadow:0 0 18px var(--accent-glow);
 }
-.hero-sub{
-  font-size:clamp(16px,1.8vw,20px);line-height:1.65;
-  color:var(--muted);max-width:560px;margin-bottom:36px;
+.nav-mid{
+  display:flex; gap:28px;
+  font-size:14px; color:var(--muted);
 }
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:44px;}
-.btn-primary{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:14px 28px;border-radius:999px;
-  background:linear-gradient(135deg,var(--pink),var(--violet));
-  font-size:15px;font-weight:700;color:#fff;text-decoration:none;
-  box-shadow:0 16px 48px rgba(255,61,154,.35);
-  transition:.25s;
+.nav-mid a{
+  color:inherit; text-decoration:none;
+  transition: color .2s ease;
 }
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 22px 56px rgba(255,61,154,.45);}
-.btn-ghost{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:14px 28px;border-radius:999px;
-  background:var(--glass);border:1px solid var(--line);
-  font-size:15px;font-weight:600;color:rgba(255,255,255,.82);
-  text-decoration:none;transition:.25s;
+.nav-mid a:hover{ color:var(--text); }
+.nav-right{ display:flex; align-items:center; gap:10px; }
+.status-chip{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:7px 12px; border-radius:var(--r-pill);
+  background:rgba(41,217,133,.08);
+  border:1px solid rgba(41,217,133,.22);
+  font-size:12px; font-weight:500; color:var(--green);
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:.04em;
 }
-.btn-ghost:hover{background:rgba(255,255,255,.1);color:#fff;}
+.status-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--green);
+  animation:pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot{
+  0%,100%{ opacity:1; box-shadow:0 0 0 0 rgba(41,217,133,.4); }
+  50%{ opacity:.55; box-shadow:0 0 0 6px rgba(41,217,133,0); }
+}
+.btn-cta{
+  padding:9px 18px;
+  border-radius:var(--r-pill);
+  background:var(--accent);
+  font-size:13px; font-weight:600; color:#fff;
+  text-decoration:none; border:none; cursor:pointer;
+  box-shadow:0 6px 22px var(--accent-glow);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.btn-cta:hover{ transform:translateY(-1px); box-shadow:0 10px 30px var(--accent-glow); }
 
-
-
-/* ── PHONE ── */
-.phone-wrap{
-  position:relative;display:flex;justify-content:center;align-items:center;
-  min-height:640px;
+@media (max-width: 940px){
+  .nav-mid{ display:none; }
+  .mobile-bnav{ display:block; }
 }
-.halo{
-  position:absolute;border-radius:50%;
-  border:1px solid rgba(255,255,255,.09);
-  animation:pulse 5s ease-in-out infinite;
+@media (max-width: 700px){
+  nav{
+    top:12px;
+    width: calc(100% - 20px);
+    padding:6px 6px 6px 14px;
+  }
+  .brand{ font-size:13px; gap:8px; }
+  .brand-mark{ width:26px; height:26px; font-size:12px; }
+  .status-chip{ display:none; }
+  .btn-cta{ padding:8px 14px; font-size:12px; white-space:nowrap; }
 }
-.h1r{width:540px;height:540px;}
-.h2r{width:420px;height:420px;animation-delay:-1.7s;border-color:rgba(255,255,255,.06);}
-.h3r{width:300px;height:300px;animation-delay:-3.4s;border-color:rgba(255,255,255,.04);}
-@keyframes pulse{0%,100%{transform:scale(.94);opacity:.5;}50%{transform:scale(1.04);opacity:1;}}
 
-.phone{
-  position:relative;z-index:2;
-  width:300px;height:618px;
-  border-radius:52px;
-  background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.04));
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:0 40px 120px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.07);
-  padding:14px;
-  transform:rotate(2.5deg);
-}
-.screen{
-  height:100%;border-radius:40px;overflow:hidden;
-  background:#080814;
-  border:1px solid rgba(255,255,255,.08);
+/* ──────────────────────────────────────────────────────────
+   HERO — split, restrained, single halo
+   ────────────────────────────────────────────────────────── */
+.hero{
+  min-height:100vh;
+  padding:120px 0 64px;
+  display:flex; align-items:center;
   position:relative;
 }
-.notch{
-  position:absolute;top:10px;left:50%;transform:translateX(-50%);
-  width:88px;height:24px;border-radius:999px;background:#030308;z-index:5;
+.hero-grid{
+  display:grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap:64px;
+  align-items:center;
 }
-.s-top{padding:46px 18px 14px;display:flex;justify-content:space-between;align-items:center;}
-.s-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.04em;}
-.s-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--cyan));}
-.s-tabs{display:flex;gap:6px;padding:0 16px 12px;}
-.s-tab{
-  flex:1;padding:8px 0;text-align:center;border-radius:999px;
-  font-size:10px;font-weight:800;color:rgba(255,255,255,.5);
-  background:rgba(255,255,255,.06);
-  transition:all .4s ease;
-  cursor:pointer;
+.eyebrow-row{
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:32px;
 }
-.s-tab.on{background:rgba(255,61,154,.2);color:#fff;border:1px solid rgba(255,61,154,.3);}
+.eyebrow-row .divider{
+  flex:0 0 40px; height:1px; background:var(--line-strong);
+}
+.hero h1{
+  font-size:var(--t-display);
+  font-weight:800;
+  letter-spacing:-.055em;
+  margin-bottom:28px;
+}
+.hero h1 .line-2{ display:block; }
+.hero-sub{
+  font-size:clamp(16px, 1.4vw, 19px);
+  line-height:1.55; color:var(--muted);
+  max-width:520px;
+  margin-bottom:40px;
+}
+.hero-actions{
+  display:flex; gap:10px; flex-wrap:wrap;
+  align-items:center;
+}
+.btn-primary{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:14px 24px; border-radius:var(--r-pill);
+  background:var(--accent);
+  font-size:15px; font-weight:600; color:#fff;
+  text-decoration:none;
+  box-shadow:0 10px 32px var(--accent-glow);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.btn-primary:hover{ transform:translateY(-2px); box-shadow:0 16px 42px var(--accent-glow); }
+.btn-primary .arrow{
+  display:inline-block; transition: transform .25s ease;
+}
+.btn-primary:hover .arrow{ transform: translate(2px,-2px); }
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:14px 22px; border-radius:var(--r-pill);
+  background:transparent;
+  border:1px solid var(--line-strong);
+  font-size:15px; font-weight:500; color:var(--text);
+  text-decoration:none;
+  transition: background .2s ease, border-color .2s ease;
+}
+.btn-ghost:hover{ background:var(--surface-1); border-color:rgba(255,255,255,.22); }
 
-/* Animated Content Views */
-.s-content{position:relative;min-height:450px;}
-.s-view{
-  position:absolute;inset:0;
-  opacity:0;
-  transition:opacity .6s ease;
+/* Hero meta strip — replaces noisy floating cards */
+.hero-meta{
+  display:flex; gap:32px; margin-top:56px;
+  padding-top:32px;
+  border-top:1px solid var(--line);
+}
+.hero-meta-item .num{
+  font-family:'Syne', sans-serif;
+  font-size:28px; font-weight:700;
+  letter-spacing:-.02em;
+}
+.hero-meta-item .label{
+  display:block;
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--faint); margin-top:4px;
+}
+
+/* Phone — straight, single halo */
+.phone-stage{
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  min-height:620px;
+}
+.phone-halo{
+  position:absolute; left:50%; top:50%;
+  width:520px; height:520px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(255,61,154,.18), transparent 55%);
+  filter:blur(20px);
   pointer-events:none;
 }
-.s-view.active{opacity:1;pointer-events:all;}
-
-.s-stories{display:flex;gap:9px;padding:0 16px 14px;}
-.s-story{
-  width:50px;height:50px;border-radius:17px;flex-shrink:0;
-  border:2px solid rgba(255,255,255,.18);
+.phone-ring{
+  position:absolute; left:50%; top:50%;
+  width:480px; height:480px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border:1px solid var(--line);
+  pointer-events:none;
 }
-.ss1{background:linear-gradient(135deg,var(--pink),var(--violet));}
-.ss2{background:linear-gradient(135deg,var(--cyan),var(--violet));}
-.ss3{background:linear-gradient(135deg,var(--gold),var(--pink));}
-.ss4{background:linear-gradient(135deg,rgba(255,255,255,.9),var(--cyan));}
-.s-card{
-  margin:0 14px 12px;padding:12px;
-  border-radius:26px;background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.09);
+.phone{
+  position:relative; z-index:2;
+  width:296px; height:608px;
+  border-radius:48px;
+  background:linear-gradient(160deg, #1a1a26, #0a0a14);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow: 0 40px 100px rgba(0,0,0,.55),
+              inset 0 0 0 1px rgba(255,255,255,.05);
+  padding:12px;
 }
-.s-meta{display:flex;justify-content:space-between;padding-top:10px;font-size:11px;color:rgba(255,255,255,.65);}
-
-/* Premium abstract hero phone UI */
-.hero-map-card,
-.hero-feed-card,
-.hero-discovery-card{
-  margin:0 14px 12px;
-  border-radius:30px;
-  border:1px solid rgba(255,255,255,.09);
-  background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.035));
-  box-shadow:0 22px 70px rgba(0,0,0,.32);
-  backdrop-filter:blur(18px);
-  overflow:hidden;
+.phone-screen{
+  width:100%; height:100%;
+  border-radius:38px;
+  overflow:hidden; position:relative;
+  background:#06060c;
+  border:1px solid rgba(255,255,255,.05);
+}
+.phone-notch{
+  position:absolute; top:11px; left:50%; transform:translateX(-50%);
+  width:84px; height:22px; border-radius:999px;
+  background:#000; z-index:5;
+}
+.phone-top{
+  padding:46px 18px 14px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.phone-title{ font-family:'Syne',sans-serif; font-size:18px; font-weight:700; letter-spacing:-.02em; }
+.phone-avatar{
+  width:30px; height:30px; border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 12px var(--accent-glow);
+}
+.phone-tabs{
+  display:flex; gap:6px; padding:0 16px 14px;
+}
+.phone-tab{
+  flex:1; padding:8px 0; text-align:center;
+  border-radius:var(--r-pill);
+  font-size:10px; font-weight:600; letter-spacing:.06em;
+  color:var(--faint);
+  background:rgba(255,255,255,.04);
+  cursor:pointer;
+  transition: all .3s ease;
+  text-transform:uppercase;
+  font-family:'JetBrains Mono',monospace;
+}
+.phone-tab.on{
+  background:rgba(255,61,154,.14);
+  color:var(--text);
+  border:1px solid rgba(255,61,154,.3);
 }
 
-.hero-map-card{padding:14px;}
+.phone-content{ position:relative; min-height:440px; }
+.phone-view{
+  position:absolute; inset:0;
+  opacity:0; transition: opacity .6s ease;
+  pointer-events:none;
+}
+.phone-view.active{ opacity:1; pointer-events:auto; }
 
-.hero-card-top{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
+/* Phone view: Nearby */
+.pv-card{
+  margin:0 14px;
+  border-radius:24px;
+  background: linear-gradient(170deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.08);
+  padding:14px;
+}
+.pv-head{
+  display:flex; justify-content:space-between; align-items:flex-start;
   margin-bottom:14px;
 }
-
-.hero-card-title{
-  font-size:17px;
-  font-weight:800;
-  letter-spacing:-.04em;
+.pv-title{ font-size:15px; font-weight:700; letter-spacing:-.02em; }
+.pv-sub{ font-size:11px; color:var(--faint); margin-top:2px; }
+.pv-livedot{
+  width:8px; height:8px; border-radius:50%;
+  background:var(--green); box-shadow:0 0 14px var(--green);
 }
-
-.hero-card-sub{
-  margin-top:4px;
-  color:rgba(255,255,255,.55);
-  font-size:11px;
-  line-height:1.35;
-}
-
-.hero-live-dot{
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 18px var(--green);
-  margin-top:4px;
-  flex-shrink:0;
-}
-
-.hero-map-area{
-  position:relative;
-  height:260px;
-  border-radius:24px;
-  overflow:hidden;
+.pv-map{
+  height:240px; border-radius:18px;
+  position:relative; overflow:hidden;
   background:
-    radial-gradient(circle at 30% 25%,rgba(255,61,154,.28),transparent 28%),
-    radial-gradient(circle at 68% 62%,rgba(56,217,245,.2),transparent 30%),
-    linear-gradient(135deg,#101023,#070713);
-  border:1px solid rgba(255,255,255,.08);
+    radial-gradient(circle at 32% 25%, rgba(255,61,154,.3), transparent 30%),
+    radial-gradient(circle at 70% 65%, rgba(124,58,255,.22), transparent 32%),
+    linear-gradient(135deg, #0e0e1c, #060611);
+  border:1px solid rgba(255,255,255,.06);
 }
-
-.hero-map-line{
-  position:absolute;
-  inset:44px 34px;
-  border:1px dashed rgba(255,255,255,.18);
-  border-radius:44% 56% 52% 48%;
-  transform:rotate(-12deg);
+.pv-map-grid{
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
 }
-
-.hero-map-pin,
-.hero-map-person{
-  position:absolute;
-  border-radius:50%;
-  background:linear-gradient(135deg,var(--pink),var(--violet));
-  box-shadow:0 0 0 10px rgba(255,61,154,.1),0 0 26px rgba(255,61,154,.55);
+.pv-pin{
+  position:absolute; border-radius:50%;
+  background:var(--accent);
+  box-shadow: 0 0 0 8px rgba(255,61,154,.12), 0 0 22px var(--accent-glow);
 }
-
-.hero-map-pin{width:18px;height:18px;left:44px;top:72px;}
-.hero-map-person{width:34px;height:34px;right:52px;top:96px;background:linear-gradient(135deg,var(--cyan),var(--violet));}
-.hero-map-person.two{left:92px;bottom:52px;top:auto;right:auto;background:linear-gradient(135deg,var(--gold),var(--pink));}
-
-.hero-map-pulse{
-  position:absolute;
-  width:112px;
-  height:112px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.1);
-  left:50%;
-  top:50%;
+.pv-pin.a{ width:16px; height:16px; left:42px; top:64px; }
+.pv-pin.b{ width:30px; height:30px; right:48px; top:88px; background:linear-gradient(135deg,#38d9f5,#7c3aff); box-shadow:0 0 0 8px rgba(124,58,255,.12), 0 0 22px rgba(124,58,255,.5); }
+.pv-pin.c{ width:24px; height:24px; left:78px; bottom:50px; background:linear-gradient(135deg,#ffcb47,#ff3d9a); box-shadow:0 0 0 8px rgba(255,203,71,.1), 0 0 22px rgba(255,203,71,.45); }
+.pv-pulse{
+  position:absolute; left:50%; top:50%;
+  width:96px; height:96px; border-radius:50%;
   transform:translate(-50%,-50%);
-  animation:heroPulse 2.8s ease-out infinite;
+  border:1px solid rgba(255,255,255,.18);
+  animation: phoneRipple 2.8s ease-out infinite;
+}
+@keyframes phoneRipple{
+  0%   { transform:translate(-50%,-50%) scale(.6); opacity:.8; }
+  100% { transform:translate(-50%,-50%) scale(1.6); opacity:0; }
+}
+.pv-pills{
+  display:flex; gap:6px; margin-top:12px;
+}
+.pv-pill{
+  flex:1; text-align:center;
+  padding:8px; border-radius:var(--r-pill);
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.06);
+  font-size:10.5px; font-weight:600; color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:.04em;
 }
 
-@keyframes heroPulse{
-  0%{transform:translate(-50%,-50%) scale(.75);opacity:.7;}
-  100%{transform:translate(-50%,-50%) scale(1.55);opacity:0;}
+/* Phone view: Feed */
+.pv-feed-head{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:14px;
 }
-
-.hero-pill-row{display:flex;gap:8px;margin-top:12px;}
-.hero-pill{
-  flex:1;
-  text-align:center;
-  padding:9px 10px;
-  border-radius:999px;
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.08);
-  color:rgba(255,255,255,.78);
-  font-size:11px;
-  font-weight:700;
+.pv-user{ display:flex; align-items:center; gap:10px; }
+.pv-user-av{
+  width:38px; height:38px; border-radius:50%;
+  background:linear-gradient(135deg,#ff3d9a,#38d9f5);
 }
-
-.hero-feed-card{padding:14px;}
-.hero-feed-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-.hero-user{display:flex;align-items:center;gap:10px;}
-.hero-user-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--cyan));}
-.hero-user-name{font-size:13px;font-weight:800;}
-.hero-user-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;}
-.hero-more{width:7px;height:7px;border-radius:50%;background:var(--pink);box-shadow:0 0 14px rgba(255,61,154,.7);}
-.hero-photo-card{
-  height:270px;
-  border-radius:24px;
-  border:1px solid rgba(255,255,255,.08);
+.pv-user-name{ font-size:13px; font-weight:700; }
+.pv-user-sub{ font-size:11px; color:var(--faint); margin-top:2px; }
+.pv-photo{
+  height:240px; border-radius:18px;
   background:
-    radial-gradient(circle at 22% 20%,rgba(255,255,255,.38),transparent 22%),
-    linear-gradient(135deg,#ff3d9a,#7c3aff 55%,#38d9f5);
-  box-shadow:inset 0 -80px 80px rgba(0,0,0,.28);
+    radial-gradient(circle at 22% 20%, rgba(255,255,255,.36), transparent 22%),
+    linear-gradient(135deg, #ff3d9a, #7c3aff 55%, #38d9f5);
+  box-shadow: inset 0 -60px 60px rgba(0,0,0,.28);
 }
-.hero-feed-actions{display:flex;justify-content:space-between;margin-top:14px;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;}
+.pv-feed-actions{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:14px;
+  font-size:11.5px; color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:.04em;
+}
 
-.hero-discovery-card{
-  position:relative;
-  height:390px;
-  margin-top:2px;
-  display:grid;
-  place-items:center;
+/* Phone view: Discovery */
+.pv-radar{
+  height:340px; border-radius:18px;
+  position:relative; display:grid; place-items:center;
   background:
-    radial-gradient(circle at center,rgba(124,58,255,.24),transparent 62%),
-    linear-gradient(180deg,#0b0b1a,#06060f);
-}
-
-.hero-radar-ring{
-  position:absolute;
-  width:240px;
-  height:240px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.11);
-  box-shadow:
-    0 0 0 42px rgba(255,255,255,.025),
-    0 0 0 84px rgba(255,255,255,.015);
-  animation:radarFloat 5s ease-in-out infinite;
-}
-
-@keyframes radarFloat{
-  0%,100%{transform:scale(1);opacity:.9;}
-  50%{transform:scale(1.04);opacity:1;}
-}
-
-.hero-center-person,
-.hero-orbit-person{
-  position:absolute;
-  border-radius:50%;
-  background:linear-gradient(135deg,var(--pink),var(--cyan));
-}
-
-.hero-center-person{
-  width:74px;
-  height:74px;
-  z-index:2;
-  box-shadow:0 0 45px rgba(255,61,154,.45);
-}
-
-.hero-orbit-person{width:46px;height:46px;box-shadow:0 0 24px rgba(56,217,245,.32);}
-.hero-orbit-person.one{top:70px;left:62px;}
-.hero-orbit-person.two{top:130px;right:54px;background:linear-gradient(135deg,var(--gold),var(--pink));}
-.hero-orbit-person.three{bottom:74px;left:88px;background:linear-gradient(135deg,var(--violet),var(--cyan));}
-
-.hero-discovery-label{
-  position:absolute;
-  left:18px;
-  right:18px;
-  bottom:18px;
-  padding:14px;
-  border-radius:20px;
-  background:rgba(255,255,255,.065);
-  border:1px solid rgba(255,255,255,.09);
-  backdrop-filter:blur(16px);
-}
-.hero-discovery-label strong{display:block;font-size:13px;margin-bottom:4px;}
-.hero-discovery-label span{font-size:11px;color:rgba(255,255,255,.55);}
-
-/* Plans View Styles */
-.s-event{
-  margin:0 14px 12px;padding:14px;
-  border-radius:24px;
-  background:linear-gradient(135deg,rgba(255,61,154,.18),rgba(56,217,245,.1));
-  border:1px solid rgba(255,255,255,.1);
-}
-.s-event strong{display:block;font-size:12px;margin-bottom:4px;}
-.s-event span{color:var(--muted);font-size:11px;line-height:1.5;}
-.rsvp-stats{display:flex;gap:8px;margin-top:12px;}
-.rsvp-badge{
-  flex:1;padding:8px;border-radius:12px;text-align:center;
-  font-size:11px;background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.08);
-}
-.rsvp-number{display:block;font-size:16px;font-weight:800;margin-bottom:2px;}
-.s-bar{
-  position:absolute;bottom:9px;left:50%;transform:translateX(-50%);
-  width:104px;height:4px;border-radius:999px;background:rgba(255,255,255,.25);
-}
-.fc{
-  position:absolute;z-index:3;
-  padding:14px 16px;border-radius:22px;
-  background:rgba(10,10,22,.8);backdrop-filter:blur(20px);
-  border:1px solid var(--line);
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
-  animation:float 6s ease-in-out infinite;
-}
-.fc-left{left:-60px;bottom:160px;}
-.fc-right{right:-52px;top:190px;animation-delay:-3s;}
-.fc b{display:block;font-size:13px;margin-bottom:3px;}
-.fc small{color:var(--faint);font-size:11px;}
-.fc-dot{
-  width:9px;height:9px;border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 12px var(--green);
-  display:inline-block;margin-right:6px;
-}
-@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
-
-/* ── STRIP ── */
-.strip{
-  border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);
+    radial-gradient(circle at center, rgba(124,58,255,.2), transparent 60%),
+    linear-gradient(180deg, #0a0a18, #050510);
+  border:1px solid rgba(255,255,255,.06);
   overflow:hidden;
-  background:rgba(255,255,255,.025);
+}
+.pv-radar-ring{
+  position:absolute; width:200px; height:200px; border-radius:50%;
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow: 0 0 0 32px rgba(255,255,255,.018), 0 0 0 64px rgba(255,255,255,.01);
+  animation: radarFloat 5s ease-in-out infinite;
+}
+@keyframes radarFloat{
+  0%,100%{ transform:scale(1); opacity:.85; }
+  50%   { transform:scale(1.06); opacity:1; }
+}
+.pv-radar-me{
+  position:absolute; width:60px; height:60px; border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 38px var(--accent-glow);
+  z-index:2;
+}
+.pv-radar-other{
+  position:absolute; width:38px; height:38px; border-radius:50%;
+  background:linear-gradient(135deg,#38d9f5,#7c3aff);
+  box-shadow:0 0 18px rgba(56,217,245,.4);
+}
+.pv-radar-other.one{ top:58px; left:54px; }
+.pv-radar-other.two{ top:110px; right:46px; background:linear-gradient(135deg,#ffcb47,#ff3d9a); }
+.pv-radar-other.three{ bottom:62px; left:78px; background:linear-gradient(135deg,#7c3aff,#38d9f5); }
+.pv-radar-label{
+  position:absolute; left:14px; right:14px; bottom:14px;
+  padding:12px; border-radius:14px;
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.06);
+}
+.pv-radar-label strong{ display:block; font-size:12px; font-weight:700; margin-bottom:3px; }
+.pv-radar-label span{ font-size:10.5px; color:var(--faint); }
+
+/* Hero floating chip — ONE chip, not two */
+.hero-chip{
+  position:absolute; z-index:3;
+  display:flex; align-items:center; gap:10px;
+  padding:12px 16px; border-radius:var(--r-pill);
+  background:rgba(8,8,14,.7);
+  backdrop-filter: blur(20px);
+  border:1px solid var(--line-strong);
+  font-size:12.5px; font-weight:500;
+  box-shadow: 0 20px 50px rgba(0,0,0,.5);
+  animation: chipFloat 6s ease-in-out infinite;
+}
+.hero-chip .dot{ width:7px; height:7px; border-radius:50%; background:var(--green); }
+.hero-chip.right{ right:-20px; top:60px; }
+@keyframes chipFloat{
+  0%,100% { transform:translateY(0); }
+  50%     { transform:translateY(-8px); }
+}
+
+@media (max-width: 940px){
+  .hero-grid{ grid-template-columns: 1fr; gap:60px; }
+  .phone-stage{ min-height:540px; }
+  .phone{ transform:scale(.92); }
+  .hero-chip.right{ right:0; }
+  .hero h1{
+    font-size: clamp(40px, 11vw, 64px);
+    letter-spacing:-.045em;
+    margin-bottom:22px;
+  }
+  .hero-sub{ font-size:16px; margin-bottom:30px; max-width:560px; }
+  .btn-primary, .btn-ghost{ padding:13px 20px; font-size:14px; }
+  .hero-meta{ gap:24px; margin-top:44px; padding-top:28px; }
+  .hero-meta-item .num{ font-size:24px; }
+  h2{ font-size: clamp(28px, 5.5vw, 46px) !important; line-height:1.05; }
+  .section-head{ margin-bottom:48px; }
+  .section-head p{ font-size:16px; margin-top:14px; }
+}
+@media (max-width: 940px){
+  .hero{ padding: 130px 0 80px; }
+}
+@media (max-width: 700px){
+  .hero{ padding: 130px 0 56px; min-height: auto; }
+  .hero h1{
+    font-size: clamp(38px, 11vw, 56px);
+    letter-spacing:-.045em;
+    margin-bottom:20px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  .hero-sub{ font-size:15.5px; margin-bottom:28px; }
+  .hero-actions{ width:100%; }
+  .btn-primary, .btn-ghost{ flex:1; justify-content:center; padding:13px 18px; font-size:14px; }
+  .hero-meta{ gap:18px; margin-top:40px; padding-top:24px; }
+  .hero-meta-item .num{ font-size:22px; }
+  .hero-meta-item .label{ font-size:10px; letter-spacing:.12em; }
+  .phone-stage{ min-height:480px; }
+  .phone{ transform:scale(.82); }
+  .phone-halo{ width:380px; height:380px; }
+  .phone-ring{ width:340px; height:340px; }
+  .hero-chip{ font-size:11.5px; padding:10px 14px; }
+  .hero-chip.right{ top:30px; right:-4px; }
+  .eyebrow-row{ margin-bottom:22px; }
+  .eyebrow-row .divider{ flex:0 0 24px; }
+  h2{ font-size: clamp(26px, 7vw, 38px) !important; line-height:1.05; }
+}
+
+/* ──────────────────────────────────────────────────────────
+   MARQUEE — short and quiet
+   ────────────────────────────────────────────────────────── */
+.marquee-wrap{
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  overflow:hidden;
+  padding:18px 0;
+  background:rgba(255,255,255,.012);
 }
 .marquee{
-  display:flex;gap:48px;padding:18px 0;white-space:nowrap;
-  color:rgba(255,255,255,.4);font-size:11px;font-weight:800;
-  letter-spacing:.14em;text-transform:uppercase;
-  animation:marquee 24s linear infinite;
+  display:flex; gap:48px; align-items:center;
+  white-space:nowrap;
+  animation: scrollX 40s linear infinite;
+  font-family:'JetBrains Mono', monospace;
+  font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--faint);
 }
-.marquee span{flex-shrink:0;}
-.marquee-dot{color:var(--pink);opacity:.7;}
-@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%)}}
-
-/* ── SECTIONS ── */
-section.block{padding:120px 0;}
-.kicker{
-  font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--cyan);margin-bottom:16px;
-}
-h2{
-  font-family:'Syne',sans-serif;
-  font-size:clamp(36px,5vw,64px);
-  line-height:.95;letter-spacing:-.06em;font-weight:800;
-}
-.section-sub{
-  margin-top:18px;max-width:580px;
-  color:var(--muted);font-size:18px;line-height:1.65;
+.marquee span.dot{ color:var(--pink); }
+@keyframes scrollX{
+  0%{ transform:translateX(0); }
+  100%{ transform:translateX(-50%); }
 }
 
-/* EXPERIENCE */
-.exp-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:24px;margin-top:52px;align-items:stretch;}
-.exp-visual{
-  border-radius:var(--r);overflow:hidden;
-  background:rgba(255,255,255,.06);border:1px solid var(--line);
-  min-height:480px;position:relative;
-  box-shadow:0 30px 90px rgba(0,0,0,.28);
+/* ──────────────────────────────────────────────────────────
+   SECTION SHELL
+   ────────────────────────────────────────────────────────── */
+section.block{ padding: var(--section-y) 0; }
+@media (max-width: 600px){
+  :root{ --section-y: 72px; }
+  section.block{ padding: var(--section-y) 0; }
 }
-.map-bg{
-  position:absolute;inset:0;
-  background:
-    radial-gradient(circle at 28% 32%,rgba(255,61,154,.28),transparent 28%),
-    radial-gradient(circle at 68% 68%,rgba(56,217,245,.2),transparent 26%),
-    radial-gradient(circle at 50% 50%,rgba(124,58,255,.18),transparent 40%),
-    linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+.section-head{ margin-bottom:64px; max-width:760px; }
+@media (max-width: 600px){
+  .section-head{ margin-bottom:40px; }
+  .section-head p{ font-size:15.5px; margin-top:14px; }
+  .section-head h2{ margin-top:14px; }
 }
-.route-ring{
-  position:absolute;inset:52px;
-  border:1px dashed rgba(255,255,255,.18);
-  border-radius:42% 58% 55% 45%;
-  transform:rotate(-8deg);
-}
-.pin{
-  position:absolute;width:20px;height:20px;border-radius:50%;
-  box-shadow:0 0 0 14px rgba(255,61,154,.12),0 0 30px rgba(255,61,154,.8);
-  background:var(--pink);
-}
-.pin.b{left:62%;top:40%;background:var(--cyan);box-shadow:0 0 0 14px rgba(56,217,245,.12),0 0 30px rgba(56,217,245,.8);}
-.pin.c{left:46%;top:66%;background:var(--gold);box-shadow:0 0 0 14px rgba(255,203,71,.12),0 0 30px rgba(255,203,71,.8);}
-.pin.a{left:24%;top:28%;}
-.pin-pulse{
-  position:absolute;inset:-8px;border-radius:50%;
-  border:1px solid rgba(255,61,154,.4);
-  animation:pinpulse 2s ease-out infinite;
-}
-@keyframes pinpulse{0%{transform:scale(.8);opacity:.8;}100%{transform:scale(2.2);opacity:0;}}
+.section-head.center{ margin-left:auto; margin-right:auto; text-align:center; }
+.section-head h2{ margin-top:18px; }
+.section-head p{ margin-top:18px; font-size:18px; max-width:600px; }
+.section-head.center p{ margin-left:auto; margin-right:auto; }
 
-.exp-content{
-  background:rgba(255,255,255,.04);border:1px solid var(--line);
-  border-radius:var(--r);padding:40px;
-  box-shadow:0 30px 90px rgba(0,0,0,.2);
-}
-.plan-list{display:grid;gap:12px;margin-top:32px;}
-.plan-item{
-  display:flex;align-items:center;gap:14px;
-  padding:16px 18px;border-radius:22px;
-  background:rgba(255,255,255,.05);border:1px solid var(--line2);
-  transition:.2s;
-}
-.plan-item:hover{background:rgba(255,255,255,.08);border-color:var(--line);}
-.plan-icon{
-  width:44px;height:44px;border-radius:16px;flex-shrink:0;
-  display:grid;place-items:center;font-size:20px;
-  background:linear-gradient(135deg,var(--pink),var(--violet));
-}
-.plan-text b{display:block;font-size:15px;margin-bottom:3px;}
-.plan-text span{color:var(--muted);font-size:13px;}
-.micro-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:24px;}
-.micro{
-  padding:18px;border-radius:20px;
-  background:rgba(255,255,255,.04);border:1px solid var(--line2);
-}
-.micro b{display:block;font-size:14px;margin-bottom:5px;}
-.micro span{color:var(--faint);font-size:13px;line-height:1.4;}
-
-/* FEATURES */
-.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:52px;}
-.feat{
-  padding:30px;border-radius:32px;min-height:240px;
-  border:1px solid var(--line);
-  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
-  box-shadow:0 20px 60px rgba(0,0,0,.2);
-  transition:.3s;
-}
-.feat:hover{
-  transform:translateY(-4px);
-  border-color:rgba(255,255,255,.18);
-  box-shadow:0 0 40px rgba(255,61,154,.12);
-}
-.feat-icon{
-  width:52px;height:52px;border-radius:18px;
-  display:grid;place-items:center;font-size:22px;
-  background:rgba(255,255,255,.08);border:1px solid var(--line);
-  margin-bottom:24px;
-}
-.feat h3{font-family:'Syne',sans-serif;font-size:22px;letter-spacing:-.04em;margin-bottom:10px;}
-.feat p{color:var(--muted);line-height:1.65;font-size:15px;}
-
-/* Quote Source Badge */
-.quote-source{
-  display:inline-block;
-  margin-top:14px;
-  padding:5px 12px;
-  border-radius:999px;
-  background:rgba(255,61,154,.1);
-  border:1px solid rgba(255,61,154,.2);
-  color:var(--pink);
-  font-size:11px;
-  font-weight:700;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-}
-
-/* INSIDE PRAXIS */
-
-.inside-grid{
+/* ──────────────────────────────────────────────────────────
+   EXPERIENCE — split, left-aligned
+   ────────────────────────────────────────────────────────── */
+.exp-split{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:18px;
-  margin-top:56px;
+  grid-template-columns: 1.05fr .95fr;
+  gap:80px;
+  align-items:center;
 }
-
-.inside-card{
+.exp-visual{
   position:relative;
-  overflow:hidden;
-  border-radius:34px;
+  aspect-ratio: 1/1;
+  border-radius:var(--r-md);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,61,154,.18), transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(124,58,255,.16), transparent 50%),
+    linear-gradient(160deg, #0d0d18, #07070f);
   border:1px solid var(--line);
-  background:rgba(255,255,255,.04);
-  height:560px;
+  overflow:hidden;
+}
+.exp-visual::before{
+  content:""; position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 38px 38px;
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+}
+.exp-ring{
+  position:absolute; left:50%; top:50%;
+  width:60%; height:60%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border:1px dashed rgba(255,255,255,.18);
+  animation: spinSlow 50s linear infinite;
+}
+@keyframes spinSlow{ to{ transform:translate(-50%,-50%) rotate(360deg); } }
+.exp-pin{
+  position:absolute; border-radius:50%;
+  background:var(--accent);
+  box-shadow: 0 0 0 8px rgba(255,61,154,.1), 0 0 26px var(--accent-glow);
+}
+.exp-pin.a{ width:24px; height:24px; left:34%; top:30%; }
+.exp-pin.b{ width:36px; height:36px; right:30%; top:48%; background:linear-gradient(135deg,#38d9f5,#7c3aff); box-shadow:0 0 0 8px rgba(124,58,255,.1), 0 0 26px rgba(124,58,255,.4); }
+.exp-pin.c{ width:18px; height:18px; left:46%; bottom:28%; background:linear-gradient(135deg,#ffcb47,#ff3d9a); box-shadow:0 0 0 6px rgba(255,203,71,.1), 0 0 20px rgba(255,203,71,.4); }
+.exp-pulse{
+  position:absolute; left:34%; top:30%;
+  width:24px; height:24px; border-radius:50%;
+  border:1px solid rgba(255,61,154,.4);
+  animation: pinPulse 2.4s ease-out infinite;
+}
+@keyframes pinPulse{
+  0%{ transform:scale(1); opacity:.7; }
+  100%{ transform:scale(3); opacity:0; }
+}
+.exp-coord{
+  position:absolute; bottom:16px; left:16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:var(--faint); letter-spacing:.1em;
+}
+.exp-coord b{ color:var(--text); font-weight:500; }
 
-  box-shadow:
-    0 24px 80px rgba(0,0,0,.28),
-    inset 0 0 0 1px rgba(255,255,255,.04);
+.plan-list{
+  margin-top:36px;
+  display:flex; flex-direction:column;
+}
+.plan-item{
+  display:flex; gap:18px;
+  padding:22px 0;
+  border-bottom:1px solid var(--line);
+}
+.plan-item:last-child{ border-bottom:none; }
+.plan-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:var(--faint);
+  letter-spacing:.16em; padding-top:5px;
+  flex:0 0 32px;
+}
+.plan-text b{
+  display:block; font-family:'Syne',sans-serif; font-weight:600;
+  font-size:18px; letter-spacing:-.02em;
+  margin-bottom:4px;
+}
+.plan-text span{ display:block; color:var(--muted); font-size:15px; line-height:1.5; }
 
-  transition:.35s ease;
+@media (max-width: 940px){
+  .exp-split{ grid-template-columns: 1fr; gap:48px; }
+}
+@media (max-width: 600px){
+  .exp-split{ gap:36px; }
+  .plan-list{ margin-top:24px; }
+  .plan-item{ padding:18px 0; gap:14px; }
+  .plan-num{ flex:0 0 26px; font-size:10.5px; }
+  .plan-text b{ font-size:16px; }
+  .plan-text span{ font-size:14px; }
 }
 
+/* ──────────────────────────────────────────────────────────
+   FEATURES — 3×2 minimal cards with hairlines
+   ────────────────────────────────────────────────────────── */
+.feat-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:0;
+  border-top:1px solid var(--line);
+  border-left:1px solid var(--line);
+}
+.feat{
+  padding:36px 32px;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  position:relative;
+  transition: background .3s ease;
+}
+.feat:hover{ background:var(--surface-1); }
+.feat-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:var(--faint);
+  letter-spacing:.16em;
+  margin-bottom:32px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.feat-glyph{
+  width:20px; height:20px; border-radius:50%;
+  border:1px solid var(--line-strong);
+  position:relative;
+}
+.feat-glyph::after{
+  content:""; position:absolute; inset:6px; border-radius:50%;
+  background:var(--accent);
+}
+.feat h3{
+  margin-bottom:12px;
+  font-size:22px;
+}
+.feat p{ font-size:15px; line-height:1.55; }
 
-.inside-card:hover{
-  transform:translateY(-6px);
-  border-color:rgba(255,255,255,.16);
-  box-shadow:
-    0 30px 90px rgba(0,0,0,.34),
-    0 0 40px rgba(255,61,154,.08);
+@media (max-width: 940px){
+  .feat-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px){
+  .feat-grid{ grid-template-columns: 1fr; }
+  .feat{ padding:28px 22px; }
+  .feat-num{ margin-bottom:24px; }
+  .feat h3{ font-size:20px; }
+  .feat p{ font-size:14.5px; }
 }
 
-.inside-card img{
+/* ──────────────────────────────────────────────────────────
+   INSIDE — real product screenshot showcase
+   ────────────────────────────────────────────────────────── */
+.inside-showcase{
+  position:relative;
+  min-height:640px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  overflow:hidden;
+}
+.inside-showcase::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:45%;
+  width:min(760px,86vw);
+  height:360px;
+  transform:translate(-50%,-50%);
+  background:
+    radial-gradient(ellipse at center, rgba(255,61,154,.22), transparent 58%),
+    radial-gradient(ellipse at 60% 50%, rgba(124,58,255,.2), transparent 62%);
+  filter:blur(34px);
+  pointer-events:none;
+}
+.screenshot-row{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:clamp(12px,2vw,28px);
+  padding:34px 0 18px;
+  perspective:1200px;
+}
+.phone-shot{
+  position:relative;
+  width:clamp(150px,15vw,218px);
+  aspect-ratio:9/19.5;
+  border-radius:34px;
+  padding:7px;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.045));
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 32px 90px rgba(0,0,0,.62), 0 0 50px rgba(255,61,154,.08);
+}
+.phone-shot::before{
+  content:"";
+  position:absolute;
+  top:13px;
+  left:50%;
+  width:34%;
+  height:18px;
+  transform:translateX(-50%);
+  border-radius:999px;
+  background:#030306;
+  z-index:3;
+}
+.phone-shot img{
   width:100%;
   height:100%;
-  object-fit:cover;
-  object-position:top center;
   display:block;
+  object-fit:cover;
+  object-position:center top;
+  border-radius:27px;
+  background:#08080d;
 }
-
-.inside-overlay{
+.phone-shot .shot-label{
   position:absolute;
-  inset:auto 0 0 0;
-  padding:26px;
-
-  background:
-    linear-gradient(
-      to top,
-      rgba(0,0,0,.78),
-      rgba(0,0,0,.28),
-      transparent
-    );
-}
-
-.inside-overlay span{
-  display:inline-block;
-
-  padding:7px 12px;
-  border-radius:999px;
-
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.08);
-
-  color:rgba(255,255,255,.72);
-
-  font-size:11px;
+  left:50%;
+  bottom:-30px;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  font-family:'Syne',sans-serif;
+  font-size:17px;
   font-weight:700;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-
-  margin-bottom:12px;
+  color:rgba(255,255,255,.88);
+  text-shadow:0 8px 24px rgba(0,0,0,.8);
 }
-
-.inside-overlay h3{
-  font-family:'Syne',sans-serif;
-  font-size:28px;
-  line-height:1;
-  letter-spacing:-.05em;
+.phone-shot.left-2{ transform:rotate(-9deg) translateY(48px); opacity:.86; }
+.phone-shot.left-1{ transform:rotate(-4deg) translateY(20px); opacity:.95; }
+.phone-shot.center{
+  width:clamp(178px,17vw,250px);
+  transform:translateY(-10px);
+  z-index:4;
+  box-shadow:0 38px 110px rgba(0,0,0,.68), 0 0 90px rgba(255,61,154,.22);
 }
-
-@media(max-width:960px){
-
-  .inside-grid{
-    grid-template-columns:1fr;
-  }
-
-  .inside-card{
-    height:560px;
-  }
-}
-
-.roadmap-section{padding:120px 0;}
-.roadmap-shell{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:16px;
-  margin-top:56px;
-}
-.roadmap-card{
-  padding:28px;
-  border-radius:30px;
-  background:rgba(255,255,255,.055);
-  border:1px solid rgba(255,255,255,.09);
-  box-shadow:0 24px 80px rgba(0,0,0,.26);
-}
-.roadmap-year{
-  display:inline-block;
-  padding:7px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  color:var(--cyan);
-  font-size:11px;
-  font-weight:800;
-  margin-bottom:16px;
-}
-.roadmap-card h3{
-  font-family:'Syne',sans-serif;
-  font-size:24px;
-  letter-spacing:-.05em;
-  margin-bottom:10px;
-}
-.roadmap-card p{
-  color:var(--muted);
-  font-size:15px;
-  line-height:1.65;
-}
-@media(max-width:960px){
-  .roadmap-shell{grid-template-columns:1fr;}
-}
-/* CTA */
-.cta-wrap{padding:120px 0;text-align:center;}
-.cta-card{
-  position:relative;overflow:hidden;
-  padding:80px 32px;border-radius:52px;
-  border:1px solid var(--line);
-  background:linear-gradient(135deg,rgba(255,61,154,.16),rgba(124,58,255,.12),rgba(56,217,245,.08));
-  box-shadow:0 40px 120px rgba(0,0,0,.4);
-}
-.cta-card::before{
-  content:"";position:absolute;inset:-60%;
-  background:conic-gradient(from 0deg,transparent,rgba(255,255,255,.1),transparent 25%);
-  animation:spin 14s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg);}}
-.cta-card>*{position:relative;}
-.cta-card h2{font-size:clamp(38px,5vw,68px);}
-.cta-card p{max-width:580px;margin:20px auto 0;color:var(--muted);font-size:18px;line-height:1.65;}
-.waitlist{
-  display:flex;gap:10px;margin:36px auto 0;max-width:520px;
-  padding:8px;border-radius:999px;
-  background:rgba(0,0,0,.3);border:1px solid var(--line);
-}
-.waitlist input{
-  flex:1;min-width:0;border:none;outline:none;
-  padding:0 20px;background:transparent;color:#fff;font:inherit;font-size:15px;
-}
-.waitlist input::placeholder{color:rgba(255,255,255,.35);}
-.waitlist-btn{
-  padding:12px 24px;border-radius:999px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--pink),var(--violet));
-  color:#fff;font:inherit;font-size:14px;font-weight:700;
-  box-shadow:0 8px 28px rgba(255,61,154,.35);
-  transition:.2s;white-space:nowrap;
-}
-.waitlist-btn:hover{transform:translateY(-1px);}
-
-/* Success Checkmark Animation */
-.success-check{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  animation:successPop .5s cubic-bezier(.68,-.55,.27,1.55);
-}
-@keyframes successPop{
-  0%{transform:scale(0);opacity:0;}
-  50%{transform:scale(1.1);}
-  100%{transform:scale(1);opacity:1;}
-}
-
-/* LIVE WAITLIST SOCIAL PROOF */
-.waitlist-proof{
+.phone-shot.right-1{ transform:rotate(4deg) translateY(20px); opacity:.95; }
+.phone-shot.right-2{ transform:rotate(9deg) translateY(48px); opacity:.86; }
+.showcase-status{
+  position:relative;
+  z-index:3;
   display:inline-flex;
   align-items:center;
   gap:10px;
-  margin-top:28px;
-  padding:12px 18px;
+  width:max-content;
+  margin-bottom:28px;
+  padding:9px 16px;
   border-radius:999px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.08);
-  color:rgba(255,255,255,.82);
-  font-size:14px;
-  font-weight:600;
-  backdrop-filter:blur(18px);
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.1);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.72);
 }
-.waitlist-proof .proof-dot{
-  width:10px;
-  height:10px;
+.showcase-status::before{
+  content:"";
+  width:7px;
+  height:7px;
   border-radius:50%;
   background:var(--green);
-  box-shadow:0 0 12px var(--green);
-  animation:blink 1.8s ease-in-out infinite;
+  box-shadow:0 0 14px var(--green);
+}
+.showcase-tabs{
+  position:relative;
+  z-index:3;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  margin-top:42px;
+  flex-wrap:wrap;
+}
+.showcase-tabs span{
+  padding:9px 16px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.025);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.45);
+}
+.showcase-tabs span.active{
+  color:#fff;
+  border-color:rgba(255,61,154,.36);
+  background:rgba(255,61,154,.12);
+}
+.showcase-tabs i{
+  width:28px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+}
+
+@media (max-width:940px){
+  .screenshot-row{
+    justify-content:flex-start;
+    overflow-x:auto;
+    padding:36px 26px 34px;
+    scrollbar-width:none;
+  }
+  .screenshot-row::-webkit-scrollbar{display:none;}
+  .phone-shot{
+    flex:0 0 210px;
+    width:210px;
+    transform:none !important;
+    opacity:1 !important;
+  }
+  .phone-shot.center{
+    flex-basis:230px;
+    width:230px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   ROADMAP — horizontal timeline
+   ────────────────────────────────────────────────────────── */
+.timeline{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:0;
+  position:relative;
+  border-top:1px solid var(--line-strong);
+  padding-top:48px;
+}
+.timeline::before{
+  content:""; position:absolute; top:-4px; left:0;
+  width:9px; height:9px; border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 16px var(--accent-glow);
+}
+.timeline-step{
+  padding:0 24px 0 0;
+  position:relative;
+}
+.timeline-step::before{
+  content:""; position:absolute; top:-52px; left:0;
+  width:9px; height:9px; border-radius:50%;
+  background:var(--text);
+  opacity:.4;
+}
+.timeline-step:first-child::before{ display:none; }
+.timeline-year{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px; letter-spacing:.16em; color:var(--faint);
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+.timeline-step h3{ margin-bottom:12px; font-size:22px; }
+.timeline-step p{ font-size:14.5px; color:var(--muted); }
+
+@media (max-width: 940px){
+  .timeline{ grid-template-columns: 1fr 1fr; gap:48px 0; }
+}
+@media (max-width: 600px){
+  .timeline{ grid-template-columns: 1fr; gap:32px; padding-top:36px; border-top:none; border-left:1px solid var(--line-strong); padding-left:24px; }
+  .timeline::before{ left:-4px; top:0; }
+  .timeline-step{ padding:0; }
+  .timeline-step::before{ top:0; left:-28px; }
+  .timeline-step:first-child::before{ display:block; background:var(--accent); box-shadow:0 0 16px var(--accent-glow); opacity:1; }
+  .timeline-year{ margin-bottom:12px; font-size:11px; }
+  .timeline-step h3{ font-size:19px; margin-bottom:8px; }
+  .timeline-step p{ font-size:14px; }
+}
+
+/* ──────────────────────────────────────────────────────────
+   COMMUNITY — quote cards
+   ────────────────────────────────────────────────────────── */
+.quote-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:20px;
+}
+.quote{
+  padding:32px;
+  border-radius:var(--r-md);
+  background:var(--surface-1);
+  border:1px solid var(--line);
+  display:flex; flex-direction:column;
+  min-height:260px;
+}
+.quote-mark{
+  font-family:'Syne',sans-serif;
+  font-size:48px; line-height:1; color:var(--pink);
+  margin-bottom:18px; opacity:.7;
+}
+.quote-body{
+  font-family:'Syne',sans-serif;
+  font-size:20px; line-height:1.32; font-weight:500;
+  letter-spacing:-.015em;
+  margin-bottom:24px; flex:1;
+  color:var(--text);
+}
+.quote-source{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--faint);
+  padding-top:18px; border-top:1px solid var(--line);
+}
+
+@media (max-width: 940px){
+  .quote-grid{ grid-template-columns: 1fr; }
+}
+@media (max-width: 600px){
+  .quote{ padding:24px; min-height:auto; }
+  .quote-body{ font-size:18px; margin-bottom:18px; }
+  .quote-mark{ font-size:36px; margin-bottom:12px; }
+}
+
+/* ──────────────────────────────────────────────────────────
+   PRIVACY — horizontal hairline cards
+   ────────────────────────────────────────────────────────── */
+.priv-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:0;
+  border-top:1px solid var(--line);
+  border-left:1px solid var(--line);
+}
+.priv-card{
+  padding:36px 32px;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.priv-glyph{
+  width:28px; height:28px;
+  margin-bottom:24px;
+  display:grid; place-items:center;
+  border-radius:var(--r-xs);
+  background:var(--accent);
+  box-shadow:0 0 18px var(--accent-glow);
+  color:#fff; font-size:14px;
+}
+.priv-card h3{ margin-bottom:10px; font-size:20px; }
+.priv-card p{ font-size:15px; }
+
+@media (max-width: 940px){ .priv-grid{ grid-template-columns: 1fr; } }
+@media (max-width: 600px){
+  .priv-card{ padding:28px 22px; }
+  .priv-card h3{ font-size:18px; }
+  .priv-card p{ font-size:14.5px; }
+}
+
+/* ──────────────────────────────────────────────────────────
+   FAQ — split, accordion
+   ────────────────────────────────────────────────────────── */
+.faq-split{
+  display:grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap:64px;
+  align-items:flex-start;
+}
+.faq-split .section-head{ margin-bottom:0; max-width:none; }
+.faq-list{
+  border-top:1px solid var(--line);
+}
+.faq-item{ border-bottom:1px solid var(--line); }
+.faq-q{
+  display:flex; width:100%;
+  justify-content:space-between; align-items:center; gap:24px;
+  padding:24px 0;
+  background:none; border:none; cursor:pointer;
+  text-align:left;
+  font-family:'Syne',sans-serif;
+  font-size:19px; font-weight:600; letter-spacing:-.015em;
+  color:var(--text);
+  transition: color .2s ease;
+}
+.faq-q:hover{ color:var(--pink); }
+.faq-arrow{
+  font-size:22px; line-height:1;
+  color:var(--faint);
+  transition: transform .3s ease, color .2s ease;
   flex-shrink:0;
 }
-#waitlist-count{
-  color:#fff;
-  font-weight:800;
-}
-
-/* ANIMATED HERO CANVAS */
-#hero-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
-.hero-inner{position:relative;z-index:1;}
-
-/* PRIVACY */
-.privacy-section{padding:120px 0;}
-.privacy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:52px;}
-.priv-card{
-  padding:30px;border-radius:32px;
-  border:1px solid var(--line);
-  background:linear-gradient(160deg,rgba(255,255,255,.065),rgba(255,255,255,.025));
-  transition:.3s;
-}
-.priv-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.18);}
-.priv-icon{
-  width:52px;height:52px;border-radius:18px;font-size:22px;
-  display:grid;place-items:center;
-  background:rgba(56,217,245,.1);border:1px solid rgba(56,217,245,.2);
-  margin-bottom:22px;
-}
-.priv-card h3{font-family:'Syne',sans-serif;font-size:20px;letter-spacing:-.04em;margin-bottom:10px;}
-.priv-card p{color:var(--muted);line-height:1.65;font-size:15px;}
-
-/* FAQ */
-.faq-section{padding:120px 0;}
-.faq-list{margin-top:52px;display:grid;gap:12px;max-width:780px;margin-left:auto;margin-right:auto;}
-.faq-item{
-  border:1px solid var(--line);border-radius:24px;
-  background:var(--glass);overflow:hidden;
-  transition:.2s;
-}
-.faq-item:hover{border-color:rgba(255,255,255,.18);}
-.faq-q{
-  width:100%;display:flex;align-items:center;justify-content:space-between;
-  padding:22px 28px;background:none;border:none;color:#fff;
-  font:inherit;font-size:16px;font-weight:600;text-align:left;cursor:pointer;
-  gap:16px;
-}
-.faq-arrow{
-  width:28px;height:28px;border-radius:50%;flex-shrink:0;
-  background:rgba(255,255,255,.08);
-  display:grid;place-items:center;
-  font-size:14px;transition:.3s;
-}
-.faq-item.open .faq-arrow{transform:rotate(45deg);background:rgba(255,61,154,.2);}
+.faq-item.open .faq-arrow{ transform:rotate(45deg); color:var(--pink); }
 .faq-a{
-  max-height:0;overflow:hidden;
-  transition:max-height .35s cubic-bezier(.22,1,.36,1);
+  max-height:0; overflow:hidden;
+  transition: max-height .35s cubic-bezier(.4,0,.2,1);
 }
-.faq-a-inner{padding:0 28px 22px;color:var(--muted);line-height:1.7;font-size:15px;}
+.faq-a-inner{
+  padding: 0 0 28px;
+  color:var(--muted); font-size:15.5px; line-height:1.6;
+  max-width:540px;
+}
+.faq-a-inner a{ color:var(--pink); text-decoration:none; border-bottom:1px solid currentColor; }
 
-/* CONTACT */
-.contact-section{padding:80px 0;}
+@media (max-width: 940px){
+  .faq-split{ grid-template-columns: 1fr; gap:32px; }
+}
+@media (max-width: 600px){
+  .faq-split{ gap:24px; }
+  .faq-q{ padding:20px 0; font-size:16.5px; min-height:56px; }
+  .faq-a-inner{ font-size:14.5px; padding-bottom:22px; }
+}
+
+/* ──────────────────────────────────────────────────────────
+   CONTACT
+   ────────────────────────────────────────────────────────── */
 .contact-card{
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;
-  padding:36px 44px;border-radius:32px;
-  border:1px solid var(--line);background:var(--glass);
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:48px;
+  padding:60px;
+  border-radius:var(--r-md);
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255,61,154,.08), transparent 50%),
+    var(--surface-1);
+  border:1px solid var(--line);
 }
-.contact-left h3{font-family:'Syne',sans-serif;font-size:24px;letter-spacing:-.04em;margin-bottom:8px;}
-.contact-left p{color:var(--muted);font-size:15px;}
-.contact-right{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.contact-left h3{ font-size:32px; margin-bottom:14px; }
+.contact-left p{ font-size:16.5px; color:var(--muted); max-width:380px; }
+.contact-right{
+  display:flex; flex-direction:column; gap:10px; justify-content:center;
+}
 .contact-btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:12px 22px;border-radius:999px;
-  background:var(--glass);border:1px solid var(--line);
-  font-size:14px;font-weight:600;color:rgba(255,255,255,.82);
-  text-decoration:none;transition:.2s;
+  display:inline-flex; align-items:center; gap:10px;
+  padding:16px 20px;
+  border-radius:var(--r-pill);
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  font-size:14.5px; color:var(--text);
+  text-decoration:none;
+  transition: background .2s ease, border-color .2s ease;
 }
-.contact-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.22);}
+.contact-btn:hover{ background:var(--surface-3); border-color:var(--line-strong); }
 .contact-btn.primary{
-  background:linear-gradient(135deg,var(--pink),var(--violet));
-  border:none;color:#fff;
-  box-shadow:0 8px 28px rgba(255,61,154,.3);
-}
-.contact-btn.primary:hover{transform:translateY(-1px);box-shadow:0 12px 36px rgba(255,61,154,.4);}
-
-/* SOCIAL LINKS IN FOOTER */
-.foot-social{display:flex;gap:10px;}
-.soc-btn{
-  width:36px;height:36px;border-radius:50%;
-  display:grid;place-items:center;
-  background:var(--glass);border:1px solid var(--line);
-  color:var(--faint);text-decoration:none;font-size:15px;
-  transition:.2s;
-}
-.soc-btn:hover{background:rgba(255,255,255,.1);color:#fff;border-color:var(--line);}
-
-/* FOOTER */
-footer{
-  padding:28px 0 44px;
-  border-top:1px solid var(--line2);
-}
-.foot{
-  display:flex;justify-content:space-between;align-items:center;gap:16px;
-  color:var(--faint);font-size:13px;
-}
-.foot-brand{
-  display:flex;align-items:center;gap:9px;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:15px;
-  color:rgba(255,255,255,.7);
-}
-.foot-logo{
-  width:28px;height:28px;border-radius:10px;
-  background:linear-gradient(135deg,var(--pink),var(--violet));
-  display:grid;place-items:center;font-size:12px;
+  background:var(--accent);
+  border-color:transparent;
+  box-shadow:0 8px 28px var(--accent-glow);
+  font-weight:600;
 }
 
-/* SCROLL REVEALS */
-.reveal{opacity:0;transform:translateY(28px);transition:.7s cubic-bezier(.22,1,.36,1);}
-.reveal.visible{opacity:1;transform:none;}
-
-/* RESPONSIVE */
-@media(max-width:960px){
-  nav{
-    top:14px;
-    width:calc(100% - 24px);
-    display:grid;
-    grid-template-columns:1fr auto;
-    align-items:center;
-    gap:12px;
-    padding:10px 12px;
-    border-radius:22px;
-  }
-
-  .brand{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:0;
-    font-size:16px;
-    font-weight:800;
-  }
-
-  .logo{
-    width:34px;
-    height:34px;
-    border-radius:12px;
-    flex-shrink:0;
-  }
-
-  .nav-mid{
-    display:none;
-  }
-
-  .nav-right{
-    display:flex;
-    align-items:center;
-    justify-content:flex-end;
-    min-width:0;
-  }
-
-  nav .live-chip{
-    display:none;
-  }
-
-  .btn-nav{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-width:132px;
-    padding:10px 18px;
-    font-size:12px;
-    white-space:nowrap;
-    border-radius:999px;
-  }
-
-  .hero{
-    min-height:auto;
-    padding:164px 0 72px;
-  }
-
-  .hero-inner,.exp-grid{
-    grid-template-columns:1fr;
-    gap:56px;
-  }
-
-  .hero-inner{
-    text-align:center;
-  }
-
-  .hero-sub{
-    margin-left:auto;
-    margin-right:auto;
-  }
-
-  .hero-actions{
-    justify-content:center;
-  }
-
-  .phone-wrap{
-    min-height:620px;
-  }
-
-  .phone{
-    transform:rotate(0deg);
-  }
-
-  .feat-grid,.privacy-grid{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .inside-grid{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .inside-card{
-    height:520px;
-  }
-
-  .roadmap-shell{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .fc-left,.fc-right{display:none;}
-  .h1r,.h2r,.h3r{width:90vw;height:90vw;max-width:500px;max-height:500px;}
-  .mobile-status-chip{
-    position:fixed;
-    top:78px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:115;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:7px;
-    width:max-content;
-    max-width:calc(100% - 32px);
-    padding:8px 14px;
-    border-radius:999px;
-    background:rgba(29,219,139,.12);
-    border:1px solid rgba(29,219,139,.24);
-    color:var(--green);
-    font-size:10.5px;
-    font-weight:800;
-    letter-spacing:.03em;
-    backdrop-filter:blur(20px) saturate(180%);
-    box-shadow:0 14px 40px rgba(0,0,0,.26);
-  }
+@media (max-width: 940px){
+  .contact-card{ grid-template-columns: 1fr; padding:40px; gap:32px; }
+}
+@media (max-width: 600px){
+  .contact-card{ padding:32px 24px; gap:24px; }
+  .contact-left h3{ font-size:26px; }
+  .contact-left p{ font-size:15px; }
+  .contact-btn{ padding:14px 18px; font-size:14px; }
 }
 
-@media(max-width:640px){
-  .wrap{width:min(100% - 28px,1140px);}
-
-  nav{
-    top:10px;
-    width:calc(100% - 18px);
-    display:grid;
-    grid-template-columns:1fr auto;
-    align-items:center;
-    gap:10px;
-    padding:9px 10px;
-    border-radius:20px;
-  }
-
-  .brand{
-    gap:8px;
-    font-size:14px;
-    min-width:0;
-  }
-
-  .logo{
-    width:32px;
-    height:32px;
-    border-radius:11px;
-    font-size:14px;
-  }
-
-  .btn-nav{
-    min-width:120px;
-    padding:9px 16px;
-    font-size:11px;
-  }
-
-  nav .live-chip{
-    display:none;
-  }
-
-  .hero{
-    padding:156px 0 62px;
-  }
-
-  .eyebrow{
-    font-size:10px;
-    padding:8px 13px;
-    margin-bottom:18px;
-  }
-
-  h1{
-    font-size:clamp(44px,14vw,62px);
-    line-height:.92;
-    margin-bottom:18px;
-  }
-
-  .hero-sub{
-    font-size:16px;
-    line-height:1.55;
-    margin-bottom:28px;
-  }
-
-  .hero-actions{
-    gap:10px;
-    margin-bottom:18px;
-  }
-
-  .btn-primary,.btn-ghost{
-    width:100%;
-    justify-content:center;
-    padding:14px 18px;
-  }
-
-  .phone-wrap{
-    min-height:560px;
-    margin-top:8px;
-  }
-
-  .phone{
-    width:min(292px,88vw);
-    height:600px;
-    border-radius:48px;
-    padding:12px;
-  }
-
-  .screen{
-    border-radius:38px;
-  }
-
-  .s-content{
-    min-height:430px;
-  }
-
-  .hero-map-area{
-    height:246px;
-  }
-
-  .hero-photo-card{
-    height:252px;
-  }
-
-  .hero-discovery-card{
-    height:368px;
-  }
-
-  section.block,
-  .privacy-section,
-  .faq-section,
-  .roadmap-section{
-    padding:86px 0;
-  }
-
-  .cta-wrap{
-    padding:86px 0;
-  }
-
-  h2{
-    font-size:clamp(34px,11vw,46px);
-  }
-
-  .section-sub{
-    font-size:16px;
-    line-height:1.55;
-  }
-
-  .feat-grid,.privacy-grid,.inside-grid,.roadmap-shell{
-    grid-template-columns:1fr;
-  }
-
-  .feat,.priv-card{
-    padding:24px;
-    border-radius:28px;
-  }
-
-  .exp-content{
-    padding:28px;
-    border-radius:34px;
-  }
-
-  .exp-visual{
-    min-height:360px;
-    border-radius:34px;
-  }
-
-  .micro-grid{
-    grid-template-columns:1fr;
-  }
-
-  .inside-card{
-    height:520px;
-    border-radius:30px;
-  }
-
-  .inside-overlay{
-    padding:22px;
-  }
-
-  .inside-overlay h3{
-    font-size:25px;
-  }
-
-  .roadmap-card{
-    padding:24px;
-  }
-
-  .waitlist{
-    flex-direction:column;
-    border-radius:28px;
-    padding:12px;
-  }
-
-  .waitlist input{
-    min-height:46px;
-  }
-
-  .waitlist-btn{
-    width:100%;
-    padding:14px;
-  }
-
-  .cta-card{
-    padding:58px 22px;
-    border-radius:38px;
-  }
-
-  .contact-card{
-    padding:28px;
-    border-radius:28px;
-  }
-
-  .contact-right{
-    width:100%;
-  }
-
-  .contact-btn{
-    width:100%;
-    justify-content:center;
-  }
-
-  .foot{
-    flex-direction:column;
-    text-align:center;
-  }
-}
-
-@media(max-width:390px){
-  .brand{
-    gap:7px;
-    font-size:13px;
-  }
-
-  .btn-nav{
-    padding:8px 10px;
-    font-size:10px;
-  }
-
-  nav .live-chip{
-    display:none;
-  }
-
-  .hero{
-    padding-top:132px;
-  }
-
-  .phone{
-    width:272px;
-    height:570px;
-  }
-
-  .s-tabs{
-    padding:0 12px 10px;
-  }
-
-  .s-tab{
-    font-size:9px;
-  }
-
-  .hero-map-card,.hero-feed-card,.hero-discovery-card{
-    margin-left:10px;
-    margin-right:10px;
-  }
-
-  .hero-map-area{
-    height:230px;
-  }
-
-  .hero-photo-card{
-    height:236px;
-  }
-
-  .hero-discovery-card{
-    height:348px;
-  }
-}
-
-.feat{
+/* ──────────────────────────────────────────────────────────
+   CTA / WAITLIST
+   ────────────────────────────────────────────────────────── */
+.cta-section{ padding: var(--section-y) 0 calc(var(--section-y) * .6); }
+.cta-card{
+  padding: 80px 60px;
+  border-radius:var(--r-md);
+  border:1px solid var(--line-strong);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,61,154,.18), transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(124,58,255,.16), transparent 60%),
+    linear-gradient(180deg, #0d0d18, #08080f);
+  text-align:center;
   position:relative;
   overflow:hidden;
 }
-
-
-
-.mobile-status-chip{
+.cta-card::before{
+  content:""; position:absolute; left:0; right:0; top:0;
+  height:1px;
+  background: linear-gradient(90deg, transparent, var(--pink), transparent);
+  opacity:.5;
+}
+.cta-card h2{ margin-top:20px; max-width:680px; margin-left:auto; margin-right:auto; }
+.cta-card > p{ margin-top:18px; max-width:540px; margin-left:auto; margin-right:auto; font-size:17px; }
+.waitlist-proof{
+  display:inline-flex; align-items:center; gap:10px;
+  margin-top:28px;
+  padding:8px 16px; border-radius:var(--r-pill);
+  background:rgba(41,217,133,.08);
+  border:1px solid rgba(41,217,133,.22);
+  font-family:'JetBrains Mono', monospace;
+  font-size:12px; color:var(--green);
+  letter-spacing:.04em;
+}
+.proof-dot{ width:7px; height:7px; border-radius:50%; background:var(--green); animation:pulseDot 2s infinite; }
+.waitlist-form{
+  display:flex; gap:8px;
+  max-width:520px; margin:32px auto 0;
+  padding:6px;
+  background:var(--surface-1);
+  border:1px solid var(--line-strong);
+  border-radius:var(--r-pill);
+}
+.waitlist-form input{
+  flex:1; background:transparent; border:none; outline:none;
+  padding: 0 16px;
+  font: inherit; font-size:15px; color:var(--text);
+}
+.waitlist-form input::placeholder{ color:var(--faint); }
+.waitlist-btn{
+  padding:13px 22px; border-radius:var(--r-pill);
+  background:var(--accent); border:none; cursor:pointer;
+  font-family:inherit; font-size:14px; font-weight:600; color:#fff;
+  box-shadow:0 6px 20px var(--accent-glow);
+  transition: transform .2s ease;
+}
+.waitlist-btn:hover{ transform:translateY(-1px); }
+.form-success{
+  margin-top:18px; font-size:14px; font-weight:500;
+  color:var(--green);
   display:none;
 }
+@media (max-width: 600px){
+  .cta-card{ padding: 56px 28px; }
+  .waitlist-form{ flex-direction:column; border-radius:var(--r-md); padding:8px; }
+}
 
-.mobile-bottom-nav{
+/* ──────────────────────────────────────────────────────────
+   FOOTER
+   ────────────────────────────────────────────────────────── */
+footer{
+  border-top:1px solid var(--line);
+  padding: 48px 0 96px;
+}
+@media (max-width: 600px){
+  footer{ padding: 36px 0 96px; }
+  .foot{ flex-direction:column; align-items:flex-start; gap:18px; text-align:left; }
+}
+.foot{
+  display:flex;
+  justify-content:space-between; align-items:center; gap:24px;
+  flex-wrap:wrap;
+}
+.foot-brand{
+  display:flex; align-items:center; gap:10px;
+  font-family:'Syne',sans-serif; font-weight:700; font-size:15px; letter-spacing:.04em;
+}
+.foot-brand .brand-mark{ width:24px; height:24px; font-size:11px; }
+.foot small{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint);
+}
+.foot-links{
+  display:flex; gap:20px; align-items:center;
+}
+.foot-links a{
+  color:var(--muted); text-decoration:none;
+  font-size:13px;
+  transition: color .2s ease;
+}
+.foot-links a:hover{ color:var(--text); }
+.soc-btn{
+  width:36px; height:36px; display:grid; place-items:center;
+  border-radius:50%; border:1px solid var(--line);
+  color:var(--muted); transition: all .2s ease;
+}
+.soc-btn:hover{ color:var(--text); border-color:var(--line-strong); background:var(--surface-1); }
+
+/* ──────────────────────────────────────────────────────────
+   MOBILE STATUS CHIP — floating "In development" badge
+   ────────────────────────────────────────────────────────── */
+.mobile-status{
   display:none;
+  position:fixed;
+  top:80px; left:50%;
+  transform:translateX(-50%);
+  z-index:70;
+  align-items:center; gap:7px;
+  padding:7px 14px;
+  background:rgba(41,217,133,.1);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(41,217,133,.28);
+  border-radius:var(--r-pill);
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; font-weight:500;
+  color:var(--green);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+.mobile-status .dot{
+  width:6px; height:6px; border-radius:50%; background:var(--green);
+  animation:pulseDot 2s ease-in-out infinite;
+}
+@media (max-width: 940px){
+  .mobile-status{ display:inline-flex; }
 }
 
-@media(max-width:960px){
-  .mobile-status-chip{
-    position:fixed;
-    top:78px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:115;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:7px;
-    width:max-content;
-    max-width:calc(100% - 32px);
-    padding:8px 14px;
-    border-radius:999px;
-    background:rgba(29,219,139,.12);
-    border:1px solid rgba(29,219,139,.24);
-    color:var(--green);
-    font-size:10.5px;
-    font-weight:800;
-    letter-spacing:.03em;
-    backdrop-filter:blur(20px) saturate(180%);
-    box-shadow:0 14px 40px rgba(0,0,0,.26);
-  }
-  .mobile-bottom-nav{
-    position:fixed;
-    left:50%;
-    bottom:14px;
-    transform:translateX(-50%);
-    z-index:120;
-    display:flex;
-    gap:6px;
-    width:calc(100% - 24px);
-    max-width:520px;
-    padding:8px;
-    border-radius:999px;
-    background:rgba(8,8,18,.78);
-    border:1px solid rgba(255,255,255,.11);
-    backdrop-filter:blur(28px) saturate(180%);
-    box-shadow:0 18px 60px rgba(0,0,0,.38);
-    overflow-x:auto;
-    scrollbar-width:none;
-  }
+/* ──────────────────────────────────────────────────────────
+   MOBILE BOTTOM NAV
+   ────────────────────────────────────────────────────────── */
+.mobile-bnav{
+  display:none;
+  position:fixed; left:12px; right:12px; bottom:12px;
+  z-index:80;
+  padding:6px;
+  background:rgba(10,10,16,.85);
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
+  border:1px solid var(--line-strong);
+  border-radius:var(--r-pill);
+  box-shadow: 0 16px 40px rgba(0,0,0,.5);
+}
+.mobile-bnav-inner{
+  display:flex; gap:2px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.mobile-bnav-inner::-webkit-scrollbar{ display:none; }
+.mobile-bnav a{
+  flex:0 0 auto;
+  padding:10px 16px;
+  border-radius:var(--r-pill);
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted); text-decoration:none;
+  transition: background .2s ease, color .2s ease;
+  white-space:nowrap;
+}
+.mobile-bnav a:active,
+.mobile-bnav a:hover{ background:var(--surface-2); color:var(--text); }
+.mobile-bnav a.cta{
+  background:var(--accent); color:#fff; font-weight:600;
+  box-shadow:0 4px 14px var(--accent-glow);
+}
+/* mobile-bnav visibility handled in nav breakpoint above */
 
-  .mobile-bottom-nav::-webkit-scrollbar{
-    display:none;
-  }
-
-  .mobile-bottom-nav a{
-    flex:1 0 auto;
-    text-align:center;
-    text-decoration:none;
-    color:rgba(255,255,255,.8);
-    font-size:11px;
-    font-weight:800;
-    padding:10px 10px;
-    border-radius:999px;
-    background:rgba(255,255,255,.055);
-    border:1px solid rgba(255,255,255,.07);
-    white-space:nowrap;
-  }
-
-  body{
-    padding-bottom:86px;
+/* ──────────────────────────────────────────────────────────
+   TWEAKS PANEL
+   ────────────────────────────────────────────────────────── */
+.tweaks{
+  position:fixed; bottom:20px; right:20px;
+  z-index:200;
+  width:280px;
+  background:rgba(8,8,14,.92);
+  backdrop-filter:blur(20px) saturate(160%);
+  border:1px solid var(--line-strong);
+  border-radius:var(--r-md);
+  padding:18px;
+  display:none;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
+.tweaks.open{ display:block; }
+@media (max-width: 600px){
+  .tweaks{
+    left:12px; right:12px; bottom:80px;
+    width:auto;
   }
 }
-
-@media(max-width:390px){
-  .mobile-bottom-nav{
-    bottom:10px;
-    width:calc(100% - 18px);
-    gap:5px;
-    padding:7px;
-  }
-
-  .mobile-bottom-nav a{
-    font-size:10px;
-    padding:9px 8px;
-  }
+.tweaks-head{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:18px;
 }
-
-
-@media(max-width:390px){
-  .mobile-status-chip{
-    display:flex;
-    top:74px;
-    font-size:10px;
-    padding:7px 12px;
-  }
+.tweaks-title{
+  font-family:'Syne',sans-serif; font-weight:700; font-size:14px; letter-spacing:.02em;
 }
-
-@media(max-width:350px){
-  .brand{
-    font-size:12px;
-  }
-
-  .btn-nav{
-    font-size:0;
-    padding:8px 10px;
-  }
-
-  .btn-nav::after{
-    content:"Join";
-    font-size:10px;
-    line-height:1;
-  }
-
-  .mobile-status-chip{
-    display:flex;
-    top:72px;
-  }
+.tweaks-close{
+  background:none; border:none; color:var(--muted); cursor:pointer;
+  font-size:18px; line-height:1; padding:4px;
+}
+.tweak-section{ margin-bottom:18px; }
+.tweak-section:last-child{ margin-bottom:0; }
+.tweak-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--faint);
+  margin-bottom:10px;
+}
+.tweak-row{
+  display:flex; gap:6px; flex-wrap:wrap;
+}
+.tweak-opt{
+  flex:1; min-width:0;
+  padding:8px 10px;
+  background:var(--surface-1); border:1px solid var(--line);
+  border-radius:var(--r-xs);
+  font-family:inherit; font-size:12px; color:var(--muted);
+  cursor:pointer;
+  transition: all .2s ease;
+  text-align:center;
+}
+.tweak-opt:hover{ color:var(--text); }
+.tweak-opt.on{
+  background:var(--accent); color:#fff; border-color:transparent;
+  box-shadow:0 4px 14px var(--accent-glow);
+}
+.tweak-swatch{
+  display:inline-block; width:14px; height:14px; border-radius:50%;
+  vertical-align:middle; margin-right:6px;
+  border:1px solid var(--line-strong);
 }
 
 </style>
 </head>
 <body>
-<div class="canvas"></div>
-<div class="grain"></div>
-<div class="grid-overlay"></div>
 
-<!-- NAV -->
+<div class="atmosphere"></div>
+<div class="grain"></div>
+
+<!-- ═══════════════════════ NAV ═══════════════════════ -->
 <nav>
-  <a class="brand" href="#top" style="text-decoration:none;color:inherit;">
-    <span class="logo">✦</span>
+  <a class="brand" href="#top">
+    <span class="brand-mark">✦</span>
     PRAXIS
   </a>
   <div class="nav-mid">
@@ -1443,672 +1460,693 @@ footer{
     <a href="#features">Features</a>
     <a href="#inside">Inside</a>
     <a href="#roadmap">Roadmap</a>
-    <a href="#privacy">Privacy</a>
     <a href="#faq">FAQ</a>
-    <a href="#contact">Contact</a>
   </div>
   <div class="nav-right">
-    <div class="live-chip"><span class="live-dot"></span>In development</div>
-    <a class="btn-nav" href="#launch">Join waitlist</a>
+    <span class="status-chip"><span class="status-dot"></span>In development</span>
+    <a class="btn-cta" href="#launch">Join waitlist</a>
   </div>
 </nav>
 
-<div class="mobile-status-chip" aria-label="Praxis development status">
-  <span class="live-dot"></span>
-  In development
-</div>
-
-
-<div class="mobile-bottom-nav" aria-label="Mobile section navigation">
-  <a href="#experience">Experience</a>
-  <a href="#features">Features</a>
-  <a href="#inside">Inside</a>
-  <a href="#roadmap">Roadmap</a>
-  <a href="#faq">FAQ</a>
-</div>
-
-<!-- HERO -->
+<!-- ═══════════════════════ HERO ═══════════════════════ -->
 <main id="top">
-<section class="hero" style="position:relative;">
-  <canvas id="hero-canvas"></canvas>
+<section class="hero">
   <div class="wrap">
-    <div class="hero-inner">
+    <div class="hero-grid">
+
       <div class="reveal">
-        <div class="eyebrow"><span class="eyebrow-dot"></span>Nearby social, reimagined</div>
-        <h1>Meet nearby.<br><span class="h1-line2">Make real plans.</span></h1>
+        <div class="eyebrow-row">
+          <span class="divider"></span>
+          <span class="kicker">Nearby social · Reimagined</span>
+        </div>
+
+        <h1>
+          Meet nearby.<br/>
+          <span class="line-2 gradient-text">Make real plans.</span>
+        </h1>
+
         <p class="hero-sub">Praxis is the social app for discovering people around you, sharing beautiful moments, and turning online connection into real-world plans.</p>
+
         <div class="hero-actions">
-          <a class="btn-primary" href="#launch">Get early access ↗</a>
+          <a class="btn-primary" href="#launch">Get early access <span class="arrow">↗</span></a>
           <a class="btn-ghost" href="#features">Explore features</a>
         </div>
 
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <span class="num">2027</span>
+            <span class="label">App Store launch</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="num">iOS</span>
+            <span class="label">First platform</span>
+          </div>
+          <div class="hero-meta-item">
+            <span class="num">Free</span>
+            <span class="label">From day one</span>
+          </div>
+        </div>
       </div>
 
-      <div class="phone-wrap reveal" style="transition-delay:.15s;">
-        <span class="halo h1r"></span>
-        <span class="halo h2r"></span>
-        <span class="halo h3r"></span>
+      <div class="phone-stage reveal" style="transition-delay:.15s;">
+        <span class="phone-halo"></span>
+        <span class="phone-ring"></span>
 
-        <div class="fc fc-left">
-          <b><span class="fc-dot"></span>4 friends nearby</b>
-          <small>Ready to make plans</small>
-        </div>
-        <div class="fc fc-right">
-          <b>🎟 Tonight · 8:30 PM</b>
-          <small>Going · Maybe · Decline</small>
+        <div class="hero-chip right">
+          <span class="dot"></span>
+          <span>4 friends nearby</span>
         </div>
 
         <div class="phone">
-          <div class="screen">
-            <div class="notch"></div>
-            <div class="s-top">
-              <span class="s-title">Praxis</span>
-              <span class="s-av"></span>
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-top">
+              <span class="phone-title">Praxis</span>
+              <span class="phone-avatar"></span>
             </div>
-            <div class="s-tabs">
-              <span class="s-tab on" data-view="nearby">Nearby</span>
-              <span class="s-tab" data-view="feed">Feed</span>
-              <span class="s-tab" data-view="discovery">Discovery</span>
+            <div class="phone-tabs">
+              <span class="phone-tab on" data-view="0">Nearby</span>
+              <span class="phone-tab" data-view="1">Feed</span>
+              <span class="phone-tab" data-view="2">Discovery</span>
             </div>
 
-            <div class="s-content">
-              <div class="s-view active" id="nearby-view">
-                <div class="hero-map-card">
-                  <div class="hero-card-top">
+            <div class="phone-content">
+
+              <div class="phone-view active">
+                <div class="pv-card">
+                  <div class="pv-head">
                     <div>
-                      <div class="hero-card-title">Nearby, right now</div>
-                      <div class="hero-card-sub">Live people, places, and plans around you.</div>
+                      <div class="pv-title">Nearby, right now</div>
+                      <div class="pv-sub">Live people, places, plans around you</div>
                     </div>
-                    <span class="hero-live-dot"></span>
+                    <span class="pv-livedot"></span>
                   </div>
-
-                  <div class="hero-map-area">
-                    <div class="hero-map-line"></div>
-                    <span class="hero-map-pulse"></span>
-                    <span class="hero-map-pin"></span>
-                    <span class="hero-map-person"></span>
-                    <span class="hero-map-person two"></span>
+                  <div class="pv-map">
+                    <div class="pv-map-grid"></div>
+                    <span class="pv-pulse"></span>
+                    <span class="pv-pin a"></span>
+                    <span class="pv-pin b"></span>
+                    <span class="pv-pin c"></span>
                   </div>
-
-                  <div class="hero-pill-row">
-                    <span class="hero-pill">12 nearby</span>
-                    <span class="hero-pill">4 friends</span>
+                  <div class="pv-pills">
+                    <span class="pv-pill">12 NEARBY</span>
+                    <span class="pv-pill">4 FRIENDS</span>
                   </div>
                 </div>
               </div>
 
-              <div class="s-view" id="feed-view">
-                <div class="hero-feed-card">
-                  <div class="hero-feed-head">
-                    <div class="hero-user">
-                      <div class="hero-user-avatar"></div>
+              <div class="phone-view">
+                <div class="pv-card">
+                  <div class="pv-feed-head">
+                    <div class="pv-user">
+                      <div class="pv-user-av"></div>
                       <div>
-                        <div class="hero-user-name">Sophia Bennett</div>
-                        <div class="hero-user-sub">London · 2m ago</div>
+                        <div class="pv-user-name">Sophia Bennett</div>
+                        <div class="pv-user-sub">London · 2m ago</div>
                       </div>
                     </div>
-                    <span class="hero-more"></span>
                   </div>
-
-                  <div class="hero-photo-card"></div>
-
-                  <div class="hero-feed-actions">
+                  <div class="pv-photo"></div>
+                  <div class="pv-feed-actions">
                     <span>♡ 128</span>
-                    <span>✦ Nearby moment</span>
+                    <span>NEARBY MOMENT</span>
                   </div>
                 </div>
               </div>
 
-              <div class="s-view" id="discovery-view">
-                <div class="hero-discovery-card">
-                  <span class="hero-radar-ring"></span>
-                  <span class="hero-center-person"></span>
-                  <span class="hero-orbit-person one"></span>
-                  <span class="hero-orbit-person two"></span>
-                  <span class="hero-orbit-person three"></span>
-
-                  <div class="hero-discovery-label">
+              <div class="phone-view">
+                <div class="pv-radar">
+                  <span class="pv-radar-ring"></span>
+                  <span class="pv-radar-me"></span>
+                  <span class="pv-radar-other one"></span>
+                  <span class="pv-radar-other two"></span>
+                  <span class="pv-radar-other three"></span>
+                  <div class="pv-radar-label">
                     <strong>Discovery mode active</strong>
-                    <span>Bluetooth-powered nearby social layer.</span>
+                    <span>Bluetooth-powered nearby social layer</span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="s-bar"></div>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </section>
 
-<!-- STRIP -->
-<div class="strip">
+<!-- ═══════════════════════ MARQUEE ═══════════════════════ -->
+<div class="marquee-wrap" aria-hidden="true">
   <div class="marquee">
-    <span>Nearby discovery</span><span class="marquee-dot">✦</span>
-    <span>Photo sharing</span><span class="marquee-dot">✦</span>
-    <span>RSVP events</span><span class="marquee-dot">✦</span>
-    <span>Restaurant check-ins</span><span class="marquee-dot">✦</span>
-    <span>Private chat</span><span class="marquee-dot">✦</span>
-    <span>Safety-first</span><span class="marquee-dot">✦</span>
-    <span>Bluetooth discovery</span><span class="marquee-dot">✦</span>
-    <span>Real connections</span><span class="marquee-dot">✦</span>
-    <span>Nearby discovery</span><span class="marquee-dot">✦</span>
-    <span>Photo sharing</span><span class="marquee-dot">✦</span>
-    <span>RSVP events</span><span class="marquee-dot">✦</span>
-    <span>Restaurant check-ins</span><span class="marquee-dot">✦</span>
-    <span>Private chat</span><span class="marquee-dot">✦</span>
-    <span>Safety-first</span><span class="marquee-dot">✦</span>
-    <span>Bluetooth discovery</span><span class="marquee-dot">✦</span>
-    <span>Real connections</span><span class="marquee-dot">✦</span>
+    <span>Nearby discovery</span><span class="dot">✦</span>
+    <span>Photo sharing</span><span class="dot">✦</span>
+    <span>RSVP events</span><span class="dot">✦</span>
+    <span>Venue check-ins</span><span class="dot">✦</span>
+    <span>Private chat</span><span class="dot">✦</span>
+    <span>Safety-first</span><span class="dot">✦</span>
+    <span>Bluetooth discovery</span><span class="dot">✦</span>
+    <span>Real connections</span><span class="dot">✦</span>
+    <span>Nearby discovery</span><span class="dot">✦</span>
+    <span>Photo sharing</span><span class="dot">✦</span>
+    <span>RSVP events</span><span class="dot">✦</span>
+    <span>Venue check-ins</span><span class="dot">✦</span>
+    <span>Private chat</span><span class="dot">✦</span>
+    <span>Safety-first</span><span class="dot">✦</span>
+    <span>Bluetooth discovery</span><span class="dot">✦</span>
+    <span>Real connections</span><span class="dot">✦</span>
   </div>
 </div>
 
-<!-- EXPERIENCE -->
+<!-- ═══════════════════════ EXPERIENCE ═══════════════════════ -->
 <section class="block" id="experience">
   <div class="wrap">
-    <div class="reveal">
-      <div class="kicker">The Praxis idea</div>
-      <h2>Less scrolling.<br>More real life.</h2>
-      <p class="section-sub">Praxis is built around what actually matters — nearby people, real places, and plans that get made.</p>
+
+    <div class="section-head reveal">
+      <span class="kicker">The Praxis idea</span>
+      <h2>Less scrolling.<br/>More <span class="gradient-text">real life</span>.</h2>
+      <p>Praxis is built around what actually matters — nearby people, real places, and plans that get made.</p>
     </div>
-    <div class="exp-grid reveal" style="transition-delay:.1s;">
+
+    <div class="exp-split reveal" style="transition-delay:.1s;">
       <div class="exp-visual">
-        <div class="map-bg"></div>
-        <div class="route-ring"></div>
-        <span class="pin a"><span class="pin-pulse"></span></span>
-        <span class="pin b"></span>
-        <span class="pin c"></span>
+        <div class="exp-ring"></div>
+        <span class="exp-pin a"></span>
+        <span class="exp-pulse"></span>
+        <span class="exp-pin b"></span>
+        <span class="exp-pin c"></span>
+        <div class="exp-coord">LIVE NEARBY · <b>0.4 MI</b> RADIUS</div>
       </div>
-      <div class="exp-content">
-        <div class="kicker">How it works</div>
-        <h2 style="font-size:clamp(28px,3.5vw,44px);">Everything in one place</h2>
+
+      <div>
+        <span class="kicker">How it works</span>
+        <h2 style="font-size:clamp(28px,3.5vw,42px); margin-top:18px;">Everything in one place</h2>
+
         <div class="plan-list">
           <div class="plan-item">
-            <div class="plan-icon">📍</div>
-            <div class="plan-text"><b>Discover what is around you</b><span>Nearby people, places, and real-time activity.</span></div>
+            <span class="plan-num">01</span>
+            <div class="plan-text">
+              <b>Discover what's around you</b>
+              <span>Nearby people, places, and real-time activity.</span>
+            </div>
           </div>
           <div class="plan-item">
-            <div class="plan-icon">📸</div>
-            <div class="plan-text"><b>Share moments beautifully</b><span>Clean photo posts with location and check-in context.</span></div>
+            <span class="plan-num">02</span>
+            <div class="plan-text">
+              <b>Share moments beautifully</b>
+              <span>Clean photo posts with location and check-in context.</span>
+            </div>
           </div>
           <div class="plan-item">
-            <div class="plan-icon">✨</div>
-            <div class="plan-text"><b>Create plans instantly</b><span>Invite friends and track responses live in real time.</span></div>
+            <span class="plan-num">03</span>
+            <div class="plan-text">
+              <b>Create plans instantly</b>
+              <span>Invite friends and track responses live in real time.</span>
+            </div>
           </div>
-        </div>
-        <div class="micro-grid">
-          <div class="micro"><b>Local</b><span>Built around what's happening near you right now.</span></div>
-          <div class="micro"><b>Visual</b><span>Photos, places, and plans that feel polished.</span></div>
-          <div class="micro"><b>Social</b><span>Friend activity makes the app feel genuinely alive.</span></div>
-          <div class="micro"><b>Real</b><span>Designed to move people from chat to actual plans.</span></div>
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
-<!-- FEATURES -->
+<!-- ═══════════════════════ FEATURES ═══════════════════════ -->
 <section class="block" id="features">
   <div class="wrap">
-    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
-      <div class="kicker">Built for a premium social experience</div>
+
+    <div class="section-head center reveal">
+      <span class="kicker">Built for premium social</span>
       <h2>Everything feels intentional.</h2>
-      <p class="section-sub" style="margin:18px auto 0;">From nearby discovery to event cards, Praxis is built to feel polished from the very first tap.</p>
+      <p>From nearby discovery to event cards, Praxis is built to feel polished from the very first tap.</p>
     </div>
+
     <div class="feat-grid reveal" style="transition-delay:.1s;">
       <article class="feat">
-        <div class="feat-icon">🛰️</div>
+        <div class="feat-num"><span>01 / NEARBY</span><span class="feat-glyph"></span></div>
         <h3>Nearby discovery</h3>
         <p>Find and connect with people around you using a real-world social layer, not just another scroll feed.</p>
       </article>
       <article class="feat">
-        <div class="feat-icon">🌃</div>
+        <div class="feat-num"><span>02 / VENUES</span><span class="feat-glyph"></span></div>
         <h3>Restaurant check-ins</h3>
         <p>Share where you are, see venue activity, and make places feel alive through real social context.</p>
       </article>
       <article class="feat">
-        <div class="feat-icon">💬</div>
+        <div class="feat-num"><span>03 / CHAT</span><span class="feat-glyph"></span></div>
         <h3>Private conversations</h3>
         <p>Move from a moment to a message with a clean, focused chat experience built for real connections.</p>
       </article>
       <article class="feat">
-        <div class="feat-icon">🎟️</div>
+        <div class="feat-num"><span>04 / EVENTS</span><span class="feat-glyph"></span></div>
         <h3>Live RSVP events</h3>
         <p>Create an event, send it to friends, and watch Going, Maybe, and Decline update in real time.</p>
       </article>
       <article class="feat">
-        <div class="feat-icon">🛡️</div>
+        <div class="feat-num"><span>05 / SAFETY</span><span class="feat-glyph"></span></div>
         <h3>Safety-first design</h3>
         <p>Built with trust, reporting, privacy, and verification paths in mind from day one.</p>
       </article>
       <article class="feat">
-        <div class="feat-icon">⚡</div>
+        <div class="feat-num"><span>06 / CRAFT</span><span class="feat-glyph"></span></div>
         <h3>Premium native feel</h3>
         <p>Modern visuals, fluid interactions, and a brand that feels global — not cheap or generic.</p>
       </article>
     </div>
+
   </div>
 </section>
 
-<!-- INSIDE PRAXIS -->
+<!-- ═══════════════════════ INSIDE PRAXIS ═══════════════════════ -->
 <section class="block" id="inside">
   <div class="wrap">
 
-    <div class="reveal" style="text-align:center;max-width:760px;margin:0 auto;">
-      <div class="kicker">Inside Praxis</div>
+    <div class="section-head center reveal">
+      <span class="kicker">Inside Praxis</span>
       <h2>Designed to feel alive.</h2>
-
-      <p class="section-sub" style="margin:18px auto 0;">
-        Nearby discovery, real-world plans, beautiful moments, and social experiences built with a premium native feel.
-      </p>
+      <p>Nearby discovery, real-world plans, beautiful moments, and social experiences built with a premium native feel.</p>
     </div>
 
-    <div class="inside-grid reveal">
+    <div class="inside-showcase reveal" style="transition-delay:.1s;">
+  <div class="showcase-status">Live product · built natively in SwiftUI</div>
 
-      <div class="inside-card">
-        <img src="feed1.png" alt="Praxis feed"/>
-        <div class="inside-overlay">
-          <span>Social Feed</span>
-          <h3>Beautiful photo sharing</h3>
-        </div>
-      </div>
+  <div class="screenshot-row" aria-label="Praxis app screens">
+    <figure class="phone-shot left-2">
+      <img src="./meetup1.png" alt="Praxis nearby activity screen">
+      <figcaption class="shot-label">Nearby activity</figcaption>
+    </figure>
 
-      <div class="inside-card">
-        <img src="discovery1.png" alt="Praxis discovery"/>
-        <div class="inside-overlay">
-          <span>Discovery</span>
-          <h3>See who’s nearby</h3>
-        </div>
-      </div>
+    <figure class="phone-shot left-1">
+      <img src="./discovery1.png" alt="Praxis discovery screen">
+      <figcaption class="shot-label">Discover nearby</figcaption>
+    </figure>
 
-      <div class="inside-card">
-        <img src="restaurant1.png" alt="Praxis restaurant"/>
-        <div class="inside-overlay">
-          <span>Check-ins</span>
-          <h3>Restaurants feel social</h3>
-        </div>
-      </div>
+    <figure class="phone-shot center">
+      <img src="./feed1.png" alt="Praxis social feed screen">
+      <figcaption class="shot-label">Social feed</figcaption>
+    </figure>
 
-      <div class="inside-card">
-        <img src="qr1.png" alt="Praxis QR"/>
-        <div class="inside-overlay">
-          <span>QR Check-in</span>
-          <h3>Instant venue access</h3>
-        </div>
-      </div>
+    <figure class="phone-shot right-1">
+      <img src="./qr1.png" alt="Praxis QR code screen">
+      <figcaption class="shot-label">Praxis code</figcaption>
+    </figure>
 
-      <div class="inside-card">
-        <img src="meetup1.png" alt="Praxis meetup"/>
-        <div class="inside-overlay">
-          <span>Plans & Events</span>
-          <h3>Make real plans</h3>
-        </div>
-      </div>
+    <figure class="phone-shot right-2">
+      <img src="./restaurant1.png" alt="Praxis venue check-in screen">
+      <figcaption class="shot-label">Venue check-in</figcaption>
+    </figure>
+  </div>
 
-    </div>
+  <div class="showcase-tabs" aria-hidden="true">
+    <span>Meetup</span><i></i>
+    <span>Discovery</span><i></i>
+    <span class="active">Feed</span><i></i>
+    <span>Connect</span><i></i>
+    <span>Venue</span>
+  </div>
+</div>
+
   </div>
 </section>
 
-<!-- ROADMAP -->
-<section class="roadmap-section" id="roadmap">
+<!-- ═══════════════════════ ROADMAP ═══════════════════════ -->
+<section class="block" id="roadmap">
   <div class="wrap">
-    <div class="reveal" style="text-align:center;max-width:760px;margin:0 auto;">
-      <div class="kicker">Roadmap</div>
+
+    <div class="section-head reveal">
+      <span class="kicker">Roadmap</span>
       <h2>The path to launch.</h2>
-      <p class="section-sub" style="margin:18px auto 0;">
-        Praxis is being built with a long-term vision: nearby discovery, real-world social experiences, and city-by-city growth.
-      </p>
+      <p>Praxis is being built with a long-term vision: nearby discovery, real-world social experiences, and city-by-city growth.</p>
     </div>
 
-    <div class="roadmap-shell reveal" style="transition-delay:.1s;">
-      <div class="roadmap-card">
-        <div class="roadmap-year">2026</div>
+    <div class="timeline reveal" style="transition-delay:.1s;">
+      <div class="timeline-step">
+        <div class="timeline-year">2026</div>
         <h3>Product foundation</h3>
-        <p>Nearby discovery, social feeds, restaurant check-ins, events, and premium native app polish.</p>
+        <p>Nearby discovery, social feeds, restaurant check-ins, events, and premium native polish.</p>
       </div>
-
-      <div class="roadmap-card">
-        <div class="roadmap-year">2027</div>
-        <h3>India App Store launch</h3>
+      <div class="timeline-step">
+        <div class="timeline-year">2027</div>
+        <h3>India launch</h3>
         <p>Praxis launches in India with nearby people, real places, and effortless social planning.</p>
       </div>
-
-      <div class="roadmap-card">
-        <div class="roadmap-year">Late 2027</div>
-        <h3>United Kingdom expansion</h3>
-        <p>Praxis expands to the UK with a city-based nearby social experience.</p>
+      <div class="timeline-step">
+        <div class="timeline-year">Late 2027</div>
+        <h3>UK expansion</h3>
+        <p>Praxis expands to the United Kingdom with a city-based nearby social experience.</p>
       </div>
-
-      <div class="roadmap-card">
-        <div class="roadmap-year">Beyond</div>
-        <h3>More cities, deeper discovery</h3>
+      <div class="timeline-step">
+        <div class="timeline-year">Beyond</div>
+        <h3>More cities</h3>
         <p>City-by-city growth, safer communities, richer venue activity, and more real-world plans.</p>
       </div>
     </div>
+
   </div>
 </section>
 
-  <!-- COMMUNITY EXCITEMENT -->
+<!-- ═══════════════════════ COMMUNITY ═══════════════════════ -->
 <section class="block" id="community">
   <div class="wrap">
-    
-    <div class="reveal" style="text-align:center;max-width:760px;margin:0 auto;">
-      <div class="kicker">Community excitement</div>
-      <h2>Why people are excited about Praxis.</h2>
-      <p class="section-sub" style="margin:18px auto 0;">
-        A new kind of social experience built around nearby people, real places, and real plans.
-      </p>
+
+    <div class="section-head center reveal">
+      <span class="kicker">Community excitement</span>
+      <h2>Why people are <span class="gradient-text">excited</span>.</h2>
+      <p>A new kind of social experience built around nearby people, real places, and real plans.</p>
     </div>
-    
-    <div class="feat-grid reveal" style="margin-top:52px;">
-      
-      <article class="feat" style="transition-delay:0s;">
-        <div class="feat-icon">🌍</div>
-        <h3>"Cities could feel social again."</h3>
-        <p>
-          Praxis feels different because it connects online interaction with real-world presence.
-        </p>
-        <div class="quote-source">Early supporter</div>
-      </article>
-      
-      <article class="feat" style="transition-delay:0.1s;">
-        <div class="feat-icon">📍</div>
-        <h3>"Nearby discovery actually feels useful."</h3>
-        <p>
-          Instead of endless scrolling, Praxis focuses on people, places, and activity around you.
-        </p>
-        <div class="quote-source">Waitlist member</div>
-      </article>
-      
-      <article class="feat" style="transition-delay:0.2s;">
-        <div class="feat-icon">✨</div>
-        <h3>"Finally, a social app built for real plans."</h3>
-        <p>
-          Events, RSVP flows, and live social activity make the experience feel alive.
-        </p>
-        <div class="quote-source">Community feedback</div>
-      </article>
-      
+
+    <div class="quote-grid reveal" style="transition-delay:.1s;">
+      <div class="quote">
+        <span class="quote-mark">"</span>
+        <p class="quote-body">Cities could feel social again.</p>
+        <span class="quote-source">Early supporter</span>
+      </div>
+      <div class="quote">
+        <span class="quote-mark">"</span>
+        <p class="quote-body">Nearby discovery actually feels useful.</p>
+        <span class="quote-source">Waitlist member</span>
+      </div>
+      <div class="quote">
+        <span class="quote-mark">"</span>
+        <p class="quote-body">Finally — a social app built for real plans.</p>
+        <span class="quote-source">Community feedback</span>
+      </div>
     </div>
+
   </div>
 </section>
 
-<!-- PRIVACY & TRUST -->
-<section class="privacy-section" id="privacy">
+<!-- ═══════════════════════ PRIVACY ═══════════════════════ -->
+<section class="block" id="privacy">
   <div class="wrap">
-    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
-      <div class="kicker">Privacy & trust</div>
+
+    <div class="section-head reveal">
+      <span class="kicker">Privacy &amp; trust</span>
       <h2>Built with your safety in mind.</h2>
-      <p class="section-sub" style="margin:18px auto 0;">Praxis is location-based — so we designed privacy and trust into the product from day one, not as an afterthought.</p>
+      <p>Praxis is location-based — so we designed privacy and trust into the product from day one, not as an afterthought.</p>
     </div>
-    <div class="privacy-grid reveal" style="transition-delay:.1s;">
+
+    <div class="priv-grid reveal" style="transition-delay:.1s;">
       <div class="priv-card">
-        <div class="priv-icon">🔒</div>
+        <div class="priv-glyph">✕</div>
         <h3>You control your visibility</h3>
         <p>You choose who can discover you nearby. Your location is never stored or shared with third parties.</p>
       </div>
       <div class="priv-card">
-        <div class="priv-icon">🛡️</div>
-        <h3>Report & block anyone</h3>
+        <div class="priv-glyph">!</div>
+        <h3>Report &amp; block anyone</h3>
         <p>Every profile has a clear report and block flow. Our team reviews reports and takes action fast.</p>
       </div>
       <div class="priv-card">
-        <div class="priv-icon">👤</div>
+        <div class="priv-glyph">✓</div>
         <h3>Real identity, real trust</h3>
         <p>Praxis uses phone verification to keep the community genuine and reduce fake or anonymous accounts.</p>
       </div>
     </div>
+
   </div>
 </section>
 
-<!-- FAQ -->
-<section class="faq-section" id="faq">
+<!-- ═══════════════════════ FAQ ═══════════════════════ -->
+<section class="block" id="faq">
   <div class="wrap">
-    <div class="reveal" style="text-align:center;max-width:700px;margin:0 auto;">
-      <div class="kicker">Questions</div>
-      <h2>Everything you need to know.</h2>
-    </div>
-    <div class="faq-list reveal" style="transition-delay:.1s;">
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          When does Praxis launch?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a"><div class="faq-a-inner">Praxis is currently in development and is planned to launch in 2027. Join the waitlist to be among the first to get access when we go live.</div></div>
+
+    <div class="faq-split">
+      <div class="section-head reveal">
+        <span class="kicker">Questions</span>
+        <h2>Everything you need to know.</h2>
+        <p>Still curious? <a href="/cdn-cgi/l/email-protection#a8c0cdc4c4c7e8d8dac9d0c1dbdbdcc9da86cbc7c5" style="color:var(--pink);text-decoration:none;border-bottom:1px solid currentColor;">Say hello</a>.</p>
       </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Which cities will Praxis launch in first?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a"><div class="faq-a-inner">Praxis is planned to launch first in India, followed by expansion to the United Kingdom later. We’ll grow the community city by city before expanding further.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Is Praxis free to use?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a"><div class="faq-a-inner">Yes — Praxis is completely free for everyone. No subscriptions, no paywalls, no hidden charges. We want the whole community to have access from day one.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          What platforms will Praxis be available on?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a"><div class="faq-a-inner">Praxis will launch on iOS first via the App Store. Android support is something we're planning for after the initial launch.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          How does nearby discovery work?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a"><div class="faq-a-inner">Praxis uses Bluetooth to detect people nearby in real time. You stay in control — you choose when to be discoverable, and you decide who can connect with you.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Is my location data private?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a"><div class="faq-a-inner">Absolutely. Your precise location is never stored on our servers or shared with anyone. Nearby detection is done on-device via Bluetooth, so your location stays private.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Are you raising funding?
-          <span class="faq-arrow">+</span>
-        </button>
-        <div class="faq-a"><div class="faq-a-inner">We're currently in pre-launch development and open to conversations with strategic investors who understand social products and location-based experiences. If you're interested in learning more about Praxis and our vision, reach out at <a href="mailto:invest@praxisstar.com" style="color:var(--cyan);text-decoration:none;">invest@praxisstar.com</a></div></div>
+
+      <div class="faq-list reveal" style="transition-delay:.1s;">
+        <div class="faq-item">
+          <button class="faq-q">When does Praxis launch?<span class="faq-arrow">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Praxis is currently in development and is planned to launch in 2027. Join the waitlist to be among the first to get access when we go live.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Which cities first?<span class="faq-arrow">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Praxis is planned to launch first in India, followed by expansion to the United Kingdom later. We'll grow the community city by city before expanding further.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Is Praxis free to use?<span class="faq-arrow">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Yes — Praxis is completely free for everyone. No subscriptions, no paywalls, no hidden charges. We want the whole community to have access from day one.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Which platforms?<span class="faq-arrow">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Praxis will launch on iOS first via the App Store. Android support is something we're planning for after the initial launch.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">How does nearby discovery work?<span class="faq-arrow">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Praxis uses Bluetooth to detect people nearby in real time. You stay in control — you choose when to be discoverable, and you decide who can connect with you.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Is my location data private?<span class="faq-arrow">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">Absolutely. Your precise location is never stored on our servers or shared with anyone. Nearby detection is done on-device via Bluetooth, so your location stays private.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Are you raising funding?<span class="faq-arrow">+</span></button>
+          <div class="faq-a"><div class="faq-a-inner">We're currently in pre-launch development and open to conversations with strategic investors who understand social products and location-based experiences. Reach out at <a href="/cdn-cgi/l/email-protection#fc95928a998f88bc8c8e9d84958f8f889d8ed29f9391"><span class="__cf_email__" data-cfemail="9df4f3ebf8eee9ddedeffce5f4eeeee9fcefb3fef2f0">[email&#160;protected]</span></a>.</div></div>
+        </div>
       </div>
     </div>
+
   </div>
 </section>
 
-<!-- CONTACT -->
-<section class="contact-section" id="contact">
+<!-- ═══════════════════════ CONTACT ═══════════════════════ -->
+<section class="block" id="contact" style="padding-bottom:0;">
   <div class="wrap">
     <div class="contact-card reveal">
       <div class="contact-left">
-        <h3>Get in touch</h3>
+        <h3>Get in touch.</h3>
         <p>Press enquiries, partnerships, investor interest — we'd love to hear from you.</p>
       </div>
       <div class="contact-right">
         <a class="contact-btn" href="https://instagram.com/praxis_official_" target="_blank" rel="noopener">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
           @praxis_official_
         </a>
-        <a class="contact-btn" href="mailto:invest@praxisstar.com">
-          💼 Investor Interest
-        </a>
-        <a class="contact-btn primary" href="mailto:hello@praxisstar.com">
-          ✉ hello@praxisstar.com
-        </a>
+        <a class="contact-btn" href="/cdn-cgi/l/email-protection#ff9691899a8c8bbf8f8d9e87968c8c8b9e8dd19c9092">Investor enquiries →</a>
+        <a class="contact-btn primary" href="/cdn-cgi/l/email-protection#573f323b3b38172725362f3e24242336257934383a"><span class="__cf_email__" data-cfemail="d7bfb2bbbbb897a7a5b6afbea4a4a3b6a5f9b4b8ba">[email&#160;protected]</span></a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<div class="cta-wrap" id="launch">
+<!-- ═══════════════════════ CTA / WAITLIST ═══════════════════════ -->
+<section class="cta-section" id="launch">
   <div class="wrap">
     <div class="cta-card reveal">
-      <div class="kicker">Coming soon</div>
-      <h2>Be the first to experience Praxis.</h2>
+      <span class="kicker">Coming 2027</span>
+      <h2>Be the first to experience <span class="gradient-text">Praxis</span>.</h2>
       <p>Join the waitlist for early access when we launch on the App Store.</p>
-      <div class="waitlist-proof" aria-live="polite">
+
+      <div class="waitlist-proof">
         <span class="proof-dot"></span>
-        <span><span id="waitlist-count">0</span>+ people already joined the waitlist</span>
+        <span><span id="waitlist-count">0</span>+ people already joined</span>
       </div>
-      <form class="waitlist" onsubmit="handleSubmit(event)">
-        <input type="email" placeholder="Enter your email for early access" aria-label="Email for early access" required/>
+
+      <form class="waitlist-form" onsubmit="handleSubmit(event)">
+        <input type="email" placeholder="you@yourdomain.com" aria-label="Email for early access" required/>
         <button class="waitlist-btn" type="submit">Join early access</button>
       </form>
-      <p id="form-success" style="margin-top:18px;color:var(--green);font-weight:600;display:none;">✓ You're on the list! We'll be in touch.</p>
+      <p class="form-success" id="form-success">✓ You're on the list — we'll be in touch.</p>
     </div>
   </div>
-</div>
+</section>
+
 </main>
 
-<!-- FOOTER -->
+<!-- ═══════════════════════ FOOTER ═══════════════════════ -->
 <footer>
   <div class="wrap">
     <div class="foot">
       <div class="foot-brand">
-        <span class="foot-logo">✦</span>
+        <span class="brand-mark">✦</span>
         PRAXIS
       </div>
-      <div class="foot-social">
-        <a class="soc-btn" href="https://instagram.com/praxis_official_" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      <div class="foot-links">
+        <a href="/cdn-cgi/l/email-protection#0e6760786b7d7a4e7e7c6f76677d7d7a6f7c206d6163">Investors</a>
+        <a href="/cdn-cgi/l/email-protection#147c7178787b546466756c7d67676075663a777b79">Contact</a>
+        <a class="soc-btn" href="https://instagram.com/praxis_official_" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
         </a>
       </div>
-      <span>© 2026 Praxis. All rights reserved.</span>
-      <a href="mailto:invest@praxisstar.com" style="color:var(--muted);text-decoration:none;font-size:13px;transition:.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">
-        Investors · Partners
-      </a>
-      <span>Made for real-world connection.</span>
+      <small>© 2026 PRAXIS · Made for real-world connection</small>
     </div>
   </div>
 </footer>
 
-<script>
-// ── ANIMATED HERO CANVAS ──
-const canvas = document.getElementById('hero-canvas');
-const ctx = canvas.getContext('2d');
-let W, H, particles = [];
+<!-- ═══════════════════════ MOBILE STATUS CHIP ═══════════════════════ -->
+<div class="mobile-status" aria-label="Praxis development status">
+  <span class="dot"></span>
+  In development
+</div>
 
-function resize(){
-  W = canvas.width = canvas.offsetWidth;
-  H = canvas.height = canvas.offsetHeight;
+<!-- ═══════════════════════ MOBILE BOTTOM NAV ═══════════════════════ -->
+<nav class="mobile-bnav" aria-label="Section navigation">
+  <div class="mobile-bnav-inner">
+    <a href="#experience">Experience</a>
+    <a href="#features">Features</a>
+    <a href="#inside">Inside</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#faq">FAQ</a>
+    <a class="cta" href="#launch">Join ↗</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════ TWEAKS PANEL ═══════════════════════ -->
+<div class="tweaks" id="tweaks">
+  <div class="tweaks-head">
+    <span class="tweaks-title">Tweaks</span>
+    <button class="tweaks-close" id="tweaks-close" aria-label="Close">×</button>
+  </div>
+
+  <div class="tweak-section">
+    <div class="tweak-label">Accent</div>
+    <div class="tweak-row" data-knob="accent">
+      <button class="tweak-opt on" data-val="gradient">Gradient</button>
+      <button class="tweak-opt" data-val="pink">Pink</button>
+      <button class="tweak-opt" data-val="violet">Violet</button>
+      <button class="tweak-opt" data-val="white">White</button>
+    </div>
+  </div>
+
+  <div class="tweak-section">
+    <div class="tweak-label">Corner radius</div>
+    <div class="tweak-row" data-knob="radius">
+      <button class="tweak-opt on" data-val="soft">Soft</button>
+      <button class="tweak-opt" data-val="sharp">Sharp</button>
+    </div>
+  </div>
+
+  <div class="tweak-section">
+    <div class="tweak-label">Motion</div>
+    <div class="tweak-row" data-knob="motion">
+      <button class="tweak-opt on" data-val="on">On</button>
+      <button class="tweak-opt" data-val="off">Off</button>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ════════════════════════════════════════════════════════════
+   TWEAKS DEFAULTS — direct manipulation block
+   ════════════════════════════════════════════════════════════ */
+const TWEAKS = /*EDITMODE-BEGIN*/{
+  "accent": "gradient",
+  "radius": "soft",
+  "motion": "on"
+}/*EDITMODE-END*/;
+
+/* Apply on load */
+function applyTweaks(t){
+  document.documentElement.setAttribute('data-accent', t.accent);
+  document.documentElement.setAttribute('data-radius', t.radius);
+  document.documentElement.setAttribute('data-motion', t.motion);
 }
+applyTweaks(TWEAKS);
 
-function randomBetween(a,b){return a+Math.random()*(b-a);}
-
-function makeParticle(){
-  const colors = ['255,61,154','124,58,255','56,217,245','255,203,71'];
-  return {
-    x: randomBetween(0,W),
-    y: randomBetween(0,H),
-    r: randomBetween(1,3.5),
-    color: colors[Math.floor(Math.random()*colors.length)],
-    alpha: randomBetween(.15,.55),
-    vx: randomBetween(-.25,.25),
-    vy: randomBetween(-.25,.25),
-    life: randomBetween(0,Math.PI*2)
-  };
-}
-
-function initParticles(){
-  particles = [];
-  const count = Math.floor((W*H)/8000);
-  for(let i=0;i<count;i++) particles.push(makeParticle());
-}
-
-function drawParticles(){
-  ctx.clearRect(0,0,W,H);
-  particles.forEach(p=>{
-    p.life += .012;
-    p.x += p.vx;
-    p.y += p.vy;
-    if(p.x<0) p.x=W;
-    if(p.x>W) p.x=0;
-    if(p.y<0) p.y=H;
-    if(p.y>H) p.y=0;
-    const a = p.alpha * (.5+.5*Math.sin(p.life));
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle = `rgba(${p.color},${a})`;
-    ctx.fill();
-  });
-
-  // draw faint connection lines
-  for(let i=0;i<particles.length;i++){
-    for(let j=i+1;j<particles.length;j++){
-      const dx = particles[i].x - particles[j].x;
-      const dy = particles[i].y - particles[j].y;
-      const dist = Math.sqrt(dx*dx+dy*dy);
-      if(dist<120){
-        ctx.beginPath();
-        ctx.moveTo(particles[i].x,particles[i].y);
-        ctx.lineTo(particles[j].x,particles[j].y);
-        ctx.strokeStyle = `rgba(255,255,255,${.04*(1-dist/120)})`;
-        ctx.lineWidth = .5;
-        ctx.stroke();
-      }
-    }
-  }
-  requestAnimationFrame(drawParticles);
-}
-
-window.addEventListener('resize',()=>{resize();initParticles();});
-resize();
-initParticles();
-drawParticles();
-
-// ── SCROLL REVEALS ──
-const obs = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');}});
-},{threshold:.12});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-
-window.addEventListener('load',()=>{
-  document.querySelectorAll('.hero .reveal').forEach((el,i)=>{
-    setTimeout(()=>el.classList.add('visible'),i*120);
+/* Wire up tweak panel buttons */
+document.querySelectorAll('.tweak-row').forEach(row => {
+  const knob = row.dataset.knob;
+  row.querySelectorAll('.tweak-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      row.querySelectorAll('.tweak-opt').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      const val = btn.dataset.val;
+      TWEAKS[knob] = val;
+      applyTweaks(TWEAKS);
+      try {
+        window.parent.postMessage({type:'__edit_mode_set_keys', edits:{[knob]: val}}, '*');
+      } catch(e){}
+    });
   });
 });
 
-// ── FAQ TOGGLE ──
-function toggleFaq(btn){
-  const item = btn.closest('.faq-item');
-  const answer = item.querySelector('.faq-a');
-  const isOpen = item.classList.contains('open');
+/* Edit-mode toggle protocol */
+const tweaksPanel = document.getElementById('tweaks');
+const tweaksClose = document.getElementById('tweaks-close');
 
-  document.querySelectorAll('.faq-item.open').forEach(el=>{
-    el.classList.remove('open');
-    el.querySelector('.faq-a').style.maxHeight = '0';
+window.addEventListener('message', (e) => {
+  const d = e.data || {};
+  if (d.type === '__activate_edit_mode') tweaksPanel.classList.add('open');
+  if (d.type === '__deactivate_edit_mode') tweaksPanel.classList.remove('open');
+});
+tweaksClose.addEventListener('click', () => {
+  tweaksPanel.classList.remove('open');
+  try { window.parent.postMessage({type:'__edit_mode_dismissed'}, '*'); } catch(e){}
+});
+try { window.parent.postMessage({type:'__edit_mode_available'}, '*'); } catch(e){}
+
+
+/* ════════════════════════════════════════════════════════════
+   SCROLL REVEAL
+   ════════════════════════════════════════════════════════════ */
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: .12 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+window.addEventListener('load', () => {
+  document.querySelectorAll('.hero .reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), i * 140);
   });
+});
 
-  if(!isOpen){
-    item.classList.add('open');
-    answer.style.maxHeight = answer.scrollHeight + 'px';
-  }
+
+/* ════════════════════════════════════════════════════════════
+   PHONE TABS
+   ════════════════════════════════════════════════════════════ */
+const phoneTabs = document.querySelectorAll('.phone-tab');
+const phoneViews = document.querySelectorAll('.phone-view');
+let phoneIdx = 0;
+
+function setPhoneView(i){
+  phoneIdx = i;
+  phoneTabs.forEach((t, idx) => t.classList.toggle('on', idx === i));
+  phoneViews.forEach((v, idx) => v.classList.toggle('active', idx === i));
 }
+phoneTabs.forEach((tab, idx) => tab.addEventListener('click', () => setPhoneView(idx)));
+setInterval(() => setPhoneView((phoneIdx + 1) % phoneViews.length), 5000);
 
-// ── WAITLIST FORM WITH GOOGLE SHEETS ──
+
+/* ════════════════════════════════════════════════════════════
+   FAQ ACCORDION
+   ════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.faq-item');
+    const answer = item.querySelector('.faq-a');
+    const isOpen = item.classList.contains('open');
+
+    document.querySelectorAll('.faq-item.open').forEach(el => {
+      el.classList.remove('open');
+      el.querySelector('.faq-a').style.maxHeight = '0';
+    });
+
+    if (!isOpen) {
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  });
+});
+
+
+/* ════════════════════════════════════════════════════════════
+   WAITLIST (kept from original — Google Sheets endpoint)
+   ════════════════════════════════════════════════════════════ */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGAwChD7TBBqgP2pLN0OZhMQe3AuncGXaGstUsigReWS1hCkH9dZQKGXd35vDelB5d8w/exec';
-
 
 async function loadWaitlistCount(){
   try {
-    const response = await fetch(SCRIPT_URL);
-    const data = await response.json();
-
-    if(data.success && data.count !== undefined){
-      document.getElementById('waitlist-count').innerText = data.count;
+    const r = await fetch(SCRIPT_URL);
+    const d = await r.json();
+    if (d.success && d.count !== undefined) {
+      document.getElementById('waitlist-count').innerText = d.count;
     }
-  } catch (err) {
-    console.error('Failed to load waitlist count:', err);
-  }
+  } catch (err) { /* silent */ }
 }
 
 async function handleSubmit(e){
@@ -2117,75 +2155,30 @@ async function handleSubmit(e){
   const success = document.getElementById('form-success');
   const submitBtn = e.target.querySelector('button');
   const email = input.value.trim();
-  
-  // Validate email
-  if(!email || !email.includes('@')){
-    alert('Please enter a valid email address');
-    return;
-  }
-  
-  // Show loading state
-  const originalText = submitBtn.innerHTML;
+  if (!email || !email.includes('@')) { alert('Please enter a valid email'); return; }
+
+  const original = submitBtn.innerHTML;
   submitBtn.disabled = true;
-  submitBtn.innerHTML = '⏳ Joining...';
-  
+  submitBtn.innerHTML = 'Joining…';
+
   try {
-    const formData = new FormData();
-    formData.append('email', email);
-    
-    // Send to Google Sheets
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: formData,
-      mode: 'no-cors'
-    });
-    
-    // Show success
+    const fd = new FormData();
+    fd.append('email', email);
+    await fetch(SCRIPT_URL, { method: 'POST', body: fd, mode: 'no-cors' });
     input.value = '';
     success.style.display = 'block';
     setTimeout(() => success.style.display = 'none', 6000);
-
-    // Refresh live waitlist count after successful signup
     loadWaitlistCount();
-    
   } catch (err) {
-    console.error('Submission error:', err);
-    alert('Oops! Something went wrong. Please try again or email us at hello@praxisstar.com');
+    alert('Something went wrong. Email us at hello@praxisstar.com');
   } finally {
-    // Reset button
     submitBtn.disabled = false;
-    submitBtn.innerHTML = originalText;
+    submitBtn.innerHTML = original;
   }
 }
-
-// Load live waitlist count when page opens
 loadWaitlistCount();
-
-// Animated phone mockup tab switching
-let currentPhoneView = 0;
-const phoneViews = ['nearby', 'feed', 'discovery'];
-
-function switchPhoneView(index) {
-  document.querySelectorAll('.s-tab').forEach((tab, i) => {
-    tab.classList.toggle('on', i === index);
-  });
-
-  document.querySelectorAll('.s-view').forEach((view, i) => {
-    view.classList.toggle('active', i === index);
-  });
-}
-
-document.querySelectorAll('.s-tab').forEach((tab, index) => {
-  tab.addEventListener('click', () => {
-    currentPhoneView = index;
-    switchPhoneView(index);
-  });
-});
-
-setInterval(() => {
-  currentPhoneView = (currentPhoneView + 1) % phoneViews.length;
-  switchPhoneView(currentPhoneView);
-}, 5000);
 </script>
+
 </body>
 </html>
+
