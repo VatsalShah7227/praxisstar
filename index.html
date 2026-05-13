@@ -919,24 +919,53 @@ footer{
 /* RESPONSIVE */
 @media(max-width:960px){
   nav{
-    top:14px;
+    top:12px;
     width:min(720px,calc(100% - 24px));
-    padding:9px 9px 9px 16px;
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    grid-template-areas:
+      "brand spacer button"
+      "status links links";
+    align-items:center;
+    gap:10px 10px;
+    padding:10px;
+    border-radius:28px;
   }
 
-  .live-chip{display:none;}
+  .brand{grid-area:brand;}
+
+  .nav-right{display:contents;}
+
+  .btn-nav{
+    grid-area:button;
+    justify-self:end;
+  }
+
+  .live-chip{
+    grid-area:status;
+    display:flex;
+    width:max-content;
+    padding:7px 11px;
+    font-size:10px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  .live-dot{
+    width:6px;
+    height:6px;
+  }
 
   .nav-mid{
-    position:absolute;
-    left:0;
-    right:0;
-    top:58px;
+    grid-area:links;
+    min-width:0;
     display:flex;
     gap:8px;
     overflow-x:auto;
-    padding:2px 2px 10px;
+    padding:0 2px 1px;
     scrollbar-width:none;
     -webkit-overflow-scrolling:touch;
+    mask-image:linear-gradient(90deg,black 0%,black 88%,transparent 100%);
   }
 
   .nav-mid::-webkit-scrollbar{
@@ -945,18 +974,19 @@ footer{
 
   .nav-mid a{
     flex:0 0 auto;
-    padding:8px 13px;
+    padding:7px 12px;
     border-radius:999px;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.08);
-    color:rgba(255,255,255,.72);
-    font-size:12px;
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.1);
+    color:rgba(255,255,255,.78);
+    font-size:11px;
+    font-weight:600;
     backdrop-filter:blur(18px);
   }
 
   .hero{
     min-height:auto;
-    padding:154px 0 72px;
+    padding:160px 0 72px;
   }
 
   .hero-inner,.exp-grid{
@@ -1009,9 +1039,11 @@ footer{
   .wrap{width:min(100% - 28px,1140px);}
 
   nav{
-    top:12px;
-    width:calc(100% - 20px);
-    padding:8px 8px 8px 14px;
+    top:10px;
+    width:calc(100% - 18px);
+    gap:9px 8px;
+    padding:9px;
+    border-radius:26px;
   }
 
   .brand{
@@ -1029,19 +1061,18 @@ footer{
     font-size:12px;
   }
 
-  .nav-mid{
-    top:56px;
-    padding-left:0;
-    padding-right:0;
+  .live-chip{
+    padding:6px 9px;
+    font-size:9px;
   }
 
   .nav-mid a{
-    font-size:11px;
-    padding:8px 12px;
+    font-size:10px;
+    padding:7px 10px;
   }
 
   .hero{
-    padding:150px 0 62px;
+    padding:156px 0 62px;
   }
 
   .eyebrow{
@@ -1206,13 +1237,28 @@ footer{
 }
 
 @media(max-width:390px){
+  .brand{
+    gap:8px;
+    font-size:14px;
+  }
+
+  .btn-nav{
+    padding:8px 11px;
+    font-size:11px;
+  }
+
+  .live-chip{
+    font-size:8.5px;
+    padding:6px 8px;
+  }
+
   .nav-mid a{
-    font-size:10px;
-    padding:7px 10px;
+    font-size:9.5px;
+    padding:7px 9px;
   }
 
   .hero{
-    padding-top:144px;
+    padding-top:152px;
   }
 
   .phone{
@@ -1250,6 +1296,126 @@ footer{
   position:relative;
   overflow:hidden;
 }
+/* FINAL MOBILE NAV FIX */
+@media(max-width:960px){
+  nav{
+    top:14px;
+    width:calc(100% - 24px);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:10px 10px 10px 14px;
+    border-radius:999px;
+  }
+
+  .nav-mid{
+    display:none !important;
+  }
+
+  .nav-right{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-left:auto;
+  }
+
+  .live-chip{
+    display:flex !important;
+    padding:8px 11px;
+    font-size:10px;
+    white-space:nowrap;
+  }
+
+  .btn-nav{
+    padding:9px 14px;
+    font-size:11.5px;
+    white-space:nowrap;
+  }
+
+  .hero{
+    padding-top:118px;
+  }
+}
+
+@media(max-width:390px){
+  .brand{
+    font-size:14px;
+  }
+
+  .live-chip{
+    font-size:9px;
+    padding:7px 9px;
+  }
+
+  .btn-nav{
+    font-size:10.5px;
+    padding:8px 10px;
+  }
+}
+
+.mobile-bottom-nav{
+  display:none;
+}
+
+@media(max-width:960px){
+  .mobile-bottom-nav{
+    position:fixed;
+    left:50%;
+    bottom:14px;
+    transform:translateX(-50%);
+    z-index:120;
+    display:flex;
+    gap:6px;
+    width:calc(100% - 24px);
+    max-width:520px;
+    padding:8px;
+    border-radius:999px;
+    background:rgba(8,8,18,.78);
+    border:1px solid rgba(255,255,255,.11);
+    backdrop-filter:blur(28px) saturate(180%);
+    box-shadow:0 18px 60px rgba(0,0,0,.38);
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+
+  .mobile-bottom-nav::-webkit-scrollbar{
+    display:none;
+  }
+
+  .mobile-bottom-nav a{
+    flex:1 0 auto;
+    text-align:center;
+    text-decoration:none;
+    color:rgba(255,255,255,.8);
+    font-size:11px;
+    font-weight:800;
+    padding:10px 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.055);
+    border:1px solid rgba(255,255,255,.07);
+    white-space:nowrap;
+  }
+
+  body{
+    padding-bottom:86px;
+  }
+}
+
+@media(max-width:390px){
+  .mobile-bottom-nav{
+    bottom:10px;
+    width:calc(100% - 18px);
+    gap:5px;
+    padding:7px;
+  }
+
+  .mobile-bottom-nav a{
+    font-size:10px;
+    padding:9px 8px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1277,6 +1443,14 @@ footer{
     <a class="btn-nav" href="#launch">Join waitlist</a>
   </div>
 </nav>
+
+<div class="mobile-bottom-nav" aria-label="Mobile section navigation">
+  <a href="#experience">Experience</a>
+  <a href="#features">Features</a>
+  <a href="#inside">Inside</a>
+  <a href="#roadmap">Roadmap</a>
+  <a href="#faq">FAQ</a>
+</div>
 
 <!-- HERO -->
 <main id="top">
@@ -1998,8 +2172,5 @@ setInterval(() => {
   switchPhoneView(currentPhoneView);
 }, 5000);
 </script>
-</body>
-</html>
-
 </body>
 </html>
