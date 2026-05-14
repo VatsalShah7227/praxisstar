@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="description" content="Praxis — discover nearby people, share moments, and make real plans."/>
+<meta name="description" content="Praxis is a nearby social media app that helps people discover real-world connections, events, friends, and local activity around them."/>
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png"/>
 <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
 <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png"/>
@@ -26,7 +26,48 @@
 <meta name="twitter:image" content="https://praxisstar.com/social-preview.png"/>
 <meta name="twitter:image:alt" content="PRAXIS — Meet nearby. Make real plans."/>
 
-<title>PRAXIS — Meet nearby. Make real plans.</title>
+<title>Praxis — Nearby Social Media App | Real World Connections</title>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Praxis",
+  "url": "https://praxisstar.com/",
+  "logo": "https://praxisstar.com/favicon.png",
+  "sameAs": [
+    "https://instagram.com/praxis_official_"
+  ],
+  "description": "Praxis is a nearby social media app focused on real-world connection, nearby discovery, local activity, and social experiences.",
+  "foundingDate": "2026"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Praxis",
+  "url": "https://praxisstar.com/",
+  "description": "Praxis is a nearby social media platform for real-world connection and local social discovery."
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "name": "Praxis",
+  "operatingSystem": "iOS",
+  "applicationCategory": "SocialNetworkingApplication",
+  "url": "https://praxisstar.com/",
+  "description": "Praxis helps people discover nearby friends, local events, real-world activity, and social experiences.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
@@ -1784,70 +1825,6 @@ footer{
 }
 /* mobile-bnav visibility handled in nav breakpoint above */
 
-/* ──────────────────────────────────────────────────────────
-   TWEAKS PANEL
-   ────────────────────────────────────────────────────────── */
-.tweaks{
-  position:fixed; bottom:20px; right:20px;
-  z-index:200;
-  width:280px;
-  background:rgba(8,8,14,.92);
-  backdrop-filter:blur(20px) saturate(160%);
-  border:1px solid var(--line-strong);
-  border-radius:var(--r-md);
-  padding:18px;
-  display:none;
-  box-shadow:0 30px 80px rgba(0,0,0,.6);
-}
-.tweaks.open{ display:block; }
-@media (max-width: 600px){
-  .tweaks{
-    left:12px; right:12px; bottom:80px;
-    width:auto;
-  }
-}
-.tweaks-head{
-  display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:18px;
-}
-.tweaks-title{
-  font-family:'Syne',sans-serif; font-weight:700; font-size:14px; letter-spacing:.02em;
-}
-.tweaks-close{
-  background:none; border:none; color:var(--muted); cursor:pointer;
-  font-size:18px; line-height:1; padding:4px;
-}
-.tweak-section{ margin-bottom:18px; }
-.tweak-section:last-child{ margin-bottom:0; }
-.tweak-label{
-  font-family:'JetBrains Mono',monospace;
-  font-size:10px; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--faint);
-  margin-bottom:10px;
-}
-.tweak-row{
-  display:flex; gap:6px; flex-wrap:wrap;
-}
-.tweak-opt{
-  flex:1; min-width:0;
-  padding:8px 10px;
-  background:var(--surface-1); border:1px solid var(--line);
-  border-radius:var(--r-xs);
-  font-family:inherit; font-size:12px; color:var(--muted);
-  cursor:pointer;
-  transition: all .2s ease;
-  text-align:center;
-}
-.tweak-opt:hover{ color:var(--text); }
-.tweak-opt.on{
-  background:var(--accent); color:#fff; border-color:transparent;
-  box-shadow:0 4px 14px var(--accent-glow);
-}
-.tweak-swatch{
-  display:inline-block; width:14px; height:14px; border-radius:50%;
-  vertical-align:middle; margin-right:6px;
-  border:1px solid var(--line-strong);
-}
 
 </style>
 </head>
@@ -1891,7 +1868,7 @@ footer{
           <span class="line-2 gradient-text">Make real plans.</span>
         </h1>
 
-        <p class="hero-sub">Praxis is the social app for discovering people around you, sharing beautiful moments, and turning online connection into real-world plans.</p>
+        <p class="hero-sub">Praxis is a nearby social media app for discovering people around you, sharing beautiful moments, and turning online connection into real-world plans.</p>
 
         <div class="hero-actions">
           <a class="btn-primary" href="#launch">Get early access <span class="arrow">↗</span></a>
@@ -2018,7 +1995,7 @@ footer{
     <div class="section-head reveal">
       <span class="kicker">The Praxis idea</span>
       <h2>Less scrolling.<br/>More <span class="gradient-text">real life</span>.</h2>
-      <p>Praxis is built around what actually matters — nearby people, real places, and plans that get made.</p>
+      <p>Praxis is built around nearby people, real places, local events, and real-world connections that move beyond scrolling.</p>
     </div>
 
     <div class="exp-split reveal" style="transition-delay:.1s;">
@@ -2040,7 +2017,7 @@ footer{
             <span class="plan-num">01</span>
             <div class="plan-text">
               <b>Discover what's around you</b>
-              <span>Nearby people, places, and real-time activity.</span>
+              <span>Discover nearby people, places, and real-time local activity.</span>
             </div>
           </div>
           <div class="plan-item">
@@ -2054,7 +2031,7 @@ footer{
             <span class="plan-num">03</span>
             <div class="plan-text">
               <b>Create plans instantly</b>
-              <span>Invite friends and track responses live in real time.</span>
+              <span>Create local plans, invite friends, and track responses live in real time.</span>
             </div>
           </div>
         </div>
@@ -2071,14 +2048,14 @@ footer{
     <div class="section-head center reveal">
       <span class="kicker">Built for premium social</span>
       <h2>Everything feels intentional.</h2>
-      <p>From nearby discovery to event cards, Praxis is built to feel polished from the very first tap.</p>
+      <p>From Bluetooth nearby discovery to local event planning, Praxis is built to feel polished from the very first tap.</p>
     </div>
 
     <div class="feat-grid reveal" style="transition-delay:.1s;">
       <article class="feat">
         <div class="feat-num"><span>01 / NEARBY</span><span class="feat-glyph"></span></div>
         <h3>Nearby discovery</h3>
-        <p>Find and connect with people around you using a real-world social layer, not just another scroll feed.</p>
+        <p>Discover people nearby and connect through a real-world social layer, not just another scroll feed.</p>
       </article>
       <article class="feat">
         <div class="feat-num"><span>02 / VENUES</span><span class="feat-glyph"></span></div>
@@ -2088,12 +2065,12 @@ footer{
       <article class="feat">
         <div class="feat-num"><span>03 / CHAT</span><span class="feat-glyph"></span></div>
         <h3>Private conversations</h3>
-        <p>Move from a moment to a message with a clean, focused chat experience built for real connections.</p>
+        <p>Move from nearby moments to private messages with a clean chat experience built for real-world connection.</p>
       </article>
       <article class="feat">
         <div class="feat-num"><span>04 / EVENTS</span><span class="feat-glyph"></span></div>
         <h3>Live RSVP events</h3>
-        <p>Create an event, send it to friends, and watch Going, Maybe, and Decline update in real time.</p>
+        <p>Create local events, send them to friends, and watch Going, Maybe, and Decline update in real time.</p>
       </article>
       <article class="feat">
         <div class="feat-num"><span>05 / SAFETY</span><span class="feat-glyph"></span></div>
@@ -2117,7 +2094,7 @@ footer{
     <div class="section-head center reveal">
       <span class="kicker">Inside Praxis</span>
       <h2>Designed to feel alive.</h2>
-      <p>Nearby discovery, real-world plans, beautiful moments, and social experiences built with a premium native feel.</p>
+      <p>Nearby discovery, real-world plans, local activity, and social experiences built with a premium native feel.</p>
     </div>
 
     <div class="inside-showcase reveal" style="transition-delay:.1s;">
@@ -2125,27 +2102,27 @@ footer{
 
   <div class="screenshot-row" aria-label="Praxis app screens">
     <figure class="phone-shot left-2">
-      <img src="./meetup1.png" alt="Praxis nearby activity screen">
+      <img src="./meetup1.png" alt="Praxis local event planning app screen showing nearby activity">
       <figcaption class="shot-label">Nearby activity</figcaption>
     </figure>
 
     <figure class="phone-shot left-1">
-      <img src="./discovery1.png" alt="Praxis discovery screen">
+      <img src="./discovery1.png" alt="Praxis nearby social discovery app screen for finding people nearby">
       <figcaption class="shot-label">Discover nearby</figcaption>
     </figure>
 
     <figure class="phone-shot center">
-      <img src="./feed1.png" alt="Praxis social feed screen">
+      <img src="./feed1.png" alt="Praxis social media app feed for nearby moments and real-world connection">
       <figcaption class="shot-label">Social feed</figcaption>
     </figure>
 
     <figure class="phone-shot right-1">
-      <img src="./qr1.png" alt="Praxis QR code screen">
+      <img src="./qr1.png" alt="Praxis QR code check-in screen for venue-based social discovery">
       <figcaption class="shot-label">Praxis code</figcaption>
     </figure>
 
     <figure class="phone-shot right-2">
-      <img src="./restaurant1.png" alt="Praxis venue check-in screen">
+      <img src="./restaurant1.png" alt="Praxis restaurant check-in screen for local social activity">
       <figcaption class="shot-label">Venue check-in</figcaption>
     </figure>
   </div>
@@ -2387,90 +2364,8 @@ footer{
   </div>
 </nav>
 
-<!-- ═══════════════════════ TWEAKS PANEL ═══════════════════════ -->
-<div class="tweaks" id="tweaks">
-  <div class="tweaks-head">
-    <span class="tweaks-title">Tweaks</span>
-    <button class="tweaks-close" id="tweaks-close" aria-label="Close">×</button>
-  </div>
-
-  <div class="tweak-section">
-    <div class="tweak-label">Accent</div>
-    <div class="tweak-row" data-knob="accent">
-      <button class="tweak-opt on" data-val="gradient">Gradient</button>
-      <button class="tweak-opt" data-val="pink">Pink</button>
-      <button class="tweak-opt" data-val="violet">Violet</button>
-      <button class="tweak-opt" data-val="white">White</button>
-    </div>
-  </div>
-
-  <div class="tweak-section">
-    <div class="tweak-label">Corner radius</div>
-    <div class="tweak-row" data-knob="radius">
-      <button class="tweak-opt on" data-val="soft">Soft</button>
-      <button class="tweak-opt" data-val="sharp">Sharp</button>
-    </div>
-  </div>
-
-  <div class="tweak-section">
-    <div class="tweak-label">Motion</div>
-    <div class="tweak-row" data-knob="motion">
-      <button class="tweak-opt on" data-val="on">On</button>
-      <button class="tweak-opt" data-val="off">Off</button>
-    </div>
-  </div>
-</div>
 
 <script>
-/* ════════════════════════════════════════════════════════════
-   TWEAKS DEFAULTS — direct manipulation block
-   ════════════════════════════════════════════════════════════ */
-const TWEAKS = /*EDITMODE-BEGIN*/{
-  "accent": "gradient",
-  "radius": "soft",
-  "motion": "on"
-}/*EDITMODE-END*/;
-
-/* Apply on load */
-function applyTweaks(t){
-  document.documentElement.setAttribute('data-accent', t.accent);
-  document.documentElement.setAttribute('data-radius', t.radius);
-  document.documentElement.setAttribute('data-motion', t.motion);
-}
-applyTweaks(TWEAKS);
-
-/* Wire up tweak panel buttons */
-document.querySelectorAll('.tweak-row').forEach(row => {
-  const knob = row.dataset.knob;
-  row.querySelectorAll('.tweak-opt').forEach(btn => {
-    btn.addEventListener('click', () => {
-      row.querySelectorAll('.tweak-opt').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      const val = btn.dataset.val;
-      TWEAKS[knob] = val;
-      applyTweaks(TWEAKS);
-      try {
-        window.parent.postMessage({type:'__edit_mode_set_keys', edits:{[knob]: val}}, '*');
-      } catch(e){}
-    });
-  });
-});
-
-/* Edit-mode toggle protocol */
-const tweaksPanel = document.getElementById('tweaks');
-const tweaksClose = document.getElementById('tweaks-close');
-
-window.addEventListener('message', (e) => {
-  const d = e.data || {};
-  if (d.type === '__activate_edit_mode') tweaksPanel.classList.add('open');
-  if (d.type === '__deactivate_edit_mode') tweaksPanel.classList.remove('open');
-});
-tweaksClose.addEventListener('click', () => {
-  tweaksPanel.classList.remove('open');
-  try { window.parent.postMessage({type:'__edit_mode_dismissed'}, '*'); } catch(e){}
-});
-try { window.parent.postMessage({type:'__edit_mode_available'}, '*'); } catch(e){}
-
 
 /* ════════════════════════════════════════════════════════════
    SCROLL REVEAL
