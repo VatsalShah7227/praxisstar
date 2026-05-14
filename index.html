@@ -4,7 +4,21 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="description" content="Praxis — discover nearby people, share moments, and make real plans."/>
-<title>Praxis — Nearby social, reimagined</title>
+<link rel="icon" type="image/png" href="./favicon.png"/>
+<link rel="apple-touch-icon" href="./favicon.png"/>
+
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="PRAXIS — Nearby social, reimagined"/>
+<meta property="og:description" content="Meet nearby. Make real plans."/>
+<meta property="og:image" content="./social-preview.png"/>
+<meta property="og:url" content="https://praxisstar.com"/>
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="PRAXIS — Nearby social, reimagined"/>
+<meta name="twitter:description" content="Meet nearby. Make real plans."/>
+<meta name="twitter:image" content="./social-preview.png"/>
+
+<title>PRAXIS — Meet nearby. Make real plans.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
@@ -178,17 +192,24 @@ nav{
   border-radius:var(--r-pill);
 }
 .brand{
-  display:flex;align-items:center;gap:10px;
+  display:flex;
+  align-items:center;
   font-family:'Syne',sans-serif;
-  font-weight:700; font-size:15px; letter-spacing:.04em;
-  color:var(--text); text-decoration:none;
+  font-weight:800;
+  font-size:19px;
+  letter-spacing:.18em;
+  color:var(--text);
+  text-decoration:none;
+  text-transform:uppercase;
 }
-.brand-mark{
-  width:28px;height:28px;border-radius:8px;
-  background:var(--accent);
-  display:grid;place-items:center;
-  font-size:13px; color:#fff;
-  box-shadow:0 0 18px var(--accent-glow);
+
+.brand-wordmark{
+  background:linear-gradient(135deg,#ff4da6 0%,#9b6dff 45%,#5aa6ff 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  line-height:1;
+  text-shadow:0 0 24px rgba(255,61,154,.18);
 }
 .nav-mid{
   display:flex; gap:28px;
@@ -238,8 +259,10 @@ nav{
     width: calc(100% - 20px);
     padding:6px 6px 6px 14px;
   }
-  .brand{ font-size:13px; gap:8px; }
-  .brand-mark{ width:26px; height:26px; font-size:12px; }
+  .brand-wordmark{
+    font-size:15px;
+    letter-spacing:.14em;
+  }
   .status-chip{ display:none; }
   .btn-cta{ padding:8px 14px; font-size:12px; white-space:nowrap; }
 }
@@ -275,8 +298,9 @@ nav{
 .hero h1 .line-2{ display:block; }
 .hero-sub{
   font-size:clamp(16px, 1.4vw, 19px);
-  line-height:1.55; color:var(--muted);
-  max-width:520px;
+  line-height:1.65;
+  color:var(--muted);
+  max-width:480px;
   margin-bottom:40px;
 }
 .hero-actions{
@@ -337,8 +361,8 @@ nav{
   width:520px; height:520px;
   transform:translate(-50%,-50%);
   border-radius:50%;
-  background: radial-gradient(circle, rgba(255,61,154,.18), transparent 55%);
-  filter:blur(20px);
+  background: radial-gradient(circle, rgba(255,61,154,.14), transparent 55%);
+  filter:blur(24px);
   pointer-events:none;
 }
 .phone-ring{
@@ -346,7 +370,7 @@ nav{
   width:480px; height:480px;
   transform:translate(-50%,-50%);
   border-radius:50%;
-  border:1px solid var(--line);
+  border:1px solid rgba(255,255,255,.06);
   pointer-events:none;
 }
 .phone{
@@ -365,205 +389,364 @@ nav{
   overflow:hidden; position:relative;
   background:#06060c;
   border:1px solid rgba(255,255,255,.05);
+  isolation:isolate;
+  box-shadow: inset 0 0 36px rgba(255,255,255,.035);
+}
+.phone-screen::before{
+  content:"";
+  position:absolute; inset:0;
+  z-index:4;
+  pointer-events:none;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.16), transparent 25%, transparent 62%, rgba(255,61,154,.08)),
+    radial-gradient(circle at 80% 8%, rgba(56,217,245,.14), transparent 28%);
+  mix-blend-mode:screen;
+  opacity:.32;
+}
+.phone-screen::after{
+  content:"";
+  position:absolute; inset:0;
+  z-index:2;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.52), rgba(0,0,0,.12) 28%, transparent 58%, rgba(0,0,0,.48)),
+    radial-gradient(circle at 50% 100%, rgba(255,61,154,.16), transparent 46%);
 }
 .phone-notch{
   position:absolute; top:11px; left:50%; transform:translateX(-50%);
   width:84px; height:22px; border-radius:999px;
-  background:#000; z-index:5;
+  background:#000; z-index:8;
+  box-shadow:0 8px 18px rgba(0,0,0,.38);
 }
-.phone-top{
-  padding:46px 18px 14px;
-  display:flex; justify-content:space-between; align-items:center;
-}
-.phone-title{ font-family:'Syne',sans-serif; font-size:18px; font-weight:700; letter-spacing:-.02em; }
-.phone-avatar{
-  width:30px; height:30px; border-radius:50%;
-  background:var(--accent);
-  box-shadow:0 0 12px var(--accent-glow);
-}
-.phone-tabs{
-  display:flex; gap:6px; padding:0 16px 14px;
-}
-.phone-tab{
-  flex:1; padding:8px 0; text-align:center;
-  border-radius:var(--r-pill);
-  font-size:10px; font-weight:600; letter-spacing:.06em;
-  color:var(--faint);
-  background:rgba(255,255,255,.04);
-  cursor:pointer;
-  transition: all .3s ease;
-  text-transform:uppercase;
-  font-family:'JetBrains Mono',monospace;
-}
-.phone-tab.on{
-  background:rgba(255,61,154,.14);
-  color:var(--text);
-  border:1px solid rgba(255,61,154,.3);
-}
-
-.phone-content{ position:relative; min-height:440px; }
-.phone-view{
+.phone-concept{
   position:absolute; inset:0;
-  opacity:0; transition: opacity .6s ease;
+  z-index:3;
+  padding:46px 17px 16px;
+  background:
+    linear-gradient(160deg, rgba(255,61,154,.16), transparent 24%),
+    linear-gradient(25deg, rgba(56,217,245,.11), transparent 35%),
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.08), transparent 48%),
+    linear-gradient(180deg, #10101a 0%, #07070d 50%, #030308 100%);
+}
+.phone-concept::before{
+  content:"";
+  position:absolute; inset:0;
   pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,255,255,.015) 1px, transparent 1px);
+  background-size:52px 52px;
+  mask-image:linear-gradient(180deg, transparent, black 18%, black 70%, transparent);
+  opacity:.28;
 }
-.phone-view.active{ opacity:1; pointer-events:auto; }
-
-/* Phone view: Nearby */
-.pv-card{
-  margin:0 14px;
-  border-radius:24px;
-  background: linear-gradient(170deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-  border:1px solid rgba(255,255,255,.08);
-  padding:14px;
+.concept-glow{
+  position:absolute;
+  pointer-events:none;
+  filter:blur(20px);
+  opacity:.52;
+  animation:conceptBreathe 8.5s ease-in-out infinite;
 }
-.pv-head{
-  display:flex; justify-content:space-between; align-items:flex-start;
+.concept-glow.one{
+  width:170px; height:130px; right:-36px; top:76px;
+  background:linear-gradient(135deg, rgba(255,61,154,.3), rgba(124,58,255,.12));
+}
+.concept-glow.two{
+  width:160px; height:160px; left:-44px; bottom:78px;
+  background:linear-gradient(135deg, rgba(56,217,245,.18), rgba(255,61,154,.1));
+  animation-delay:1.4s;
+}
+.concept-top,
+.concept-status,
+.concept-card,
+.concept-map,
+.concept-dock{
+  position:relative; z-index:2;
+}
+.concept-top{
+  display:flex; align-items:center; justify-content:space-between;
   margin-bottom:14px;
 }
-.pv-title{ font-size:15px; font-weight:700; letter-spacing:-.02em; }
-.pv-sub{ font-size:11px; color:var(--faint); margin-top:2px; }
-.pv-livedot{
-  width:8px; height:8px; border-radius:50%;
-  background:var(--green); box-shadow:0 0 14px var(--green);
+.concept-brand{
+  display:flex; align-items:center; gap:7px;
+  font-family:'Syne',sans-serif;
+  font-size:18px; font-weight:700; letter-spacing:-.02em;
 }
-.pv-map{
-  height:240px; border-radius:18px;
-  position:relative; overflow:hidden;
-  background:
-    radial-gradient(circle at 32% 25%, rgba(255,61,154,.3), transparent 30%),
-    radial-gradient(circle at 70% 65%, rgba(124,58,255,.22), transparent 32%),
-    linear-gradient(135deg, #0e0e1c, #060611);
+.concept-online{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 16px var(--green);
+  animation:conceptPulse 2.4s ease-in-out infinite;
+}
+.concept-time{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; letter-spacing:.04em;
+  color:rgba(255,255,255,.58);
+}
+.concept-status{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:9px 10px;
+  border-radius:18px;
+  background:rgba(255,255,255,.038);
   border:1px solid rgba(255,255,255,.06);
+  opacity:.82;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
 }
-.pv-map-grid{
+.concept-status span{
+  font-family:'JetBrains Mono',monospace;
+  font-size:8.5px; letter-spacing:.08em;
+  color:rgba(255,255,255,.58);
+}
+.concept-people{
+  position:relative;
+  z-index:3;
+  height:74px;
+  margin:6px 0 -4px;
+  opacity:.72;
+}
+.nearby-person{
+  position:absolute;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  display:grid; place-items:center;
+  font-size:9px; font-weight:800;
+  color:rgba(255,255,255,.88);
+  background:linear-gradient(135deg, rgba(255,61,154,.78), rgba(124,58,255,.66));
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 12px 24px rgba(0,0,0,.26), 0 0 20px rgba(255,61,154,.12);
+  animation:conceptFloat 7.6s ease-in-out infinite;
+}
+.nearby-person::after{
+  content:"";
+  position:absolute; inset:-8px;
+  border-radius:inherit;
+  border:1px solid rgba(255,255,255,.08);
+  opacity:.5;
+}
+.nearby-person.a{ left:15px; top:24px; }
+.nearby-person.b{ right:34px; top:4px; width:40px; height:40px; background:linear-gradient(135deg, rgba(56,217,245,.86), rgba(124,58,255,.82)); animation-delay:.9s; }
+.nearby-person.c{ right:6px; top:58px; width:28px; height:28px; background:linear-gradient(135deg, rgba(255,203,71,.85), rgba(255,61,154,.82)); animation-delay:1.7s; }
+.concept-card{
+  padding:17px;
+  border-radius:27px;
+  background:
+    linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.05)),
+    radial-gradient(circle at 20% 0%, rgba(255,61,154,.16), transparent 42%);
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter:blur(26px) saturate(155%);
+  -webkit-backdrop-filter:blur(26px) saturate(155%);
+  box-shadow:
+    0 30px 78px rgba(0,0,0,.42),
+    0 0 42px rgba(255,61,154,.09),
+    inset 0 1px 0 rgba(255,255,255,.18);
+  animation:conceptFloat 8s ease-in-out infinite .25s;
+}
+.concept-card-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:15px;
+}
+.concept-avatar{
+  width:42px; height:42px; border-radius:50%;
+  background:
+    linear-gradient(rgba(255,255,255,.16), transparent),
+    linear-gradient(135deg, #ff3d9a, #7c3aff 52%, #38d9f5);
+  border:1px solid rgba(255,255,255,.26);
+  box-shadow:0 0 26px rgba(255,61,154,.22);
+}
+.concept-live{
+  display:flex; align-items:center; gap:7px;
+  padding:7px 9px;
+  border-radius:999px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:8.5px; letter-spacing:.06em;
+  color:rgba(255,255,255,.72);
+  background:rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.08);
+}
+.concept-live i{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 14px var(--green);
+  animation:conceptPulse 1.9s ease-in-out infinite;
+}
+.concept-card-title{
+  font-size:17px; font-weight:700; letter-spacing:-.02em;
+  margin-bottom:5px;
+}
+.concept-card-sub{
+  font-size:12px; color:rgba(255,255,255,.58);
+}
+.concept-card-line{
+  display:flex; gap:6px;
+  margin-top:15px;
+}
+.concept-card-line span{
+  height:4px; border-radius:999px;
+  background:rgba(255,255,255,.16);
+}
+.concept-card-line span:nth-child(1){ width:46px; background:linear-gradient(90deg, rgba(255,61,154,.85), rgba(124,58,255,.6)); }
+.concept-card-line span:nth-child(2){ width:32px; }
+.concept-card-line span:nth-child(3){ width:18px; }
+.concept-map{
+  margin-top:14px;
+  height:136px;
+  opacity:.9;
+  border-radius:25px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 44% 48%, rgba(255,61,154,.22), transparent 28%),
+    radial-gradient(circle at 70% 28%, rgba(56,217,245,.15), transparent 24%),
+    linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.025));
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 22px 48px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.concept-map-grid{
   position:absolute; inset:0;
   background-image:
-    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-  background-size: 22px 22px;
-  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size:25px 25px;
+  mask-image:radial-gradient(ellipse at center, black 30%, transparent 82%);
 }
-.pv-pin{
-  position:absolute; border-radius:50%;
-  background:var(--accent);
-  box-shadow: 0 0 0 8px rgba(255,61,154,.12), 0 0 22px var(--accent-glow);
-}
-.pv-pin.a{ width:16px; height:16px; left:42px; top:64px; }
-.pv-pin.b{ width:30px; height:30px; right:48px; top:88px; background:linear-gradient(135deg,#38d9f5,#7c3aff); box-shadow:0 0 0 8px rgba(124,58,255,.12), 0 0 22px rgba(124,58,255,.5); }
-.pv-pin.c{ width:24px; height:24px; left:78px; bottom:50px; background:linear-gradient(135deg,#ffcb47,#ff3d9a); box-shadow:0 0 0 8px rgba(255,203,71,.1), 0 0 22px rgba(255,203,71,.45); }
-.pv-pulse{
+.concept-radius{
   position:absolute; left:50%; top:50%;
-  width:96px; height:96px; border-radius:50%;
+  width:96px; height:96px;
+  border-radius:50%;
   transform:translate(-50%,-50%);
-  border:1px solid rgba(255,255,255,.18);
-  animation: phoneRipple 2.8s ease-out infinite;
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 0 0 22px rgba(255,255,255,.025), 0 0 38px rgba(255,61,154,.14);
+  animation:conceptRadius 4.8s ease-in-out infinite;
 }
-@keyframes phoneRipple{
-  0%   { transform:translate(-50%,-50%) scale(.6); opacity:.8; }
-  100% { transform:translate(-50%,-50%) scale(1.6); opacity:0; }
-}
-.pv-pills{
-  display:flex; gap:6px; margin-top:12px;
-}
-.pv-pill{
-  flex:1; text-align:center;
-  padding:8px; border-radius:var(--r-pill);
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.06);
-  font-size:10.5px; font-weight:600; color:var(--muted);
-  font-family:'JetBrains Mono',monospace;
-  letter-spacing:.04em;
-}
-
-/* Phone view: Feed */
-.pv-feed-head{
-  display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:14px;
-}
-.pv-user{ display:flex; align-items:center; gap:10px; }
-.pv-user-av{
-  width:38px; height:38px; border-radius:50%;
-  background:linear-gradient(135deg,#ff3d9a,#38d9f5);
-}
-.pv-user-name{ font-size:13px; font-weight:700; }
-.pv-user-sub{ font-size:11px; color:var(--faint); margin-top:2px; }
-.pv-photo{
-  height:240px; border-radius:18px;
-  background:
-    radial-gradient(circle at 22% 20%, rgba(255,255,255,.36), transparent 22%),
-    linear-gradient(135deg, #ff3d9a, #7c3aff 55%, #38d9f5);
-  box-shadow: inset 0 -60px 60px rgba(0,0,0,.28);
-}
-.pv-feed-actions{
-  display:flex; justify-content:space-between; align-items:center;
-  margin-top:14px;
-  font-size:11.5px; color:var(--muted);
-  font-family:'JetBrains Mono',monospace;
-  letter-spacing:.04em;
-}
-
-/* Phone view: Discovery */
-.pv-radar{
-  height:340px; border-radius:18px;
-  position:relative; display:grid; place-items:center;
-  background:
-    radial-gradient(circle at center, rgba(124,58,255,.2), transparent 60%),
-    linear-gradient(180deg, #0a0a18, #050510);
-  border:1px solid rgba(255,255,255,.06);
-  overflow:hidden;
-}
-.pv-radar-ring{
-  position:absolute; width:200px; height:200px; border-radius:50%;
-  border:1px solid rgba(255,255,255,.1);
-  box-shadow: 0 0 0 32px rgba(255,255,255,.018), 0 0 0 64px rgba(255,255,255,.01);
-  animation: radarFloat 5s ease-in-out infinite;
-}
-@keyframes radarFloat{
-  0%,100%{ transform:scale(1); opacity:.85; }
-  50%   { transform:scale(1.06); opacity:1; }
-}
-.pv-radar-me{
-  position:absolute; width:60px; height:60px; border-radius:50%;
+.concept-pin{
+  position:absolute;
+  width:10px; height:10px; border-radius:50%;
   background:var(--accent);
-  box-shadow:0 0 38px var(--accent-glow);
-  z-index:2;
+  box-shadow:0 0 0 7px rgba(255,61,154,.12), 0 0 20px rgba(255,61,154,.58);
 }
-.pv-radar-other{
-  position:absolute; width:38px; height:38px; border-radius:50%;
-  background:linear-gradient(135deg,#38d9f5,#7c3aff);
-  box-shadow:0 0 18px rgba(56,217,245,.4);
+.concept-pin.a{ left:50%; top:48%; }
+.concept-pin.b{ right:46px; top:38px; background:#38d9f5; box-shadow:0 0 0 7px rgba(56,217,245,.1), 0 0 18px rgba(56,217,245,.55); }
+.concept-pin.c{ left:52px; bottom:34px; background:#ffcb47; box-shadow:0 0 0 7px rgba(255,203,71,.1), 0 0 18px rgba(255,203,71,.45); }
+.concept-map-actions{
+  position:absolute; left:10px; right:10px; bottom:52px;
+  display:flex; gap:8px;
 }
-.pv-radar-other.one{ top:58px; left:54px; }
-.pv-radar-other.two{ top:110px; right:46px; background:linear-gradient(135deg,#ffcb47,#ff3d9a); }
-.pv-radar-other.three{ bottom:62px; left:78px; background:linear-gradient(135deg,#7c3aff,#38d9f5); }
-.pv-radar-label{
-  position:absolute; left:14px; right:14px; bottom:14px;
-  padding:12px; border-radius:14px;
-  background:rgba(0,0,0,.5);
+.concept-map-actions span{
+  flex:1;
+  padding:7px 0;
+  border-radius:999px;
+  text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:8.5px; letter-spacing:.06em;
+  color:rgba(255,255,255,.66);
+  background:rgba(4,4,8,.38);
+  border:1px solid rgba(255,255,255,.09);
   backdrop-filter:blur(14px);
-  border:1px solid rgba(255,255,255,.06);
 }
-.pv-radar-label strong{ display:block; font-size:12px; font-weight:700; margin-bottom:3px; }
-.pv-radar-label span{ font-size:10.5px; color:var(--faint); }
+.concept-dock{
+  position:absolute; left:24px; right:24px; bottom:17px;
+  height:54px;
+  display:flex; align-items:center; justify-content:space-around;
+  border-radius:24px;
+  background:rgba(12,12,18,.52);
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:
+    0 20px 48px rgba(0,0,0,.42),
+    inset 0 1px 0 rgba(255,255,255,.1);
+  backdrop-filter:blur(24px) saturate(150%);
+  -webkit-backdrop-filter:blur(24px) saturate(150%);
+}
+.concept-dock-btn{
+  position:relative;
+  width:34px; height:34px;
+  display:grid; place-items:center;
+  border-radius:15px;
+  border:0;
+  background:transparent;
+}
+.concept-dock-btn::before{
+  content:"";
+  width:14px; height:14px;
+  opacity:.58;
+}
+.concept-dock-btn.home::before{
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.82);
+}
+.concept-dock-btn.map::before{
+  width:16px; height:16px;
+  border-radius:5px;
+  border:2px solid rgba(255,255,255,.78);
+  transform:rotate(45deg);
+}
+.concept-dock-btn.scan::before{
+  width:16px; height:16px;
+  border:2px solid rgba(255,255,255,.78);
+  border-radius:4px;
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.08);
+}
+.concept-dock-btn.chat::before{
+  width:16px; height:12px;
+  border:2px solid rgba(255,255,255,.78);
+  border-radius:8px;
+}
+.concept-dock-btn.active{
+  background:rgba(255,61,154,.14);
+  box-shadow:0 0 28px rgba(255,61,154,.28), inset 0 1px 0 rgba(255,255,255,.16);
+}
+.concept-dock-btn.active::before{
+  opacity:1;
+  border-color:#fff;
+  box-shadow:0 0 18px rgba(255,61,154,.55);
+}
+@keyframes conceptBreathe{
+  0%,100%{ transform:scale(1); opacity:.55; }
+  50%{ transform:scale(1.08); opacity:.82; }
+}
+@keyframes conceptFloat{
+  0%,100%{ transform:translate3d(0,0,0); }
+  50%{ transform:translate3d(0,-6px,0); }
+}
+@keyframes conceptPulse{
+  0%,100%{ transform:scale(1); opacity:.65; }
+  50%{ transform:scale(1.28); opacity:.95; }
+}
+@keyframes conceptRadius{
+  0%,100%{
+    transform:translate(-50%,-50%) scale(.94);
+    opacity:.45;
+  }
+  50%{
+    transform:translate(-50%,-50%) scale(1.05);
+    opacity:.82;
+  }
+}
 
 /* Hero floating chip — ONE chip, not two */
 .hero-chip{
   position:absolute; z-index:3;
   display:flex; align-items:center; gap:10px;
   padding:12px 16px; border-radius:var(--r-pill);
-  background:rgba(8,8,14,.7);
+  background:rgba(8,8,14,.75);
   backdrop-filter: blur(20px);
-  border:1px solid var(--line-strong);
+  border:1px solid rgba(255,255,255,.1);
   font-size:12.5px; font-weight:500;
-  box-shadow: 0 20px 50px rgba(0,0,0,.5);
-  animation: chipFloat 6s ease-in-out infinite;
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.4);
+  animation: chipFloat 7s ease-in-out infinite;
 }
 .hero-chip .dot{ width:7px; height:7px; border-radius:50%; background:var(--green); }
-.hero-chip.right{ right:-20px; top:60px; }
+.hero-chip.right{
+  right:-12px;
+  top:72px;
+  opacity:.86;
+}
 @keyframes chipFloat{
   0%,100% { transform:translateY(0); }
-  50%     { transform:translateY(-8px); }
+  50% { transform:translateY(-6px); }
 }
 
 @media (max-width: 940px){
@@ -596,7 +779,12 @@ nav{
     word-break: keep-all;
     overflow-wrap: break-word;
   }
-  .hero-sub{ font-size:15.5px; margin-bottom:28px; }
+  .hero-sub{
+    font-size:15.5px;
+    margin-bottom:28px;
+    line-height:1.65;
+    max-width:100%;
+  }
   .hero-actions{ width:100%; }
   .btn-primary, .btn-ghost{ flex:1; justify-content:center; padding:13px 18px; font-size:14px; }
   .hero-meta{ gap:18px; margin-top:40px; padding-top:24px; }
@@ -604,10 +792,18 @@ nav{
   .hero-meta-item .label{ font-size:10px; letter-spacing:.12em; }
   .phone-stage{ min-height:480px; }
   .phone{ transform:scale(.82); }
-  .phone-halo{ width:380px; height:380px; }
-  .phone-ring{ width:340px; height:340px; }
+  .phone-halo{ width:360px; height:360px; }
+  .phone-ring{ width:320px; height:320px; }
   .hero-chip{ font-size:11.5px; padding:10px 14px; }
-  .hero-chip.right{ top:30px; right:-4px; }
+  .hero-chip.right{ top:40px; right:-8px; }
+  .concept-people{ height:66px; }
+  .concept-card{ padding:15px; }
+  .concept-map{ height:128px; }
+  .concept-dock{
+    left:26px;
+    right:26px;
+    height:48px;
+  }
   .eyebrow-row{ margin-bottom:22px; }
   .eyebrow-row .divider{ flex:0 0 24px; }
   h2{ font-size: clamp(26px, 7vw, 38px) !important; line-height:1.05; }
@@ -809,25 +1005,61 @@ section.block{ padding: var(--section-y) 0; }
    ────────────────────────────────────────────────────────── */
 .inside-showcase{
   position:relative;
-  min-height:640px;
+  min-height:680px;
   display:flex;
   flex-direction:column;
   justify-content:center;
   overflow:hidden;
+  isolation:isolate;
 }
 .inside-showcase::before{
   content:"";
   position:absolute;
   left:50%;
-  top:45%;
-  width:min(760px,86vw);
-  height:360px;
+  top:47%;
+  width:min(880px,92vw);
+  height:430px;
   transform:translate(-50%,-50%);
   background:
-    radial-gradient(ellipse at center, rgba(255,61,154,.22), transparent 58%),
-    radial-gradient(ellipse at 60% 50%, rgba(124,58,255,.2), transparent 62%);
-  filter:blur(34px);
+    radial-gradient(ellipse at center, rgba(255,61,154,.26), transparent 56%),
+    radial-gradient(ellipse at 62% 48%, rgba(124,58,255,.22), transparent 62%),
+    radial-gradient(ellipse at 35% 55%, rgba(90,166,255,.12), transparent 58%);
+  filter:blur(42px);
+  opacity:.9;
   pointer-events:none;
+  z-index:-2;
+  animation:showcaseGlowDrift 9s ease-in-out infinite alternate;
+}
+.inside-showcase::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:98px;
+  width:min(760px,82vw);
+  height:80px;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse at center, rgba(0,0,0,.62), transparent 68%);
+  filter:blur(18px);
+  opacity:.85;
+  pointer-events:none;
+  z-index:-1;
+}
+@keyframes showcaseGlowDrift{
+  0%{ transform:translate(-52%,-50%) scale(.96); opacity:.72; }
+  50%{ transform:translate(-49%,-48%) scale(1.04); opacity:.95; }
+  100%{ transform:translate(-47%,-51%) scale(1.01); opacity:.82; }
+}
+@keyframes phoneFloatLeft{
+  0%,100%{ margin-top:0; }
+  50%{ margin-top:-10px; }
+}
+@keyframes phoneFloatCenter{
+  0%,100%{ margin-top:0; }
+  50%{ margin-top:-14px; }
+}
+@keyframes phoneFloatRight{
+  0%,100%{ margin-top:0; }
+  50%{ margin-top:-9px; }
 }
 .screenshot-row{
   position:relative;
@@ -835,31 +1067,59 @@ section.block{ padding: var(--section-y) 0; }
   display:flex;
   align-items:flex-end;
   justify-content:center;
-  gap:clamp(12px,2vw,28px);
-  padding:34px 0 18px;
-  perspective:1200px;
+  gap:clamp(10px,1.6vw,22px);
+  padding:42px 0 28px;
+  perspective:1400px;
 }
 .phone-shot{
   position:relative;
-  width:clamp(150px,15vw,218px);
+  width:clamp(152px,14.2vw,210px);
   aspect-ratio:9/19.5;
-  border-radius:34px;
+  border-radius:36px;
   padding:7px;
-  background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.045));
-  border:1px solid rgba(255,255,255,.16);
-  box-shadow:0 32px 90px rgba(0,0,0,.62), 0 0 50px rgba(255,61,154,.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.06)),
+    linear-gradient(135deg, rgba(255,61,154,.22), rgba(90,166,255,.12));
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:
+    0 34px 95px rgba(0,0,0,.66),
+    0 0 52px rgba(255,61,154,.08),
+    inset 0 0 0 1px rgba(255,255,255,.05);
+  transform-origin:center bottom;
+  transition:
+    transform .55s cubic-bezier(.2,.7,.2,1),
+    opacity .45s ease,
+    filter .45s ease,
+    box-shadow .45s ease;
+  will-change:transform;
 }
 .phone-shot::before{
   content:"";
   position:absolute;
-  top:13px;
+  top:14px;
   left:50%;
   width:34%;
   height:18px;
   transform:translateX(-50%);
   border-radius:999px;
   background:#030306;
+  z-index:4;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.08),
+    inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.phone-shot::after{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border-radius:28px;
+  pointer-events:none;
   z-index:3;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.16), transparent 26%, transparent 72%, rgba(255,255,255,.05)),
+    linear-gradient(180deg, transparent 58%, rgba(0,0,0,.12));
+  mix-blend-mode:screen;
+  opacity:.45;
 }
 .phone-shot img{
   width:100%;
@@ -867,31 +1127,74 @@ section.block{ padding: var(--section-y) 0; }
   display:block;
   object-fit:cover;
   object-position:center top;
-  border-radius:27px;
+  border-radius:28px;
   background:#08080d;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
 }
 .phone-shot .shot-label{
   position:absolute;
   left:50%;
-  bottom:-30px;
+  bottom:-34px;
   transform:translateX(-50%);
   white-space:nowrap;
   font-family:'Syne',sans-serif;
-  font-size:17px;
+  font-size:15px;
   font-weight:700;
-  color:rgba(255,255,255,.88);
-  text-shadow:0 8px 24px rgba(0,0,0,.8);
+  letter-spacing:-.025em;
+  color:rgba(255,255,255,.82);
+  text-shadow:0 10px 28px rgba(0,0,0,.9);
+  opacity:.86;
 }
-.phone-shot.left-2{ transform:rotate(-9deg) translateY(48px); opacity:.86; }
-.phone-shot.left-1{ transform:rotate(-4deg) translateY(20px); opacity:.95; }
+.phone-shot.left-2{
+  transform:translate(var(--parallax-x,0), var(--parallax-y,0)) rotate(-11deg) translateY(58px) translateX(18px) scale(.94);
+  opacity:.62;
+  filter:saturate(.88) brightness(.72) blur(.15px);
+  animation:phoneFloatLeft 6.8s ease-in-out infinite;
+}
+.phone-shot.left-1{
+  transform:translate(var(--parallax-x,0), var(--parallax-y,0)) rotate(-5deg) translateY(26px) translateX(6px) scale(.98);
+  opacity:.86;
+  filter:saturate(.96) brightness(.88);
+  animation:phoneFloatLeft 7.4s ease-in-out infinite .35s;
+}
 .phone-shot.center{
-  width:clamp(178px,17vw,250px);
-  transform:translateY(-10px);
-  z-index:4;
-  box-shadow:0 38px 110px rgba(0,0,0,.68), 0 0 90px rgba(255,61,154,.22);
+  width:clamp(184px,17vw,254px);
+  transform:translate(var(--parallax-x,0), var(--parallax-y,0)) translateY(-16px) scale(1.045);
+  z-index:5;
+  opacity:1;
+  filter:saturate(1.05) brightness(1.02);
+  box-shadow:
+    0 44px 120px rgba(0,0,0,.72),
+    0 0 96px rgba(255,61,154,.24),
+    0 0 54px rgba(90,166,255,.1),
+    inset 0 0 0 1px rgba(255,255,255,.07);
+  animation:phoneFloatCenter 7s ease-in-out infinite .15s;
 }
-.phone-shot.right-1{ transform:rotate(4deg) translateY(20px); opacity:.95; }
-.phone-shot.right-2{ transform:rotate(9deg) translateY(48px); opacity:.86; }
+.phone-shot.right-1{
+  transform:translate(var(--parallax-x,0), var(--parallax-y,0)) rotate(5deg) translateY(26px) translateX(-6px) scale(.98);
+  opacity:.86;
+  filter:saturate(.96) brightness(.88);
+  animation:phoneFloatRight 7.2s ease-in-out infinite .5s;
+}
+.phone-shot.right-2{
+  transform:translate(var(--parallax-x,0), var(--parallax-y,0)) rotate(11deg) translateY(58px) translateX(-18px) scale(.94);
+  opacity:.62;
+  filter:saturate(.88) brightness(.72) blur(.15px);
+  animation:phoneFloatRight 6.9s ease-in-out infinite .25s;
+}
+.phone-shot:hover{
+  transform:translateY(-26px) scale(1.045) !important;
+  opacity:1;
+  filter:saturate(1.08) brightness(1.04);
+  z-index:9;
+  box-shadow:
+    0 52px 130px rgba(0,0,0,.76),
+    0 0 110px rgba(255,61,154,.28),
+    0 0 56px rgba(90,166,255,.14);
+}
+.phone-shot:hover .shot-label{
+  opacity:1;
+}
 .showcase-status{
   position:relative;
   z-index:3;
@@ -899,16 +1202,18 @@ section.block{ padding: var(--section-y) 0; }
   align-items:center;
   gap:10px;
   width:max-content;
-  margin-bottom:28px;
+  margin:0 0 22px;
   padding:9px 16px;
   border-radius:999px;
-  background:rgba(255,255,255,.035);
-  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.11);
+  backdrop-filter:blur(20px) saturate(160%);
   font-family:'JetBrains Mono',monospace;
   font-size:11px;
   letter-spacing:.16em;
   text-transform:uppercase;
   color:rgba(255,255,255,.72);
+  box-shadow:0 18px 50px rgba(0,0,0,.26);
 }
 .showcase-status::before{
   content:"";
@@ -925,48 +1230,136 @@ section.block{ padding: var(--section-y) 0; }
   justify-content:center;
   align-items:center;
   gap:10px;
-  margin-top:42px;
+  margin-top:48px;
   flex-wrap:wrap;
 }
 .showcase-tabs span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   padding:9px 16px;
   border-radius:999px;
   border:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.025);
+  background:rgba(255,255,255,.026);
+  backdrop-filter:blur(14px);
   font-family:'JetBrains Mono',monospace;
   font-size:11px;
   letter-spacing:.16em;
   text-transform:uppercase;
-  color:rgba(255,255,255,.45);
+  color:rgba(255,255,255,.43);
 }
 .showcase-tabs span.active{
   color:#fff;
   border-color:rgba(255,61,154,.36);
   background:rgba(255,61,154,.12);
+  box-shadow:0 0 28px rgba(255,61,154,.16);
 }
 .showcase-tabs i{
   width:28px;
   height:1px;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
 }
-
 @media (max-width:940px){
+  .inside-showcase{
+    min-height:640px;
+    margin-left:calc((100vw - 100%) / -2);
+    margin-right:calc((100vw - 100%) / -2);
+  }
+  .inside-showcase::after{
+    bottom:112px;
+    width:78vw;
+  }
+  .showcase-status{
+    margin-left:26px;
+  }
   .screenshot-row{
     justify-content:flex-start;
     overflow-x:auto;
-    padding:36px 26px 34px;
+    padding:38px 26px 42px;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
+    gap:18px;
   }
   .screenshot-row::-webkit-scrollbar{display:none;}
-  .phone-shot{
-    flex:0 0 210px;
-    width:210px;
+  .phone-shot,
+  .phone-shot.center{
+    flex:0 0 214px;
+    width:214px;
     transform:none !important;
     opacity:1 !important;
+    filter:none !important;
+    scroll-snap-align:center;
+    animation:none !important;
   }
   .phone-shot.center{
     flex-basis:230px;
     width:230px;
+  }
+  .phone-shot .shot-label{
+    bottom:-30px;
+    font-size:14px;
+  }
+}
+@media (max-width:600px){
+  .inside-showcase{
+    min-height:570px;
+  }
+  .showcase-status{
+    margin-left:20px;
+    padding:8px 13px;
+    font-size:9.5px;
+    letter-spacing:.12em;
+  }
+  .screenshot-row{
+    padding:34px 20px 38px;
+    gap:14px;
+  }
+  .phone-shot,
+  .phone-shot.center{
+    flex-basis:176px;
+    width:176px;
+    border-radius:30px;
+    padding:6px;
+  }
+  .phone-shot.center{
+    flex-basis:192px;
+    width:192px;
+  }
+  .phone-shot img{
+    border-radius:24px;
+  }
+  .phone-shot::before{
+    top:12px;
+    height:15px;
+  }
+  .phone-shot::after{
+    inset:6px;
+    border-radius:24px;
+  }
+  .phone-shot .shot-label{
+    font-size:12.5px;
+    bottom:-28px;
+  }
+  .showcase-tabs{
+    margin-top:30px;
+    gap:7px;
+    padding:0 20px;
+  }
+  .showcase-tabs span{
+    font-size:9px;
+    padding:8px 11px;
+    letter-spacing:.12em;
+  }
+  .showcase-tabs i{
+    display:none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .inside-showcase::before,
+  .phone-shot{
+    animation:none !important;
   }
 }
 
@@ -1276,6 +1669,8 @@ footer{
 @media (max-width: 600px){
   footer{ padding: 36px 0 96px; }
   .foot{ flex-direction:column; align-items:flex-start; gap:18px; text-align:left; }
+  .foot-brand{ gap:10px; }
+  .foot-brand .brand-wordmark{ font-size:14px; }
 }
 .foot{
   display:flex;
@@ -1283,10 +1678,14 @@ footer{
   flex-wrap:wrap;
 }
 .foot-brand{
-  display:flex; align-items:center; gap:10px;
-  font-family:'Syne',sans-serif; font-weight:700; font-size:15px; letter-spacing:.04em;
+  display:flex;
+  align-items:center;
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:16px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
 }
-.foot-brand .brand-mark{ width:24px; height:24px; font-size:11px; }
 .foot small{
   font-family:'JetBrains Mono',monospace;
   font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint);
@@ -1452,8 +1851,7 @@ footer{
 <!-- ═══════════════════════ NAV ═══════════════════════ -->
 <nav>
   <a class="brand" href="#top">
-    <span class="brand-mark">✦</span>
-    PRAXIS
+    <span class="brand-wordmark">PRAXIS</span>
   </a>
   <div class="nav-mid">
     <a href="#experience">Experience</a>
@@ -1520,74 +1918,60 @@ footer{
         <div class="phone">
           <div class="phone-screen">
             <div class="phone-notch"></div>
-            <div class="phone-top">
-              <span class="phone-title">Praxis</span>
-              <span class="phone-avatar"></span>
-            </div>
-            <div class="phone-tabs">
-              <span class="phone-tab on" data-view="0">Nearby</span>
-              <span class="phone-tab" data-view="1">Feed</span>
-              <span class="phone-tab" data-view="2">Discovery</span>
-            </div>
+            <div class="phone-concept" aria-label="Praxis concept interface">
+              <span class="concept-glow one"></span>
+              <span class="concept-glow two"></span>
 
-            <div class="phone-content">
+              <div class="concept-top">
+                <div class="concept-brand">
+                  <span>Praxis</span>
+                  <i class="concept-online" aria-hidden="true"></i>
+                </div>
+                <span class="concept-time">LIVE</span>
+              </div>
 
-              <div class="phone-view active">
-                <div class="pv-card">
-                  <div class="pv-head">
-                    <div>
-                      <div class="pv-title">Nearby, right now</div>
-                      <div class="pv-sub">Live people, places, plans around you</div>
-                    </div>
-                    <span class="pv-livedot"></span>
-                  </div>
-                  <div class="pv-map">
-                    <div class="pv-map-grid"></div>
-                    <span class="pv-pulse"></span>
-                    <span class="pv-pin a"></span>
-                    <span class="pv-pin b"></span>
-                    <span class="pv-pin c"></span>
-                  </div>
-                  <div class="pv-pills">
-                    <span class="pv-pill">12 NEARBY</span>
-                    <span class="pv-pill">4 FRIENDS</span>
-                  </div>
+              <div class="concept-status">
+                <span>0.4 MI</span>
+                <span>12 NEARBY</span>
+                <span>SOHO</span>
+              </div>
+
+              <div class="concept-people" aria-hidden="true">
+                <span class="nearby-person a">M</span>
+                <span class="nearby-person b">A</span>
+                <span class="nearby-person c">J</span>
+              </div>
+
+              <div class="concept-card">
+                <div class="concept-card-head">
+                  <span class="concept-avatar" aria-hidden="true"></span>
+                  <span class="concept-live"><i aria-hidden="true"></i>LIVE PULSE</span>
+                </div>
+                <div class="concept-card-title">Coffee at Blue Tokai</div>
+                <div class="concept-card-sub">2 friends nearby</div>
+                <div class="concept-card-line" aria-hidden="true">
+                  <span></span><span></span><span></span>
                 </div>
               </div>
 
-              <div class="phone-view">
-                <div class="pv-card">
-                  <div class="pv-feed-head">
-                    <div class="pv-user">
-                      <div class="pv-user-av"></div>
-                      <div>
-                        <div class="pv-user-name">Sophia Bennett</div>
-                        <div class="pv-user-sub">London · 2m ago</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="pv-photo"></div>
-                  <div class="pv-feed-actions">
-                    <span>♡ 128</span>
-                    <span>NEARBY MOMENT</span>
-                  </div>
+              <div class="concept-map">
+                <span class="concept-map-grid"></span>
+                <span class="concept-radius"></span>
+                <span class="concept-pin a"></span>
+                <span class="concept-pin b"></span>
+                <span class="concept-pin c"></span>
+                <div class="concept-map-actions">
+                  <span>JOIN</span>
+                  <span>ROUTE</span>
                 </div>
               </div>
 
-              <div class="phone-view">
-                <div class="pv-radar">
-                  <span class="pv-radar-ring"></span>
-                  <span class="pv-radar-me"></span>
-                  <span class="pv-radar-other one"></span>
-                  <span class="pv-radar-other two"></span>
-                  <span class="pv-radar-other three"></span>
-                  <div class="pv-radar-label">
-                    <strong>Discovery mode active</strong>
-                    <span>Bluetooth-powered nearby social layer</span>
-                  </div>
-                </div>
+              <div class="concept-dock" aria-label="Praxis navigation">
+                <button class="concept-dock-btn home active" aria-label="Home"></button>
+                <button class="concept-dock-btn map" aria-label="Nearby map"></button>
+                <button class="concept-dock-btn scan" aria-label="Scan"></button>
+                <button class="concept-dock-btn chat" aria-label="Chat"></button>
               </div>
-
             </div>
           </div>
         </div>
@@ -1876,7 +2260,7 @@ footer{
       <div class="section-head reveal">
         <span class="kicker">Questions</span>
         <h2>Everything you need to know.</h2>
-        <p>Still curious? <a href="/cdn-cgi/l/email-protection#a8c0cdc4c4c7e8d8dac9d0c1dbdbdcc9da86cbc7c5" style="color:var(--pink);text-decoration:none;border-bottom:1px solid currentColor;">Say hello</a>.</p>
+        <p>Still curious? <a href="mailto:hello@praxisstar.com" style="color:var(--pink);text-decoration:none;border-bottom:1px solid currentColor;">Say hello</a>.</p>
       </div>
 
       <div class="faq-list reveal" style="transition-delay:.1s;">
@@ -1906,7 +2290,7 @@ footer{
         </div>
         <div class="faq-item">
           <button class="faq-q">Are you raising funding?<span class="faq-arrow">+</span></button>
-          <div class="faq-a"><div class="faq-a-inner">We're currently in pre-launch development and open to conversations with strategic investors who understand social products and location-based experiences. Reach out at <a href="/cdn-cgi/l/email-protection#fc95928a998f88bc8c8e9d84958f8f889d8ed29f9391"><span class="__cf_email__" data-cfemail="9df4f3ebf8eee9ddedeffce5f4eeeee9fcefb3fef2f0">[email&#160;protected]</span></a>.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">We're currently in pre-launch development and open to conversations with strategic investors who understand social products and location-based experiences. Reach out at <a href="mailto:invest@praxisstar.com">invest@praxisstar.com</a>.</div></div>
         </div>
       </div>
     </div>
@@ -1927,8 +2311,8 @@ footer{
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
           @praxis_official_
         </a>
-        <a class="contact-btn" href="/cdn-cgi/l/email-protection#ff9691899a8c8bbf8f8d9e87968c8c8b9e8dd19c9092">Investor enquiries →</a>
-        <a class="contact-btn primary" href="/cdn-cgi/l/email-protection#573f323b3b38172725362f3e24242336257934383a"><span class="__cf_email__" data-cfemail="d7bfb2bbbbb897a7a5b6afbea4a4a3b6a5f9b4b8ba">[email&#160;protected]</span></a>
+        <a class="contact-btn" href="mailto:invest@praxisstar.com">Investor enquiries →</a>
+        <a class="contact-btn primary" href="mailto:hello@praxisstar.com">hello@praxisstar.com</a>
       </div>
     </div>
   </div>
@@ -1963,12 +2347,11 @@ footer{
   <div class="wrap">
     <div class="foot">
       <div class="foot-brand">
-        <span class="brand-mark">✦</span>
-        PRAXIS
+        <span class="brand-wordmark">PRAXIS</span>
       </div>
       <div class="foot-links">
-        <a href="/cdn-cgi/l/email-protection#0e6760786b7d7a4e7e7c6f76677d7d7a6f7c206d6163">Investors</a>
-        <a href="/cdn-cgi/l/email-protection#147c7178787b546466756c7d67676075663a777b79">Contact</a>
+        <a href="mailto:invest@praxisstar.com">Investors</a>
+        <a href="mailto:hello@praxisstar.com">Contact</a>
         <a class="soc-btn" href="https://instagram.com/praxis_official_" target="_blank" rel="noopener" aria-label="Instagram">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
         </a>
@@ -2030,7 +2413,7 @@ footer{
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* ════════════════════════════════════════════════════════════
    TWEAKS DEFAULTS — direct manipulation block
    ════════════════════════════════════════════════════════════ */
@@ -2095,6 +2478,39 @@ window.addEventListener('load', () => {
   });
 });
 
+/* ════════════════════════════════════════════════════════════
+   SCREENSHOT SHOWCASE PARALLAX
+   ════════════════════════════════════════════════════════════ */
+const showcase = document.querySelector('.inside-showcase');
+const showcaseShots = document.querySelectorAll('.phone-shot');
+let showcaseTicking = false;
+
+function updateShowcaseParallax(){
+  if (!showcase || window.innerWidth <= 940) return;
+  const rect = showcase.getBoundingClientRect();
+  const viewport = window.innerHeight || document.documentElement.clientHeight;
+  const progress = Math.max(-1, Math.min(1, (viewport / 2 - (rect.top + rect.height / 2)) / viewport));
+
+  showcaseShots.forEach((shot, index) => {
+    const depth = (index - 2) * 5;
+    const lift = progress * (10 - Math.abs(index - 2) * 2);
+    shot.style.setProperty('--parallax-x', `${depth * progress}px`);
+    shot.style.setProperty('--parallax-y', `${lift}px`);
+  });
+}
+
+window.addEventListener('scroll', () => {
+  if (showcaseTicking) return;
+  showcaseTicking = true;
+  requestAnimationFrame(() => {
+    updateShowcaseParallax();
+    showcaseTicking = false;
+  });
+}, { passive:true });
+
+window.addEventListener('resize', updateShowcaseParallax);
+updateShowcaseParallax();
+
 
 /* ════════════════════════════════════════════════════════════
    PHONE TABS
@@ -2108,8 +2524,10 @@ function setPhoneView(i){
   phoneTabs.forEach((t, idx) => t.classList.toggle('on', idx === i));
   phoneViews.forEach((v, idx) => v.classList.toggle('active', idx === i));
 }
-phoneTabs.forEach((tab, idx) => tab.addEventListener('click', () => setPhoneView(idx)));
-setInterval(() => setPhoneView((phoneIdx + 1) % phoneViews.length), 5000);
+if (phoneTabs.length && phoneViews.length) {
+  phoneTabs.forEach((tab, idx) => tab.addEventListener('click', () => setPhoneView(idx)));
+  setInterval(() => setPhoneView((phoneIdx + 1) % phoneViews.length), 5200);
+}
 
 
 /* ════════════════════════════════════════════════════════════
