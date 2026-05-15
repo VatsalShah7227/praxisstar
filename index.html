@@ -117,6 +117,7 @@
 }
 </script>
 
+
 <!-- FAQ Schema -->
 <script type="application/ld+json">
 {
@@ -156,6 +157,82 @@
       }
     }
   ]
+}
+</script>
+
+<!-- Blog / Insights Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Why we're building Praxis",
+  "description": "Social media stopped feeling social. Here's why we're building Praxis.",
+  "author": {
+    "@type": "Organization",
+    "name": "Praxis"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Praxis",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://praxisstar.com/favicon.png"
+    }
+  },
+  "datePublished": "2026-05-15",
+  "mainEntityOfPage": "https://praxisstar.com/#why-praxis",
+  "url": "https://praxisstar.com/#why-praxis",
+  "image": "https://praxisstar.com/social-preview.png"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Social media stopped feeling social",
+  "description": "Modern social media optimized for scrolling instead of real-world connection.",
+  "author": {
+    "@type": "Organization",
+    "name": "Praxis"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Praxis",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://praxisstar.com/favicon.png"
+    }
+  },
+  "datePublished": "2026-05-15",
+  "mainEntityOfPage": "https://praxisstar.com/#social-media-stopped-feeling-social",
+  "url": "https://praxisstar.com/#social-media-stopped-feeling-social",
+  "image": "https://praxisstar.com/social-preview.png"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Why nearby discovery matters",
+  "description": "Why local activity, nearby people, and real-world discovery matter in modern social apps.",
+  "author": {
+    "@type": "Organization",
+    "name": "Praxis"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Praxis",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://praxisstar.com/favicon.png"
+    }
+  },
+  "datePublished": "2026-05-15",
+  "mainEntityOfPage": "https://praxisstar.com/#why-nearby-discovery-matters",
+  "url": "https://praxisstar.com/#why-nearby-discovery-matters",
+  "image": "https://praxisstar.com/social-preview.png"
 }
 </script>
 
@@ -1599,6 +1676,154 @@ section.block{ padding: var(--section-y) 0; }
 }
 
 /* ──────────────────────────────────────────────────────────
+   BLOG GRID — preview cards
+   ────────────────────────────────────────────────────────── */
+.blog-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:24px;
+}
+.blog-preview{
+  padding:32px;
+  border-radius:var(--r-md);
+  background:var(--surface-1);
+  border:1px solid var(--line);
+  transition:background .3s ease, border-color .3s ease, transform .25s ease;
+  display:flex;
+  flex-direction:column;
+}
+.blog-preview:hover{
+  background:var(--surface-2);
+  border-color:var(--line-strong);
+  transform:translateY(-2px);
+}
+.blog-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+.blog-date{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:var(--faint);
+  letter-spacing:.1em;
+  white-space:nowrap;
+}
+.blog-preview h3{
+  margin-bottom:12px;
+  font-size:22px;
+  line-height:1.2;
+}
+.blog-preview h3 a{
+  color:var(--text);
+  text-decoration:none;
+  transition:color .2s ease;
+}
+.blog-preview h3 a:hover{
+  color:var(--pink);
+}
+.blog-preview p{
+  font-size:15px;
+  line-height:1.6;
+  margin-bottom:18px;
+  flex:1;
+}
+.blog-read-more{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:14px;
+  font-weight:500;
+  color:var(--pink);
+  text-decoration:none;
+  transition:gap .2s ease;
+}
+.blog-read-more:hover{
+  gap:10px;
+}
+@media (max-width: 940px){
+  .blog-grid{
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   STORY / BLOG — founder-led narrative
+   ────────────────────────────────────────────────────────── */
+.story-card{
+  max-width:900px;
+  margin:0 auto;
+  padding:52px;
+  border-radius:var(--r-md);
+  background:
+    radial-gradient(circle at 88% 10%, rgba(255,61,154,.08), transparent 42%),
+    radial-gradient(circle at 12% 90%, rgba(124,58,255,.08), transparent 44%),
+    var(--surface-1);
+  border:1px solid var(--line);
+}
+.story-card h2{
+  margin-top:16px;
+  margin-bottom:28px;
+}
+.story-card p{
+  font-size:17px;
+  line-height:1.8;
+  color:rgba(246,246,248,.68);
+  margin-bottom:22px;
+}
+.story-card p:last-child{
+  margin-bottom:0;
+}
+.blog-post-meta{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+
+  color:rgba(255,255,255,.42);
+
+  margin:18px 0 30px;
+}
+.story-list{
+  margin:30px 0;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.story-list span{
+  padding:12px 14px;
+  border-radius:var(--r-sm);
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:rgba(246,246,248,.58);
+}
+@media (max-width:600px){
+  .story-card{
+    padding:32px 24px;
+  }
+  .story-card p{
+    font-size:15.5px;
+    line-height:1.75;
+  }
+  .story-list{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
    PRIVACY — horizontal hairline cards
    ────────────────────────────────────────────────────────── */
 .priv-grid{
@@ -1969,6 +2194,7 @@ footer{
     <a href="#experience">Experience</a>
     <a href="#features">Features</a>
     <a href="#inside">Inside</a>
+    <a href="#insights">Insights</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#faq">FAQ</a>
   </div>
@@ -2333,6 +2559,198 @@ footer{
   </div>
 </section>
 
+
+<!-- ═══════════════════════ INSIGHTS INDEX ═══════════════════════ -->
+<section class="block" id="insights">
+  <div class="wrap">
+
+    <div class="section-head center reveal">
+      <span class="kicker">Insights</span>
+      <h2>Thinking behind <span class="gradient-text">Praxis</span>.</h2>
+      <p>Founder-led notes on nearby discovery, real-world connection, and why social should feel more human again.</p>
+    </div>
+
+    <div class="blog-grid reveal" style="transition-delay:.1s;">
+      <article class="blog-preview">
+        <div class="blog-meta">
+          <span class="kicker">Founder note</span>
+          <span class="blog-date">May 15, 2026 · 5 min</span>
+        </div>
+        <h3><a href="#why-praxis">Why we’re building Praxis</a></h3>
+        <p>Social media stopped feeling social. Here’s why we’re building Praxis around real-world connection instead of endless scrolling.</p>
+        <a href="#why-praxis" class="blog-read-more">Read more →</a>
+      </article>
+
+      <article class="blog-preview">
+        <div class="blog-meta">
+          <span class="kicker">Product thinking</span>
+          <span class="blog-date">May 15, 2026 · 4 min</span>
+        </div>
+        <h3><a href="#social-media-stopped-feeling-social">Social media stopped feeling social</a></h3>
+        <p>Modern platforms optimize for attention and consumption. We think there’s a better way.</p>
+        <a href="#social-media-stopped-feeling-social" class="blog-read-more">Read more →</a>
+      </article>
+
+      <article class="blog-preview">
+        <div class="blog-meta">
+          <span class="kicker">Nearby discovery</span>
+          <span class="blog-date">May 15, 2026 · 4 min</span>
+        </div>
+        <h3><a href="#why-nearby-discovery-matters">Why nearby discovery matters</a></h3>
+        <p>Social apps became global first. We believe there’s enormous value in making social feel local again.</p>
+        <a href="#why-nearby-discovery-matters" class="blog-read-more">Read more →</a>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════ STORY / BLOG — WHY PRAXIS ═══════════════════════ -->
+<section class="block" id="why-praxis">
+  <div class="wrap">
+    <article class="story-card reveal">
+      <span class="kicker">Founder note</span>
+      <h2>Why we’re building <span class="gradient-text">Praxis</span>.</h2>
+      <div class="blog-post-meta">
+        <span>Published May 15, 2026</span>
+        <span>·</span>
+        <span>5 min read</span>
+      </div>
+
+      <p>Social media helped the world connect — but somewhere along the way, it stopped feeling social.</p>
+
+      <p>Today, most platforms are built around endless scrolling, algorithms, isolation, and content consumption. You can spend hours online and still feel disconnected from the people and places around you.</p>
+
+      <p>We think there’s a better way.</p>
+
+      <p>Praxis is being built around real-world connection: nearby people, local places, spontaneous plans, shared experiences, and communities that feel alive.</p>
+
+      <p>We want discovering people nearby to feel natural. We want cities to feel more social. We want meeting friends, finding events, and discovering local activity to happen effortlessly.</p>
+
+      <p>Instead of another platform designed only to maximize screen time, Praxis is designed to help people spend more meaningful time in the real world.</p>
+
+      <div class="story-list" aria-label="Praxis focus areas">
+        <span>Nearby discovery</span>
+        <span>Real-world experiences</span>
+        <span>Local communities</span>
+        <span>Thoughtful design</span>
+        <span>Privacy &amp; trust</span>
+        <span>Native interactions</span>
+      </div>
+
+      <p>This is only the beginning. Praxis is currently in development and planned to launch first on iOS in 2027.</p>
+
+      <p>Welcome to the next generation of social connection.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ═══════════════════════ STORY / BLOG — SOCIAL MEDIA ═══════════════════════ -->
+<section class="block" id="social-media-stopped-feeling-social">
+  <div class="wrap">
+    <article class="story-card reveal">
+      <span class="kicker">Product thinking</span>
+      <h2>Social media stopped feeling <span class="gradient-text">social</span>.</h2>
+      <div class="blog-post-meta">
+        <span>Published May 15, 2026</span>
+        <span>·</span>
+        <span>4 min read</span>
+      </div>
+
+      <p>Somewhere along the way, social media stopped being about people.</p>
+
+      <p>It became about algorithms, endless feeds, engagement metrics, and consuming content for hours without actually feeling connected to anyone around us.</p>
+
+      <p>You can open almost any app today and instantly see thousands of posts from strangers across the world — but still know nothing about the people nearby, the places around you, or what’s happening in your own city.</p>
+
+      <p>That feels backwards.</p>
+
+      <p>The internet made global connection easier than ever, but local connection slowly disappeared.</p>
+
+      <p>We think there’s a gap between digital life and real life that modern social platforms no longer solve well.</p>
+
+      <div class="story-list" aria-label="Modern social media problems">
+        <span>Attention</span>
+        <span>Retention</span>
+        <span>Scrolling</span>
+        <span>Advertisements</span>
+        <span>Passive content</span>
+        <span>Algorithmic feeds</span>
+      </div>
+
+      <p>Most platforms optimize for attention and consumption. But very few are designed around spontaneity, local experiences, nearby people, real-world plans, and communities that feel alive.</p>
+
+      <p>That’s one of the reasons we started building Praxis.</p>
+
+      <p>Praxis is designed to feel more connected to the real world: discovering people nearby, seeing local activity, finding events, meeting friends, checking into places, and turning online interaction into real experiences.</p>
+
+      <p>We believe social apps should help people go outside more, discover their city, feel less isolated, meet more naturally, and create memories offline — not just consume content online.</p>
+
+      <p>Technology should make the real world feel more connected, not replace it.</p>
+
+      <p>That’s the direction we want Praxis to move toward. And this is only the beginning.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ═══════════════════════ STORY / BLOG — NEARBY DISCOVERY ═══════════════════════ -->
+<section class="block" id="why-nearby-discovery-matters">
+  <div class="wrap">
+    <article class="story-card reveal">
+      <span class="kicker">Nearby discovery</span>
+      <h2>Why nearby discovery <span class="gradient-text">matters</span>.</h2>
+      <div class="blog-post-meta">
+        <span>Published May 15, 2026</span>
+        <span>·</span>
+        <span>4 min read</span>
+      </div>
+
+      <p>For most of the internet’s history, social platforms connected us to people far away.</p>
+
+      <p>But they rarely helped us connect with the people already around us.</p>
+
+      <p>You can spend hours online discovering creators, communities, and conversations happening across the world — while knowing almost nothing about the activity happening nearby.</p>
+
+      <p>Who’s at the same café? Who’s exploring the same city? Which places feel alive tonight? Where are your friends meeting? What’s happening around you right now?</p>
+
+      <p>Modern social apps became global first. But we believe there’s enormous value in making social feel local again.</p>
+
+      <p>Nearby discovery changes the feeling of a platform.</p>
+
+      <p>It transforms social media from passive consumption into real-world awareness.</p>
+
+      <div class="story-list" aria-label="Nearby discovery benefits">
+        <span>Local activity</span>
+        <span>Nearby experiences</span>
+        <span>Natural meetups</span>
+        <span>Spontaneous plans</span>
+        <span>City awareness</span>
+        <span>Real-world connection</span>
+      </div>
+
+      <p>Instead of endlessly scrolling through disconnected content, people can discover local activity, find nearby experiences, meet friends more naturally, create spontaneous plans, and feel more connected to their city.</p>
+
+      <p>That’s one of the ideas behind Praxis.</p>
+
+      <p>We’re building nearby discovery carefully: with privacy, intentionality, and user control built into the experience from the beginning.</p>
+
+      <p>People should decide when they’re discoverable, who can connect with them, and how visible they want to be.</p>
+
+      <p>Nearby technology should feel empowering — not invasive.</p>
+
+      <p>We also believe nearby social experiences can make cities feel more alive.</p>
+
+      <p>A restaurant becomes more social when you can see real activity. An event feels more dynamic when nearby people can discover it naturally. A city feels less isolating when meaningful connection becomes easier.</p>
+
+      <p>This isn’t just about technology.</p>
+
+      <p>It’s about making the digital world feel closer to real life again.</p>
+
+      <p>And we believe that’s where social platforms are heading next.</p>
+    </article>
+  </div>
+</section>
+
 <!-- ═══════════════════════ PRIVACY ═══════════════════════ -->
 <section class="block" id="privacy">
   <div class="wrap">
@@ -2528,6 +2946,7 @@ footer{
     <a href="#experience">Experience</a>
     <a href="#features">Features</a>
     <a href="#inside">Inside</a>
+    <a href="#insights">Insights</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#faq">FAQ</a>
     <a class="cta" href="#launch">Join ↗</a>
