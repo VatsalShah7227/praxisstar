@@ -107,10 +107,11 @@
   "featureList": [
     "Nearby discovery",
     "Photo sharing",
-    "Event planning",
-    "Restaurant check-ins",
+    "Chat-based event planning",
+    "Curated restaurant check-ins",
+    "Following and friends (separate graphs)",
     "Private messaging",
-    "Bluetooth discovery",
+    "Live venue activity",
     "Location-based social networking"
   ],
   "datePublished": "2027-01-01"
@@ -153,7 +154,7 @@
       "name": "How does nearby discovery work on Praxis?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Praxis uses Bluetooth-based nearby discovery so users can choose when they are discoverable and decide who they want to connect with."
+        "text": "Praxis surfaces nearby people and activity in real time, and you stay in control — you choose when you are discoverable and decide who can connect with you."
       }
     }
   ]
@@ -2178,6 +2179,285 @@ footer{
 /* mobile-bnav visibility handled in nav breakpoint above */
 
 
+/* ──────────────────────────────────────────────────────────
+   CONNECT — two relationship types (Follow vs Friends)
+   ────────────────────────────────────────────────────────── */
+.duo-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
+.duo-card{
+  position:relative;
+  padding:40px 34px;
+  border-radius:var(--r-md);
+  background:var(--surface-1);
+  border:1px solid var(--line);
+  overflow:hidden;
+  transition: background .3s ease, border-color .3s ease, transform .3s ease;
+}
+.duo-card:hover{ background:var(--surface-2); border-color:var(--line-strong); transform:translateY(-3px); }
+.duo-card::before{
+  content:"";
+  position:absolute; left:0; top:0; right:0; height:1px;
+  background:var(--accent); opacity:.5;
+}
+.duo-card.friends::before{ background:linear-gradient(120deg,#38d9f5,#7c3aff); }
+.duo-tag{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--faint); margin-bottom:22px;
+}
+.duo-tag i{
+  width:8px; height:8px; border-radius:50%;
+  background:var(--accent); box-shadow:0 0 12px var(--accent-glow);
+}
+.duo-card.friends .duo-tag i{ background:linear-gradient(135deg,#38d9f5,#7c3aff); box-shadow:0 0 12px rgba(124,58,255,.45); }
+.duo-card h3{ font-size:26px; margin-bottom:8px; }
+.duo-kind{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px; color:var(--pink); letter-spacing:.04em;
+  margin-bottom:18px; display:block;
+}
+.duo-card.friends .duo-kind{ color:#7fbcff; }
+.duo-card > p{ font-size:15px; line-height:1.6; margin-bottom:24px; }
+.duo-list{ display:flex; flex-direction:column; gap:12px; }
+.duo-list-item{
+  display:flex; align-items:flex-start; gap:11px;
+  font-size:14.5px; color:var(--muted); line-height:1.45;
+}
+.duo-list-item span.tick{
+  flex:0 0 18px; height:18px; margin-top:1px;
+  display:grid; place-items:center; border-radius:50%;
+  background:rgba(255,255,255,.05); border:1px solid var(--line-strong);
+  font-size:10px; color:var(--text);
+}
+.duo-note{
+  margin-top:46px;
+  text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px; letter-spacing:.08em;
+  color:var(--faint);
+}
+.duo-note b{ color:var(--text); font-weight:500; }
+@media (max-width:760px){
+  .duo-grid{ grid-template-columns:1fr; }
+  .duo-card{ padding:32px 26px; }
+}
+
+/* ──────────────────────────────────────────────────────────
+   CHAT-PLAN — event card lives inside chat
+   ────────────────────────────────────────────────────────── */
+.chatplan-split{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:64px;
+  align-items:center;
+}
+.chatplan-copy .plan-list{ margin-top:30px; }
+.chat-mock{
+  position:relative;
+  width:min(340px,100%);
+  margin:0 auto;
+  padding:18px 16px 20px;
+  border-radius:var(--r-md);
+  background:linear-gradient(170deg,#101019,#0a0a12);
+  border:1px solid var(--line-strong);
+  box-shadow:0 40px 90px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.03);
+}
+.chat-mock-head{
+  display:flex; align-items:center; gap:10px;
+  padding-bottom:14px; margin-bottom:14px;
+  border-bottom:1px solid var(--line);
+}
+.chat-mock-av{
+  width:34px; height:34px; border-radius:50%;
+  background:linear-gradient(135deg,#ff3d9a,#7c3aff);
+  flex:0 0 34px;
+}
+.chat-mock-head b{ font-size:14px; display:block; }
+.chat-mock-head small{ font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--green); letter-spacing:.1em; }
+.cbub{
+  max-width:78%;
+  padding:10px 14px; margin-bottom:10px;
+  font-size:13.5px; line-height:1.4;
+  border-radius:16px;
+}
+.cbub.them{
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-bottom-left-radius:5px;
+  color:var(--text);
+}
+.cbub.me{
+  margin-left:auto;
+  background:var(--accent);
+  border-bottom-right-radius:5px;
+  color:#fff;
+}
+.event-card{
+  margin:6px 0 4px;
+  border-radius:var(--r-sm);
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line-strong);
+  overflow:hidden;
+}
+.event-card-top{
+  padding:14px 16px 12px;
+  border-bottom:1px solid var(--line);
+}
+.event-card-kicker{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--pink); margin-bottom:8px; display:flex; align-items:center; gap:6px;
+}
+.event-card-kicker::before{ content:""; width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent-glow); }
+.event-card-title{ font-family:'Syne',sans-serif; font-weight:700; font-size:16px; letter-spacing:-.02em; margin-bottom:4px; }
+.event-card-meta{ font-size:12px; color:var(--muted); }
+.event-card-rsvp{
+  display:grid; grid-template-columns:repeat(3,1fr);
+}
+.rsvp-btn{
+  padding:11px 4px;
+  text-align:center;
+  font-size:11.5px; font-weight:600;
+  border-right:1px solid var(--line);
+  color:var(--muted);
+}
+.rsvp-btn:last-child{ border-right:none; }
+.rsvp-btn.on{ background:rgba(255,61,154,.12); color:var(--text); }
+.rsvp-btn .rsvp-n{ display:block; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--faint); margin-top:3px; letter-spacing:.06em; }
+.rsvp-btn.on .rsvp-n{ color:var(--pink); }
+@media (max-width:880px){
+  .chatplan-split{ grid-template-columns:1fr; gap:44px; }
+  .chatplan-split .chat-mock{ order:-1; }
+}
+
+/* ──────────────────────────────────────────────────────────
+   CURATED RESTAURANTS — activity rail
+   ────────────────────────────────────────────────────────── */
+.resto-split{
+  display:grid;
+  grid-template-columns:.95fr 1.05fr;
+  gap:60px; align-items:center;
+}
+.resto-card{
+  position:relative;
+  border-radius:var(--r-md);
+  overflow:hidden;
+  border:1px solid var(--line-strong);
+  background:#0c0c14;
+  box-shadow:0 30px 70px rgba(0,0,0,.45);
+}
+.resto-card img{ width:100%; display:block; aspect-ratio:4/3; object-fit:cover; opacity:.92; }
+.resto-card.plain{ background:#0c0c14; padding:0; }
+.resto-card.plain img{ aspect-ratio:auto; object-fit:contain; opacity:1; }
+.resto-card-grad{
+  position:absolute; inset:0;
+  background:linear-gradient(180deg,transparent 35%,rgba(8,8,13,.92));
+  pointer-events:none;
+}
+.resto-card-body{
+  position:absolute; left:0; right:0; bottom:0;
+  padding:22px;
+}
+.resto-live{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:6px 11px; border-radius:var(--r-pill);
+  background:rgba(41,217,133,.12); border:1px solid rgba(41,217,133,.3);
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em;
+  color:var(--green); text-transform:uppercase; margin-bottom:12px;
+}
+.resto-live i{ width:6px;height:6px;border-radius:50%;background:var(--green); animation:pulseDot 2s ease-in-out infinite; }
+.resto-card-body h3{ font-size:24px; margin-bottom:6px; }
+.resto-card-body .resto-sub{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; color:var(--faint); text-transform:uppercase; margin-bottom:16px; }
+.resto-stats{ display:flex; gap:26px; }
+.resto-stat .n{ font-family:'Syne',sans-serif; font-weight:700; font-size:22px; }
+.resto-stat .l{ display:block; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); margin-top:2px; }
+.vis-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:26px; }
+.vis-pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:9px 14px; border-radius:var(--r-pill);
+  background:var(--surface-1); border:1px solid var(--line);
+  font-size:12.5px; color:var(--muted);
+}
+.vis-pill i{ width:7px;height:7px;border-radius:50%; }
+.vis-pill .pub{ background:#38d9f5; }
+.vis-pill .fri{ background:#7c3aff; }
+.vis-pill .pri{ background:var(--faint); }
+@media (max-width:880px){
+  .resto-split{ grid-template-columns:1fr; gap:40px; }
+}
+
+/* ──────────────────────────────────────────────────────────
+   QR FRIEND FLOW — step rail
+   ────────────────────────────────────────────────────────── */
+.qr-split{
+  display:grid; grid-template-columns:.8fr 1.2fr;
+  gap:60px; align-items:center;
+}
+.qr-frame{
+  width:min(280px,100%); margin:0 auto;
+  aspect-ratio:1; border-radius:var(--r-md);
+  background:linear-gradient(160deg,#12121c,#0a0a12);
+  border:1px solid var(--line-strong);
+  display:grid; place-items:center; position:relative;
+  box-shadow:0 30px 70px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.qr-frame::before{
+  content:""; position:absolute; width:160%; height:2px;
+  background:linear-gradient(90deg,transparent,var(--pink),transparent);
+  box-shadow:0 0 14px var(--accent-glow);
+  animation:qrScan 3.4s ease-in-out infinite;
+}
+@keyframes qrScan{ 0%,100%{ top:22%; } 50%{ top:78%; } }
+.qr-frame img{ width:62%; border-radius:var(--r-sm); }
+.qr-steps{ display:flex; flex-direction:column; }
+.qr-step{
+  display:flex; gap:18px; align-items:flex-start;
+  padding:22px 0; border-bottom:1px solid var(--line);
+}
+.qr-step:last-child{ border-bottom:none; }
+.qr-step .qn{
+  flex:0 0 30px; font-family:'JetBrains Mono',monospace;
+  font-size:12px; color:var(--pink); padding-top:3px; letter-spacing:.06em;
+}
+.qr-step b{ font-family:'Syne',sans-serif; font-weight:700; font-size:17px; letter-spacing:-.02em; display:block; margin-bottom:5px; }
+.qr-step span{ display:block; color:var(--muted); font-size:14px; line-height:1.5; }
+@media (max-width:760px){
+  .qr-split{ grid-template-columns:1fr; gap:40px; }
+}
+
+/* ──────────────────────────────────────────────────────────
+   IDENTITY — profile that's actually you
+   ────────────────────────────────────────────────────────── */
+.identity-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:18px;
+}
+.id-card{
+  padding:30px 26px;
+  border-radius:var(--r-md);
+  background:var(--surface-1);
+  border:1px solid var(--line);
+  transition: background .3s ease, transform .3s ease;
+}
+.id-card:hover{ background:var(--surface-2); transform:translateY(-3px); }
+.id-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--pink); margin-bottom:16px;
+}
+.id-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.id-chips span{
+  padding:8px 13px; border-radius:var(--r-pill);
+  background:rgba(255,255,255,.04); border:1px solid var(--line-strong);
+  font-size:13px; color:var(--text);
+}
+.id-chips.solo span{ background:var(--accent); border:none; color:#fff; box-shadow:0 6px 20px var(--accent-glow); }
+@media (max-width:880px){ .identity-grid{ grid-template-columns:1fr; } }
+
 </style>
 </head>
 <body>
@@ -2191,10 +2471,10 @@ footer{
     <span class="brand-wordmark">PRAXIS</span>
   </a>
   <div class="nav-mid">
-    <a href="#experience">Experience</a>
+    <a href="#connect">Connect</a>
     <a href="#features">Features</a>
+    <a href="#plans">Plans</a>
     <a href="#inside">Inside</a>
-    <a href="#insights">Insights</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#faq">FAQ</a>
   </div>
@@ -2324,19 +2604,19 @@ footer{
   <div class="marquee">
     <span>Nearby discovery</span><span class="dot">✦</span>
     <span>Photo sharing</span><span class="dot">✦</span>
-    <span>RSVP events</span><span class="dot">✦</span>
-    <span>Venue check-ins</span><span class="dot">✦</span>
-    <span>Private chat</span><span class="dot">✦</span>
+    <span>Plans in chat</span><span class="dot">✦</span>
+    <span>Curated venues</span><span class="dot">✦</span>
+    <span>Follow &amp; friends</span><span class="dot">✦</span>
     <span>Safety-first</span><span class="dot">✦</span>
-    <span>Bluetooth discovery</span><span class="dot">✦</span>
+    <span>Live check-ins</span><span class="dot">✦</span>
     <span>Real connections</span><span class="dot">✦</span>
     <span>Nearby discovery</span><span class="dot">✦</span>
     <span>Photo sharing</span><span class="dot">✦</span>
-    <span>RSVP events</span><span class="dot">✦</span>
-    <span>Venue check-ins</span><span class="dot">✦</span>
-    <span>Private chat</span><span class="dot">✦</span>
+    <span>Plans in chat</span><span class="dot">✦</span>
+    <span>Curated venues</span><span class="dot">✦</span>
+    <span>Follow &amp; friends</span><span class="dot">✦</span>
     <span>Safety-first</span><span class="dot">✦</span>
-    <span>Bluetooth discovery</span><span class="dot">✦</span>
+    <span>Live check-ins</span><span class="dot">✦</span>
     <span>Real connections</span><span class="dot">✦</span>
   </div>
 </div>
@@ -2394,6 +2674,47 @@ footer{
   </div>
 </section>
 
+<!-- ═══════════════════════ CONNECT — FOLLOW vs FRIENDS ═══════════════════════ -->
+<section class="block" id="connect">
+  <div class="wrap">
+
+    <div class="section-head center reveal">
+      <span class="kicker">The Praxis graph</span>
+      <h2>Two ways to <span class="gradient-text">connect</span>.</h2>
+      <p>Most apps blur following and friendship into one. Praxis keeps them separate — so being seen and being trusted aren't the same thing.</p>
+    </div>
+
+    <div class="duo-grid reveal" style="transition-delay:.1s;">
+      <div class="duo-card">
+        <span class="duo-tag"><i></i> Open · one-way</span>
+        <h3>Follow</h3>
+        <span class="duo-kind">No approval needed</span>
+        <p>Follow anyone whose activity you find interesting. It shapes your feed and powers discovery — a public, social signal.</p>
+        <div class="duo-list">
+          <div class="duo-list-item"><span class="tick">→</span> Personalises your feed</div>
+          <div class="duo-list-item"><span class="tick">→</span> Builds your public social graph</div>
+          <div class="duo-list-item"><span class="tick">→</span> Fuels nearby discovery</div>
+        </div>
+      </div>
+
+      <div class="duo-card friends">
+        <span class="duo-tag"><i></i> Mutual · trusted</span>
+        <h3>Friends</h3>
+        <span class="duo-kind">Both sides confirm</span>
+        <p>Friendship is two-way and trusted. It's what unlocks the private side of Praxis — the moments you don't share with everyone.</p>
+        <div class="duo-list">
+          <div class="duo-list-item"><span class="tick">✓</span> Friends-only check-ins &amp; posts</div>
+          <div class="duo-list-item"><span class="tick">✓</span> Event invites &amp; plans</div>
+          <div class="duo-list-item"><span class="tick">✓</span> See when friends are open to plans</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="duo-note reveal">You can <b>follow without being friends</b>, or be <b>friends without following</b>. The choice is always yours.</p>
+
+  </div>
+</section>
+
 <!-- ═══════════════════════ FEATURES ═══════════════════════ -->
 <section class="block" id="features">
   <div class="wrap">
@@ -2401,39 +2722,39 @@ footer{
     <div class="section-head center reveal">
       <span class="kicker">Built for premium social</span>
       <h2>Everything feels intentional.</h2>
-      <p>From Bluetooth nearby discovery to local event planning, Praxis is built to feel polished from the very first tap.</p>
+      <p>From nearby discovery to chat-native plans, Praxis is built to feel polished from the very first tap.</p>
     </div>
 
     <div class="feat-grid reveal" style="transition-delay:.1s;">
       <article class="feat">
         <div class="feat-num"><span>01 / NEARBY</span><span class="feat-glyph"></span></div>
         <h3>Nearby discovery</h3>
-        <p>Discover people nearby and connect through a real-world social layer, not just another scroll feed.</p>
+        <p>See people and activity around you through a real-world social layer — you decide when you're discoverable.</p>
       </article>
       <article class="feat">
         <div class="feat-num"><span>02 / VENUES</span><span class="feat-glyph"></span></div>
-        <h3>Restaurant check-ins</h3>
-        <p>Share where you are, see venue activity, and make places feel alive through real social context.</p>
+        <h3>Curated restaurants</h3>
+        <p>Hand-picked places only — never random listings. Check in, see who's there, and watch venues come alive.</p>
       </article>
       <article class="feat">
-        <div class="feat-num"><span>03 / CHAT</span><span class="feat-glyph"></span></div>
-        <h3>Private conversations</h3>
-        <p>Move from nearby moments to private messages with a clean chat experience built for real-world connection.</p>
+        <div class="feat-num"><span>03 / GRAPH</span><span class="feat-glyph"></span></div>
+        <h3>Follow &amp; Friends</h3>
+        <p>Two relationships, kept separate. Follow openly for discovery — add Friends to unlock trusted, private moments.</p>
       </article>
       <article class="feat">
-        <div class="feat-num"><span>04 / EVENTS</span><span class="feat-glyph"></span></div>
-        <h3>Live RSVP events</h3>
-        <p>Create local events, send them to friends, and watch Going, Maybe, and Decline update in real time.</p>
+        <div class="feat-num"><span>04 / PLANS</span><span class="feat-glyph"></span></div>
+        <h3>Plans inside chat</h3>
+        <p>Create an event right in a conversation. It becomes a card friends can RSVP to — Going, Maybe, Decline, live.</p>
       </article>
       <article class="feat">
         <div class="feat-num"><span>05 / SAFETY</span><span class="feat-glyph"></span></div>
-        <h3>Safety-first design</h3>
-        <p>Built with trust, reporting, privacy, and verification paths in mind from day one.</p>
+        <h3>Trust &amp; safety</h3>
+        <p>Phone verification, clear report and block flows, and visibility controls built in from day one.</p>
       </article>
       <article class="feat">
         <div class="feat-num"><span>06 / CRAFT</span><span class="feat-glyph"></span></div>
         <h3>Premium native feel</h3>
-        <p>Modern visuals, fluid interactions, and a brand that feels global — not cheap or generic.</p>
+        <p>Built natively in SwiftUI — fluid, polished interactions and a brand that feels global, not generic.</p>
       </article>
     </div>
 
@@ -2492,6 +2813,124 @@ footer{
   </div>
 </section>
 
+<!-- ═══════════════════════ CHAT-PLAN ═══════════════════════ -->
+<section class="block" id="plans">
+  <div class="wrap">
+
+    <div class="section-head reveal">
+      <span class="kicker">Plans, not calendars</span>
+      <h2>Turn a chat into a <span class="gradient-text">plan</span>.</h2>
+      <p>On Praxis, plans don't live in some separate events tab. You make them right inside the conversation — where the people already are.</p>
+    </div>
+
+    <div class="chatplan-split reveal" style="transition-delay:.1s;">
+      <div class="chatplan-copy">
+        <div class="plan-list">
+          <div class="plan-item">
+            <span class="plan-num">01</span>
+            <div class="plan-text">
+              <b>Start from the chat</b>
+              <span>Tap into any conversation, pick a restaurant and a time, and send it.</span>
+            </div>
+          </div>
+          <div class="plan-item">
+            <span class="plan-num">02</span>
+            <div class="plan-text">
+              <b>It becomes a card</b>
+              <span>The plan arrives as a live event card — not a flat message that scrolls away.</span>
+            </div>
+          </div>
+          <div class="plan-item">
+            <span class="plan-num">03</span>
+            <div class="plan-text">
+              <b>Everyone RSVPs live</b>
+              <span>Going, Maybe, Decline — counts update in real time, and the host sees who's in.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-mock" aria-label="Praxis chat with an event card">
+        <div class="chat-mock-head">
+          <span class="chat-mock-av"></span>
+          <div><b>Friday crew</b><small>● 4 ONLINE</small></div>
+        </div>
+        <div class="cbub them">where are we landing tonight?</div>
+        <div class="cbub me">made it a plan 👇</div>
+        <div class="event-card">
+          <div class="event-card-top">
+            <span class="event-card-kicker">Praxis plan</span>
+            <div class="event-card-title">Coffee at Blue Tokai</div>
+            <div class="event-card-meta">Tonight · 7:30 PM · Hosted by you</div>
+          </div>
+          <div class="event-card-rsvp">
+            <div class="rsvp-btn on">Going<span class="rsvp-n">3</span></div>
+            <div class="rsvp-btn">Maybe<span class="rsvp-n">1</span></div>
+            <div class="rsvp-btn">Decline<span class="rsvp-n">0</span></div>
+          </div>
+        </div>
+        <div class="cbub them">in. see you at 7.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════ CURATED RESTAURANTS ═══════════════════════ -->
+<section class="block" id="venues">
+  <div class="wrap">
+
+    <div class="section-head reveal">
+      <span class="kicker">Curated, never random</span>
+      <h2>Places that feel <span class="gradient-text">alive</span>.</h2>
+      <p>Every venue on Praxis is hand-picked — no random business listings. Check in, and the place reflects real activity in real time.</p>
+    </div>
+
+    <div class="resto-split reveal" style="transition-delay:.1s;">
+      <div class="resto-card plain">
+        <img src="./restaurant1.png" alt="Curated Praxis restaurant screen showing live check-in activity"/>
+      </div>
+
+      <div>
+        <span class="kicker">How check-ins work</span>
+        <h2 style="font-size:clamp(26px,3.2vw,38px); margin-top:18px;">You choose who sees it</h2>
+        <p style="margin-top:16px; max-width:440px;">Every check-in is a photo and a moment — and you decide exactly how far it travels. Three levels, no guesswork.</p>
+
+        <div class="vis-row">
+          <span class="vis-pill"><i class="pub"></i> Public — everyone</span>
+          <span class="vis-pill"><i class="fri"></i> Friends only</span>
+          <span class="vis-pill"><i class="pri"></i> Private — just you</span>
+        </div>
+
+        <div class="plan-list" style="margin-top:30px;">
+          <div class="plan-item">
+            <span class="plan-num">·</span>
+            <div class="plan-text">
+              <b>Live Now &amp; Recent activity</b>
+              <span>Counts come from real check-ins — so a venue feels busy only when it actually is.</span>
+            </div>
+          </div>
+          <div class="plan-item">
+            <span class="plan-num">·</span>
+            <div class="plan-text">
+              <b>Friends who visited</b>
+              <span>See where the people you trust have been, without broadcasting it to strangers.</span>
+            </div>
+          </div>
+          <div class="plan-item">
+            <span class="plan-num">·</span>
+            <div class="plan-text">
+              <b>Tap a pin, make a plan</b>
+              <span>Open any curated venue to view it — or start an event there in one tap.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- ═══════════════════════ ROADMAP ═══════════════════════ -->
 <section class="block" id="roadmap">
   <div class="wrap">
@@ -2528,31 +2967,85 @@ footer{
   </div>
 </section>
 
-<!-- ═══════════════════════ COMMUNITY ═══════════════════════ -->
-<section class="block" id="community">
+<!-- ═══════════════════════ QR FRIEND FLOW ═══════════════════════ -->
+<section class="block" id="qr">
   <div class="wrap">
 
     <div class="section-head center reveal">
-      <span class="kicker">Community excitement</span>
-      <h2>Why people are <span class="gradient-text">excited</span>.</h2>
-      <p>A new kind of social experience built around nearby people, real places, and real plans.</p>
+      <span class="kicker">Praxis code</span>
+      <h2>Add a friend in <span class="gradient-text">one scan</span>.</h2>
+      <p>Trust shouldn't take a dozen taps. Meet someone in real life, scan their code, and you're connected — no endless handshake.</p>
     </div>
 
-    <div class="quote-grid reveal" style="transition-delay:.1s;">
-      <div class="quote">
-        <span class="quote-mark">"</span>
-        <p class="quote-body">Cities could feel social again.</p>
-        <span class="quote-source">Early supporter</span>
+    <div class="qr-split reveal" style="transition-delay:.1s;">
+      <div class="qr-frame">
+        <img src="./qr1.png" alt="Praxis QR friend code for adding friends in person"/>
       </div>
-      <div class="quote">
-        <span class="quote-mark">"</span>
-        <p class="quote-body">Nearby discovery actually feels useful.</p>
-        <span class="quote-source">Waitlist member</span>
+      <div class="qr-steps">
+        <div class="qr-step">
+          <span class="qn">01</span>
+          <div><b>Show your code</b><span>Open your Praxis code so the person in front of you can scan it.</span></div>
+        </div>
+        <div class="qr-step">
+          <span class="qn">02</span>
+          <div><b>They scan &amp; confirm</b><span>One tap on their side sends the request straight back to you.</span></div>
+        </div>
+        <div class="qr-step">
+          <span class="qn">03</span>
+          <div><b>You confirm once</b><span>Approve it, and you're friends instantly — both sides, no second step.</span></div>
+        </div>
       </div>
-      <div class="quote">
-        <span class="quote-mark">"</span>
-        <p class="quote-body">Finally — a social app built for real plans.</p>
-        <span class="quote-source">Community feedback</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════ IDENTITY ═══════════════════════ -->
+<section class="block" id="identity">
+  <div class="wrap">
+
+    <div class="section-head reveal">
+      <span class="kicker">A profile that's actually you</span>
+      <h2>More than a <span class="gradient-text">grid of photos</span>.</h2>
+      <p>Praxis profiles are built to say something real — what you're into, where you're at, and what you're open to. No bios that read like a résumé, no dating-app prompts.</p>
+    </div>
+
+    <div class="identity-grid reveal" style="transition-delay:.1s;">
+      <div class="id-card">
+        <div class="id-label">Ask me about</div>
+        <div class="id-chips">
+          <span>Specialty coffee</span><span>Film photography</span><span>City running</span>
+        </div>
+      </div>
+      <div class="id-card">
+        <div class="id-label">Vibe</div>
+        <div class="id-chips">
+          <span>Late-night plans</span><span>Quiet cafés</span><span>Spontaneous</span><span>Local-first</span>
+        </div>
+      </div>
+      <div class="id-card">
+        <div class="id-label">Milestones</div>
+        <div class="id-chips">
+          <span>New to the city</span><span>Just ran a 10K</span>
+        </div>
+      </div>
+      <div class="id-card">
+        <div class="id-label">Social intent</div>
+        <div class="id-chips">
+          <span>Open to plans</span><span>Looking for a crew</span><span>Down to explore</span>
+        </div>
+      </div>
+      <div class="id-card">
+        <div class="id-label">Current chapter</div>
+        <div class="id-chips solo">
+          <span>Building something new ✦</span>
+        </div>
+      </div>
+      <div class="id-card">
+        <div class="id-label">Your graph</div>
+        <div class="id-chips">
+          <span>Followers</span><span>Following</span><span>Friends</span>
+        </div>
       </div>
     </div>
 
@@ -2812,11 +3305,11 @@ footer{
         </div>
         <div class="faq-item">
           <button class="faq-q">How does nearby discovery work?<span class="faq-arrow">+</span></button>
-          <div class="faq-a"><div class="faq-a-inner">Praxis uses Bluetooth to detect people nearby in real time. You stay in control — you choose when to be discoverable, and you decide who can connect with you.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">Praxis surfaces people and activity around you in real time. You stay in control — you choose when to be discoverable, and you decide who can connect with you.</div></div>
         </div>
         <div class="faq-item">
           <button class="faq-q">Is my location data private?<span class="faq-arrow">+</span></button>
-          <div class="faq-a"><div class="faq-a-inner">Absolutely. Your precise location is never stored on our servers or shared with anyone. Nearby detection is done on-device via Bluetooth, so your location stays private.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">Yes. Your precise location is never sold or shared with third parties, and you control your visibility at all times. Privacy is built into nearby discovery, not bolted on after.</div></div>
         </div>
         <div class="faq-item">
           <button class="faq-q">Are you raising funding?<span class="faq-arrow">+</span></button>
@@ -2943,10 +3436,12 @@ footer{
 <!-- ═══════════════════════ MOBILE BOTTOM NAV ═══════════════════════ -->
 <nav class="mobile-bnav" aria-label="Section navigation">
   <div class="mobile-bnav-inner">
-    <a href="#experience">Experience</a>
+    <a href="#connect">Connect</a>
     <a href="#features">Features</a>
+    <a href="#plans">Plans</a>
+    <a href="#venues">Venues</a>
     <a href="#inside">Inside</a>
-    <a href="#insights">Insights</a>
+    <a href="#qr">Code</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#faq">FAQ</a>
     <a class="cta" href="#launch">Join ↗</a>
