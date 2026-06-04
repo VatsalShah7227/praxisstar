@@ -239,6 +239,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" as="style"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 /* ──────────────────────────────────────────────────────────
@@ -2436,6 +2437,168 @@ footer{
 /* ──────────────────────────────────────────────────────────
    IDENTITY — profile that's actually you
    ────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   NEW FEATURES v2 — scroll progress · cursor · back-to-top
+   · toast · active nav · typewriter · stagger · copy email
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Scroll Progress Bar ── */
+.scroll-progress{
+  position:fixed;top:0;left:0;z-index:201;
+  height:2px;width:0%;
+  background:var(--accent);
+  box-shadow:0 0 12px var(--accent-glow);
+  transition:width .08s linear;
+  pointer-events:none;
+}
+
+/* ── Cursor Glow ── */
+.cursor-glow{
+  position:fixed;
+  width:520px;height:520px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,61,154,.052), rgba(124,58,255,.026) 46%, transparent 72%);
+  pointer-events:none;
+  z-index:0;
+  top:0;left:0;
+  translate:-260px -260px;
+  transition:translate .22s ease;
+  will-change:translate;
+}
+@media(hover:none){.cursor-glow{display:none;}}
+
+/* ── Back To Top ── */
+.back-to-top{
+  position:fixed;bottom:28px;right:24px;z-index:92;
+  width:46px;height:46px;border-radius:50%;
+  background:var(--accent);
+  border:none;cursor:pointer;
+  display:grid;place-items:center;
+  font-size:20px;line-height:1;color:#fff;font-weight:700;
+  font-family:'Syne',sans-serif;
+  box-shadow:0 8px 28px var(--accent-glow);
+  opacity:0;transform:translateY(16px);
+  transition:opacity .35s ease, transform .35s ease, box-shadow .25s ease;
+  pointer-events:none;
+}
+.back-to-top.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
+.back-to-top:hover{transform:translateY(-3px);box-shadow:0 14px 38px var(--accent-glow);}
+@media(max-width:940px){.back-to-top{bottom:80px;right:16px;}}
+
+/* ── Toast Notification ── */
+.toast{
+  position:fixed;bottom:36px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  z-index:999;
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 24px;
+  border-radius:var(--r-pill);
+  background:rgba(247,247,252,.97);
+  border:1px solid var(--line-strong);
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  font-size:14px;font-weight:500;color:var(--text);
+  box-shadow:0 14px 52px rgba(10,10,30,.13), 0 2px 8px rgba(10,10,30,.06);
+  opacity:0;
+  transition:opacity .35s ease, transform .35s ease;
+  pointer-events:none;
+  white-space:nowrap;
+  letter-spacing:-.01em;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:600px){.toast{font-size:13px;padding:12px 18px;bottom:80px;}}
+
+/* ── Enhanced Feature Card Hover ── */
+.feat{transition:background .3s ease, box-shadow .3s ease, transform .3s ease;}
+.feat:hover{
+  background:var(--surface-2) !important;
+  box-shadow:0 16px 52px rgba(255,61,154,.08), inset 0 0 0 1px var(--line-strong);
+  transform:translateY(-2px);
+}
+.feat h3{transition:color .25s ease;}
+.feat:hover h3{color:var(--pink);}
+
+/* ── Enhanced Quote Card Hover ── */
+.quote{transition:box-shadow .3s ease, transform .3s ease, border-color .3s ease;}
+.quote:hover{
+  box-shadow:0 20px 60px rgba(10,10,30,.09);
+  border-color:var(--line-strong);
+  transform:translateY(-4px);
+}
+
+/* ── Enhanced Blog Card Hover ── */
+.blog-preview{transition:background .3s ease, border-color .3s ease, transform .3s ease, box-shadow .3s ease;}
+.blog-preview:hover{
+  box-shadow:0 14px 44px rgba(255,61,154,.08);
+  transform:translateY(-3px) !important;
+}
+
+/* ── Active Nav Link ── */
+.nav-mid a{position:relative; transition:color .2s ease;}
+.nav-mid a.nav-active{color:var(--text) !important;}
+.nav-mid a.nav-active::after{
+  content:"";
+  position:absolute;bottom:-4px;left:0;right:0;
+  height:1.5px;
+  background:var(--accent);
+  border-radius:999px;
+}
+
+/* ── Typewriter Cursor ── */
+.tw-cursor{
+  display:inline-block;
+  width:3px;height:.85em;
+  background:var(--pink);
+  vertical-align:middle;
+  margin-left:3px;
+  border-radius:2px;
+  animation:twBlink .75s step-end infinite;
+}
+@keyframes twBlink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* ── Copy Email Hint ── */
+.email-copy{
+  cursor:pointer;
+  position:relative;
+  border-bottom:1px dashed var(--faint);
+  transition:border-color .2s ease, color .2s ease;
+}
+.email-copy:hover{border-color:var(--pink);color:var(--pink);}
+.email-copy::after{
+  content:"Copy";
+  position:absolute;bottom:calc(100% + 7px);left:50%;
+  transform:translateX(-50%);
+  padding:4px 9px;
+  border-radius:var(--r-xs);
+  background:var(--text);color:var(--bg);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  white-space:nowrap;
+  opacity:0;transition:opacity .2s ease;
+  pointer-events:none;
+}
+.email-copy:hover::after{opacity:1;}
+
+/* ── Feat Grid Stagger (applied via JS) ── */
+.feat.stagger-in{
+  animation:featSlideIn .5s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes featSlideIn{
+  from{opacity:0;transform:translateY(18px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ── id-card enhanced hover ── */
+.id-card:hover{background:var(--surface-2);transform:translateY(-3px);box-shadow:0 12px 36px rgba(10,10,30,.07);}
+.id-card{transition:background .3s ease, transform .3s ease, box-shadow .3s ease;}
+
+/* ── duo-card enhanced hover ── */
+.duo-card:hover{box-shadow:0 16px 48px rgba(10,10,30,.09);}
+
+/* ── plan-item subtle hover ── */
+.plan-item{transition:background .2s ease;border-radius:var(--r-xs);padding-left:6px;padding-right:6px;}
+.plan-item:hover{background:var(--surface-1);}
+
 .identity-grid{
   display:grid; grid-template-columns:repeat(3,1fr); gap:18px;
 }
@@ -2779,27 +2942,27 @@ footer{
 
   <div class="screenshot-row" aria-label="Praxis app screens">
     <figure class="phone-shot left-2">
-      <img src="./meetup1.png" alt="Praxis local event planning app screen showing nearby activity">
+      <img loading="lazy" src="./meetup1.png" alt="Praxis local event planning app screen showing nearby activity">
       <figcaption class="shot-label">Nearby activity</figcaption>
     </figure>
 
     <figure class="phone-shot left-1">
-      <img src="./discovery1.png" alt="Praxis nearby social discovery app screen for finding people nearby">
+      <img loading="lazy" src="./discovery1.png" alt="Praxis nearby social discovery app screen for finding people nearby">
       <figcaption class="shot-label">Discover nearby</figcaption>
     </figure>
 
     <figure class="phone-shot center">
-      <img src="./feed1.png" alt="Praxis social media app feed for nearby moments and real-world connection">
+      <img loading="lazy" src="./feed1.png" alt="Praxis social media app feed for nearby moments and real-world connection">
       <figcaption class="shot-label">Social feed</figcaption>
     </figure>
 
     <figure class="phone-shot right-1">
-      <img src="./qr1.png" alt="Praxis QR code check-in screen for venue-based social discovery">
+      <img loading="lazy" src="./qr1.png" alt="Praxis QR code check-in screen for venue-based social discovery">
       <figcaption class="shot-label">Praxis code</figcaption>
     </figure>
 
     <figure class="phone-shot right-2">
-      <img src="./restaurant1.png" alt="Praxis restaurant check-in screen for local social activity">
+      <img loading="lazy" src="./restaurant1.png" alt="Praxis restaurant check-in screen for local social activity">
       <figcaption class="shot-label">Venue check-in</figcaption>
     </figure>
   </div>
@@ -2891,7 +3054,7 @@ footer{
 
     <div class="resto-split reveal" style="transition-delay:.1s;">
       <div class="resto-card plain">
-        <img src="./restaurant1.png" alt="Curated Praxis restaurant screen showing live check-in activity"/>
+        <img loading="lazy" src="./restaurant1.png" alt="Curated Praxis restaurant screen showing live check-in activity"/>
       </div>
 
       <div>
@@ -2982,7 +3145,7 @@ footer{
 
     <div class="qr-split reveal" style="transition-delay:.1s;">
       <div class="qr-frame">
-        <img src="./qr1.png" alt="Praxis QR friend code for adding friends in person"/>
+        <img loading="lazy" src="./qr1.png" alt="Praxis QR friend code for adding friends in person"/>
       </div>
       <div class="qr-steps">
         <div class="qr-step">
@@ -3374,7 +3537,7 @@ footer{
         </div>
 
         <a class="contact-btn" href="mailto:hello@praxisstar.com">
-          hello@praxisstar.com
+          <span class="email-copy" data-email="hello@praxisstar.com">hello@praxisstar.com</span>
         </a>
       </div>
     </div>
@@ -3451,6 +3614,12 @@ footer{
   </div>
 </nav>
 
+
+<!-- ═══ OVERLAY UI ELEMENTS ═══ -->
+<div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
+<div id="cursor-glow"     class="cursor-glow"     aria-hidden="true"></div>
+<button id="back-to-top"  class="back-to-top"     aria-label="Back to top">↑</button>
+<div id="toast-msg"       class="toast"           role="status" aria-live="polite"></div>
 
 <script>
 
@@ -3585,6 +3754,163 @@ async function handleSubmit(e){
   }
 }
 loadWaitlistCount();
+
+
+/* ════════════════════════════════════════════════════════════
+   v2 FEATURES
+   ════════════════════════════════════════════════════════════ */
+
+/* ── TOAST ── */
+function showToast(msg, icon = '✓'){
+  const t = document.getElementById('toast-msg');
+  t.innerHTML = `<span style="font-size:16px">${icon}</span> ${msg}`;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3800);
+}
+
+/* ── Replace waitlist success div with toast ── */
+const _formSuccessEl = document.getElementById('form-success');
+if(_formSuccessEl){
+  new MutationObserver(() => {
+    if(_formSuccessEl.style.display === 'block'){
+      _formSuccessEl.style.display = 'none';
+      showToast("You're on the list — we'll be in touch! 🎉");
+    }
+  }).observe(_formSuccessEl, {attributes:true, attributeFilter:['style']});
+}
+
+/* ── SCROLL PROGRESS BAR ── */
+const _scrollProg = document.getElementById('scroll-progress');
+function _updateScrollProgress(){
+  const pct = document.documentElement.scrollTop /
+    (document.documentElement.scrollHeight - window.innerHeight) * 100;
+  _scrollProg.style.width = Math.min(100, pct) + '%';
+}
+window.addEventListener('scroll', _updateScrollProgress, {passive:true});
+
+/* ── CURSOR GLOW ── */
+const _cursorGlow = document.getElementById('cursor-glow');
+if(window.matchMedia('(hover:hover)').matches){
+  document.addEventListener('mousemove', e => {
+    _cursorGlow.style.translate = `${e.clientX - 260}px ${e.clientY - 260}px`;
+  }, {passive:true});
+}
+
+/* ── BACK TO TOP ── */
+const _bttBtn = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => {
+  _bttBtn.classList.toggle('visible', document.documentElement.scrollTop > 700);
+}, {passive:true});
+_bttBtn.addEventListener('click', () => {
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
+/* ── ACTIVE NAV LINKS on scroll ── */
+const _navLinks  = Array.from(document.querySelectorAll('.nav-mid a[href^="#"]'));
+const _navSects  = Array.from(document.querySelectorAll('section[id]'));
+const _navObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(!e.isIntersecting) return;
+    _navLinks.forEach(a => {
+      a.classList.toggle('nav-active', a.getAttribute('href') === '#' + e.target.id);
+    });
+  });
+}, { rootMargin:'-35% 0px -58% 0px', threshold:0 });
+_navSects.forEach(s => _navObs.observe(s));
+
+/* ── COPY EMAIL ── */
+document.querySelectorAll('.email-copy').forEach(el => {
+  el.addEventListener('click', ev => {
+    ev.preventDefault();
+    const email = el.dataset.email || el.textContent.trim();
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(email).then(() => showToast('Email copied! 📋'));
+    }
+  });
+});
+
+/* ── WAITLIST COUNT ANIMATION ── */
+function _animCount(el, target, dur = 1800){
+  const t0 = performance.now();
+  (function tick(now){
+    const p = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(target * e);
+    if(p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+const _wlCountEl = document.getElementById('waitlist-count');
+if(_wlCountEl){
+  let _wlAnimDone = false;
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting && !_wlAnimDone){
+        _wlAnimDone = true;
+        const cur = parseInt(_wlCountEl.textContent) || 0;
+        if(cur > 0) _animCount(_wlCountEl, cur);
+      }
+    });
+  }).observe(_wlCountEl);
+  /* Also hook into loadWaitlistCount data */
+  const _origFetch = window.fetch;
+  window.fetch = function(...args){
+    return _origFetch.apply(this, args).then(r => {
+      const clone = r.clone();
+      clone.json().then(d => {
+        if(d && d.count !== undefined && !_wlAnimDone){
+          _wlAnimDone = true;
+          _animCount(_wlCountEl, d.count);
+        }
+      }).catch(()=>{});
+      return r;
+    });
+  };
+}
+
+/* ── TYPEWRITER on hero gradient text ── */
+window.addEventListener('load', () => {
+  const gEl = document.querySelector('.hero h1 .gradient-text');
+  if(!gEl) return;
+  const fullText = gEl.textContent.trim();
+  gEl.textContent = '';
+  const cur = document.createElement('span');
+  cur.className = 'tw-cursor';
+  gEl.after(cur);
+  let i = 0;
+  function _type(){
+    if(i < fullText.length){
+      gEl.textContent += fullText[i++];
+      setTimeout(_type, 62 + Math.random() * 22);
+    } else {
+      setTimeout(() => cur.style.display = 'none', 2400);
+    }
+  }
+  setTimeout(_type, 920);
+}, {once:true});
+
+/* ── FEAT GRID STAGGER on reveal ── */
+const _featGrid = document.querySelector('.feat-grid');
+if(_featGrid){
+  const _featObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(!e.isIntersecting) return;
+      _featGrid.querySelectorAll('.feat').forEach((f, idx) => {
+        setTimeout(() => f.classList.add('stagger-in'), idx * 70);
+      });
+      _featObs.disconnect();
+    });
+  }, {threshold:.12});
+  _featObs.observe(_featGrid);
+}
+
+/* ── HERO STAT COUNTER ── */
+window.addEventListener('load', () => {
+  const yearEl = document.querySelector('.hero-meta-item .num');
+  if(yearEl && yearEl.textContent.trim() === '2027'){
+    setTimeout(() => _animCount(yearEl, 2027, 1200), 600);
+  }
+}, {once:true});
 </script>
 
 </body>
