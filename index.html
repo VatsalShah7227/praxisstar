@@ -2113,6 +2113,36 @@ footer{
 .soc-btn:hover{ color:var(--text); border-color:var(--line-strong); background:var(--surface-1); }
 
 /* ──────────────────────────────────────────────────────────
+   MOBILE STATUS CHIP — floating "In development" badge
+   ────────────────────────────────────────────────────────── */
+.mobile-status{
+  display:none;
+  position:fixed;
+  top:80px; left:50%;
+  transform:translateX(-50%);
+  z-index:70;
+  align-items:center; gap:7px;
+  padding:7px 14px;
+  background:rgba(247,247,252,.9);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(41,217,133,.35);
+  border-radius:var(--r-pill);
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px; font-weight:500;
+  color:var(--green);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  box-shadow:0 4px 16px rgba(10,10,30,.1);
+}
+.mobile-status .dot{
+  width:6px; height:6px; border-radius:50%; background:var(--green);
+  animation:pulseDot 2s ease-in-out infinite;
+}
+@media (max-width: 940px){
+  .mobile-status{ display:inline-flex; }
+}
+
+/* ──────────────────────────────────────────────────────────
    MOBILE BOTTOM NAV
    ────────────────────────────────────────────────────────── */
 .mobile-bnav{
@@ -2912,27 +2942,27 @@ footer{
 
   <div class="screenshot-row" aria-label="Praxis app screens">
     <figure class="phone-shot left-2">
-      <img loading="lazy" src="./meetup1.webp" alt="Praxis local event planning app screen showing nearby activity">
+      <img loading="lazy" src="./meetup1.png" alt="Praxis local event planning app screen showing nearby activity">
       <figcaption class="shot-label">Nearby activity</figcaption>
     </figure>
 
     <figure class="phone-shot left-1">
-      <img loading="lazy" src="./discovery1.webp" alt="Praxis nearby social discovery app screen for finding people nearby">
+      <img loading="lazy" src="./discovery1.png" alt="Praxis nearby social discovery app screen for finding people nearby">
       <figcaption class="shot-label">Discover nearby</figcaption>
     </figure>
 
     <figure class="phone-shot center">
-      <img loading="lazy" src="./feed1.webp" alt="Praxis social media app feed for nearby moments and real-world connection">
+      <img loading="lazy" src="./feed1.png" alt="Praxis social media app feed for nearby moments and real-world connection">
       <figcaption class="shot-label">Social feed</figcaption>
     </figure>
 
     <figure class="phone-shot right-1">
-      <img loading="lazy" src="./qr1.webp" alt="Praxis QR code check-in screen for venue-based social discovery">
+      <img loading="lazy" src="./qr1.png" alt="Praxis QR code check-in screen for venue-based social discovery">
       <figcaption class="shot-label">Praxis code</figcaption>
     </figure>
 
     <figure class="phone-shot right-2">
-      <img loading="lazy" src="./restaurant1.webp" alt="Praxis restaurant check-in screen for local social activity">
+      <img loading="lazy" src="./restaurant1.png" alt="Praxis restaurant check-in screen for local social activity">
       <figcaption class="shot-label">Venue check-in</figcaption>
     </figure>
   </div>
@@ -3024,7 +3054,7 @@ footer{
 
     <div class="resto-split reveal" style="transition-delay:.1s;">
       <div class="resto-card plain">
-        <img loading="lazy" src="./restaurant1.webp" alt="Curated Praxis restaurant screen showing live check-in activity"/>
+        <img loading="lazy" src="./restaurant1.png" alt="Curated Praxis restaurant screen showing live check-in activity"/>
       </div>
 
       <div>
@@ -3115,7 +3145,7 @@ footer{
 
     <div class="qr-split reveal" style="transition-delay:.1s;">
       <div class="qr-frame">
-        <img loading="lazy" src="./qr1.webp" alt="Praxis QR friend code for adding friends in person"/>
+        <img loading="lazy" src="./qr1.png" alt="Praxis QR friend code for adding friends in person"/>
       </div>
       <div class="qr-steps">
         <div class="qr-step">
@@ -3522,14 +3552,14 @@ footer{
       <h2>Be the first to experience <span class="gradient-text">Praxis</span>.</h2>
       <p>Join the waitlist for early access when we launch on the App Store.</p>
 
-      <div class="waitlist-proof" style="display:none;">
+      <div class="waitlist-proof">
         <span class="proof-dot"></span>
         <span><span id="waitlist-count">0</span>+ people already joined</span>
       </div>
 
       <form class="waitlist-form" onsubmit="handleSubmit(event)">
         <input type="email" placeholder="you@yourdomain.com" aria-label="Email for early access" required/>
-        <button class="waitlist-btn" type="submit">Get early access</button>
+        <button class="waitlist-btn" type="submit">Join early access</button>
       </form>
       <p class="form-success" id="form-success">✓ You're on the list — we'll be in touch.</p>
     </div>
@@ -3562,6 +3592,12 @@ footer{
     </div>
   </div>
 </footer>
+
+<!-- ═══════════════════════ MOBILE STATUS CHIP ═══════════════════════ -->
+<div class="mobile-status" aria-label="Praxis development status">
+  <span class="dot"></span>
+  In development
+</div>
 
 <!-- ═══════════════════════ MOBILE BOTTOM NAV ═══════════════════════ -->
 <nav class="mobile-bnav" aria-label="Section navigation">
@@ -3680,29 +3716,13 @@ document.querySelectorAll('.faq-q').forEach(btn => {
    ════════════════════════════════════════════════════════════ */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGAwChD7TBBqgP2pLN0OZhMQe3AuncGXaGstUsigReWS1hCkH9dZQKGXd35vDelB5d8w/exec';
 
-/* Social proof: only surface the counter once it's a number worth showing,
-   and round it down so it reads intentional rather than precise-but-tiny.
-   Lower PROOF_MIN if you want it to appear sooner. */
-const PROOF_MIN   = 50;
-const _proofRound = n => (n >= 200 ? Math.floor(n / 50) * 50 : Math.floor(n / 10) * 10);
-const _wlCountEl  = document.getElementById('waitlist-count');
-const _wlProofEl  = document.querySelector('.waitlist-proof');
-let   _wlAnimDone = false;
-
-function _revealWaitlist(count){
-  if (!_wlProofEl || count < PROOF_MIN) return;   // stay hidden until it's credible
-  _wlProofEl.style.display = '';
-  const target = _proofRound(count);
-  if (_wlAnimDone) { _wlCountEl.textContent = target; return; }
-  _wlAnimDone = true;
-  _animCount(_wlCountEl, target);
-}
-
 async function loadWaitlistCount(){
   try {
     const r = await fetch(SCRIPT_URL);
     const d = await r.json();
-    if (d.success && d.count !== undefined) _revealWaitlist(d.count);
+    if (d.success && d.count !== undefined) {
+      document.getElementById('waitlist-count').innerText = d.count;
+    }
   } catch (err) { /* silent */ }
 }
 
@@ -3820,7 +3840,33 @@ function _animCount(el, target, dur = 1800){
     if(p < 1) requestAnimationFrame(tick);
   })(t0);
 }
-/* Waitlist count reveal is handled by _revealWaitlist() in loadWaitlistCount(). */
+const _wlCountEl = document.getElementById('waitlist-count');
+if(_wlCountEl){
+  let _wlAnimDone = false;
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting && !_wlAnimDone){
+        _wlAnimDone = true;
+        const cur = parseInt(_wlCountEl.textContent) || 0;
+        if(cur > 0) _animCount(_wlCountEl, cur);
+      }
+    });
+  }).observe(_wlCountEl);
+  /* Also hook into loadWaitlistCount data */
+  const _origFetch = window.fetch;
+  window.fetch = function(...args){
+    return _origFetch.apply(this, args).then(r => {
+      const clone = r.clone();
+      clone.json().then(d => {
+        if(d && d.count !== undefined && !_wlAnimDone){
+          _wlAnimDone = true;
+          _animCount(_wlCountEl, d.count);
+        }
+      }).catch(()=>{});
+      return r;
+    });
+  };
+}
 
 /* ── TYPEWRITER on hero gradient text ── */
 window.addEventListener('load', () => {
@@ -3869,4 +3915,3 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
-
