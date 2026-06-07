@@ -2658,12 +2658,24 @@ footer{
   transition:transform .5s cubic-bezier(.2,.6,.2,1);
 }
 .app-demo-island{ position:absolute; top:16px; left:50%; transform:translateX(-50%); width:32%; height:24px; border-radius:999px; background:#000; z-index:6; }
-.app-demo-viewport{ position:relative; width:100%; height:100%; border-radius:46px; overflow:hidden; background:#000; }
-.app-demo-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center top; display:block; background:#000; }
+.app-demo-viewport{ position:relative; width:100%; height:100%; border-radius:46px; overflow:hidden;
+  background:
+    radial-gradient(135% 100% at 50% 0%, rgba(124,58,255,.22), transparent 58%),
+    radial-gradient(130% 90% at 50% 100%, rgba(255,61,154,.18), transparent 60%),
+    linear-gradient(180deg,#0d0d18 0%,#0a0a12 60%,#070710 100%);
+}
+.app-demo-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center top; display:block; background:transparent;
+  opacity:0; transition:opacity .4s ease; }
+/* Only reveal a video once it has a paintable first frame (.is-video-ready set by JS). */
+.app-demo-video.is-video-ready{ opacity:1; }
 
 /* Chapter 1 intro-to-feed layer */
 .app-demo-intro-layer{
-  position:absolute; inset:0; z-index:1; overflow:hidden; background:#06060c;
+  position:absolute; inset:0; z-index:1; overflow:hidden;
+  background:
+    radial-gradient(120% 80% at 50% 12%, rgba(124,58,255,.20), transparent 60%),
+    radial-gradient(120% 80% at 50% 100%, rgba(255,61,154,.16), transparent 62%),
+    linear-gradient(180deg,#0c0c16 0%,#08080f 60%,#060610 100%);
   opacity:var(--intro-opacity,1); transform:scale(var(--intro-scale,1));
   transform-origin:center center; will-change:opacity, transform;
 }
@@ -3065,6 +3077,7 @@ footer{
 @media (prefers-reduced-motion: reduce){
   .app-demo-frame{ transform:perspective(1600px) rotateY(-4deg); }
   .app-demo-cap-inner{ transition:none; }
+  .app-demo-video{ transition:none; }
 }
 
 </style>
@@ -4462,15 +4475,35 @@ if (phoneTabs.length && phoneViews.length) {
         try{ video.currentTime = 0; }catch(e){}
       }
     }
+    // A video is "ready" once it has decoded a paintable frame.
+    function videoReady(video){
+      return !!video && (video.classList.contains('is-video-ready') || video.readyState >= 3);
+    }
+    // Mobile Safari/Chrome don't paint a frame from preload/metadata alone — they
+    // only paint after a completed seek. Nudge currentTime once to force a decode.
+    function primeFirstFrame(video){
+      if(video.dataset.primed) return;
+      const dur = video.duration;
+      if(!Number.isFinite(dur) || dur <= 0) return;
+      video.dataset.primed = '1';
+      try{ video.currentTime = Math.min(0.05, dur - 0.05); }catch(e){}
+    }
+    function markReady(video){
+      video.classList.add('is-video-ready');
+    }
     function updateHandoff(p){
       const handoffProgress = hasHandoffIntro ? clamp((p - 0.40) / 0.60, 0, 1) : clamp(p, 0, 1);
       const transitionProgress = hasHandoffIntro ? clamp((p - 0.25) / 0.15, 0, 1) : 1;
       if(hasHandoffIntro){
         const introProgress = clamp(p / 0.25, 0, 1);
-        demo.style.setProperty('--intro-opacity', (1 - transitionProgress).toFixed(4));
-        demo.style.setProperty('--intro-scale', (1 + transitionProgress * 0.08).toFixed(4));
-        demo.style.setProperty('--handoff-opacity', transitionProgress.toFixed(4));
-        demo.style.setProperty('--handoff-scale', (0.94 + transitionProgress * 0.06).toFixed(4));
+        // Hold the intro layer until both phone videos have a paintable frame,
+        // so the phone-pair never crossfades in black on mobile.
+        const phonesReady = videoReady(sofiaVideo) && videoReady(alexVideo);
+        const revealT = phonesReady ? transitionProgress : 0;
+        demo.style.setProperty('--intro-opacity', (1 - revealT).toFixed(4));
+        demo.style.setProperty('--intro-scale', (1 + revealT * 0.08).toFixed(4));
+        demo.style.setProperty('--handoff-opacity', revealT.toFixed(4));
+        demo.style.setProperty('--handoff-scale', (0.94 + revealT * 0.06).toFixed(4));
         if(isRelationshipDemo){
           const activeIntroVideo = introMobileQuery.matches ? mobileIntroVideo : introVideo;
           introVideos.forEach(video => {
@@ -4505,10 +4538,13 @@ if (phoneTabs.length && phoneViews.length) {
       const introProgress = clamp(p / 0.25, 0, 1);
       const transitionProgress = clamp((p - 0.25) / 0.15, 0, 1);
       const feedProgress = clamp((p - 0.40) / 0.60, 0, 1);
-      demo.style.setProperty('--intro-opacity', (1 - transitionProgress).toFixed(4));
-      demo.style.setProperty('--intro-scale', (1 + transitionProgress * 0.08).toFixed(4));
-      demo.style.setProperty('--feed-opacity', transitionProgress.toFixed(4));
-      demo.style.setProperty('--feed-scale', (0.94 + transitionProgress * 0.06).toFixed(4));
+      // Hold the intro layer until the feed video has a paintable frame,
+      // so the feed never crossfades in black on mobile.
+      const revealT = videoReady(feedVideo) ? transitionProgress : 0;
+      demo.style.setProperty('--intro-opacity', (1 - revealT).toFixed(4));
+      demo.style.setProperty('--intro-scale', (1 + revealT * 0.08).toFixed(4));
+      demo.style.setProperty('--feed-opacity', revealT.toFixed(4));
+      demo.style.setProperty('--feed-scale', (0.94 + revealT * 0.06).toFixed(4));
       // Fallback logic for mobile intro video
       const wantsMobileIntro = introMobileQuery.matches;
       const mobileIntroReady = mobileIntroVideo && Number.isFinite(mobileIntroVideo.duration) && mobileIntroVideo.duration > 0;
@@ -4536,9 +4572,13 @@ if (phoneTabs.length && phoneViews.length) {
     videos.forEach(video => {
       video.pause();
       video.addEventListener('play', () => { video.pause(); });
-      ['loadedmetadata','loadeddata','canplay'].forEach(eventName => {
-        video.addEventListener(eventName, req);
-      });
+      // Force a one-time tiny seek so mobile decodes/paints the first frame.
+      const prime = () => { primeFirstFrame(video); req(); };
+      video.addEventListener('loadedmetadata', prime);
+      video.addEventListener('loadeddata', prime);
+      // Reveal only once a frame is actually paintable.
+      video.addEventListener('seeked', () => { markReady(video); req(); });
+      video.addEventListener('canplay', () => { markReady(video); req(); });
       try{ video.load(); }catch(e){}
     });
 
