@@ -4541,14 +4541,18 @@ if (phoneTabs.length && phoneViews.length) {
       const transitionProgress = hasHandoffIntro ? clamp((p - 0.25) / 0.15, 0, 1) : 1;
       if(hasHandoffIntro){
         const introProgress = clamp(p / 0.25, 0, 1);
-        // One-way latch: once the crossfade completes (p >= 0.40), the handoff is
-        // committed and the intro can never be pulled back by readiness flicker.
+        // Hysteresis latch: commit the handoff once the crossfade completes
+        // (p >= 0.40) and only release it when the user scrolls back BEFORE the
+        // transition (p < 0.25). On mobile the phone then stays locked through
+        // the 0.25–0.40 band on the way back, so browser-toolbar / readiness
+        // jitter near the boundary can never flip phone↔intro↔phone again.
         if(p >= 0.40) handoffCommitted = true;
+        else if(p < 0.25) handoffCommitted = false;
         // Gate the reveal on the *visible* Sofia phone only (Alex is hidden on
-        // mobile and its readyState flickers). Readiness may delay the fade-in,
-        // but the latch guarantees it can never reverse the timeline.
+        // mobile and its readyState flickers). Readiness may delay the fade-in.
         const gateOk = handoffCommitted || videoReady(sofiaVideo);
-        const revealT = gateOk ? transitionProgress : 0;
+        const lockPhone = handoffCommitted && introMobileQuery.matches;
+        const revealT = lockPhone ? 1 : (gateOk ? transitionProgress : 0);
         demo.style.setProperty('--intro-opacity', (1 - revealT).toFixed(4));
         demo.style.setProperty('--intro-scale', (1 + revealT * 0.08).toFixed(4));
         demo.style.setProperty('--handoff-opacity', revealT.toFixed(4));
