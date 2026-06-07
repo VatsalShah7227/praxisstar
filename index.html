@@ -3406,12 +3406,8 @@ footer{
       <div class="app-demo-dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
 
       <div class="app-demo-intro-layer" aria-hidden="true">
-        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" muted playsinline preload="metadata" tabindex="-1">
-          <source src="chapter-3-intro-sofia-alex-phones.mp4" type="video/mp4">
-        </video>
-        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" muted playsinline preload="metadata" tabindex="-1">
-          <source src="chapter-3-intro-sofia-alex-phones-mobile.mp4" type="video/mp4">
-        </video>
+        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" data-seq="frames/ch3-intro-desktop" data-count="78"></canvas>
+        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" data-seq="frames/ch3-intro-mobile" data-count="78"></canvas>
       </div>
 
       <div class="handoff-story-card handoff-story-left" aria-hidden="true">
@@ -3470,9 +3466,7 @@ footer{
             <div class="app-demo-frame">
               <div class="app-demo-island"></div>
               <div class="app-demo-viewport">
-                <video class="app-demo-video app-demo-sofia-video" muted playsinline preload="metadata" tabindex="-1">
-                  <source src="praxis-demo-03-sofia-send-request.mp4" type="video/mp4">
-                </video>
+                <canvas class="app-demo-video app-demo-sofia-video" data-seq="frames/ch3-sofia" data-count="109"></canvas>
               </div>
             </div>
           </div>
@@ -3484,9 +3478,7 @@ footer{
             <div class="app-demo-frame">
               <div class="app-demo-island"></div>
               <div class="app-demo-viewport">
-                <video class="app-demo-video app-demo-alex-video" muted playsinline preload="metadata" tabindex="-1">
-                  <source src="praxis-demo-03-alex-accept-request.mp4" type="video/mp4">
-                </video>
+                <canvas class="app-demo-video app-demo-alex-video" data-seq="frames/ch3-alex" data-count="128"></canvas>
               </div>
             </div>
           </div>
@@ -4434,6 +4426,8 @@ if (phoneTabs.length && phoneViews.length) {
   const stops = [0.00,0.18,0.38,0.62,0.82];
 
   demos.forEach(demo => {
+    // Chapter 3 is driven by the canvas image-sequence renderer below.
+    if(demo.id === 'app-demo-relationships') return;
     const track = demo.querySelector('.app-demo-track');
     const cap   = demo.querySelector('.app-demo-cap-inner');
     const dots  = [...demo.querySelectorAll('.app-demo-dots span')];
@@ -4667,6 +4661,243 @@ if (phoneTabs.length && phoneViews.length) {
     }
     updateAppDemo();
   });
+})();
+
+/* ════════════════════════════════════════════════════════════
+   APP DEMO — CHAPTER 3 IMAGE-SEQUENCE RENDERER (canvas scrub)
+   Scroll maps to a frame index of a pre-extracted JPEG sequence and
+   draws it to a <canvas> — no video decoder, so the scrub is
+   frame-perfect and jank-free on mobile. Same timeline / latch as
+   before, just rendered from frames instead of video.currentTime.
+   ════════════════════════════════════════════════════════════ */
+(function(){
+  const demo = document.querySelector('#app-demo-relationships');
+  if(!demo) return;
+  const track = demo.querySelector('.app-demo-track');
+  const cap   = demo.querySelector('.app-demo-cap-inner');
+  const dots  = [...demo.querySelectorAll('.app-demo-dots span')];
+  const introMobileQuery = window.matchMedia('(max-width:700px)');
+  const introDesktop = demo.querySelector('.app-demo-intro-video-desktop');
+  const introMobile  = demo.querySelector('.app-demo-intro-video-mobile');
+  const sofiaCanvas  = demo.querySelector('.app-demo-sofia-video');
+  const alexCanvas   = demo.querySelector('.app-demo-alex-video');
+  const sofiaPerson  = demo.querySelector('.app-demo-person[data-person="sofia"]');
+  const alexPerson   = demo.querySelector('.app-demo-person[data-person="alex"]');
+  const handoffSteps = [...demo.querySelectorAll('.handoff-story-step[data-step], .handoff-mobile-step[data-step]')];
+  if(!track || !cap || !sofiaCanvas || !alexCanvas) return;
+
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const copy = {
+    kicker: demo.dataset.kicker || '',
+    title: demo.dataset.title || '',
+    subtitle: demo.dataset.subtitle || '',
+    captions: demo.dataset.captions ? demo.dataset.captions.split('|') : []
+  };
+  const total = String(copy.captions.length).padStart(2,'0');
+  const sectionStops = [0.40,0.50,0.60,0.70,0.82,0.92];
+  const caps = copy.captions.map((text, idx) => [ sectionStops[idx] ?? (idx/Math.max(copy.captions.length-1,1)), String(idx+1).padStart(2,'0'), text ]);
+  const sofiaStepThresholds = { 'sofia-profile':0.02, 'sofia-follow':0.08, 'sofia-request':0.39 };
+  const alexStepThresholds  = { 'alex-activity':0.57, 'alex-request':0.62, 'alex-accept':0.85 };
+
+  // ── frame sequence: load decoded frames on demand, draw only when ready ──
+  function makeSeq(canvas){
+    const dir = canvas.dataset.seq, count = parseInt(canvas.dataset.count, 10);
+    const ctx = canvas.getContext('2d');
+    const frames = new Array(count);
+    const preloadRadius = 6;
+    let started = false, sized = false, lastTargetIdx = -1, lastDrawnIdx = -1, ready = false;
+
+    const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.jpg';
+    const progressToIndex = p => clamp(Math.round(p*(count-1)), 0, count-1);
+    const frameReady = i => {
+      const f = frames[i];
+      return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
+    };
+
+    function sizeTo(img){
+      if(sized) return;
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      sized = true;
+    }
+
+    function drawFrame(i){
+      if(!frameReady(i)) return false;
+      const img = frames[i].img;
+      sizeTo(img);
+      if(!canvas.width || !canvas.height) return false;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      lastDrawnIdx = i;
+      if(i === 0 && !ready){
+        ready = true;
+        canvas.classList.add('is-video-ready');
+      }
+      return true;
+    }
+
+    function ensureFrame(i){
+      i = clamp(i, 0, count - 1);
+      if(frames[i]) return frames[i].promise;
+      const img = new Image();
+      img.decoding = 'async';
+      const frame = { img, ready:false, promise:null };
+      frames[i] = frame;
+
+      frame.promise = new Promise(resolve => {
+        const markReady = () => {
+          const finish = () => {
+            if(img.complete && img.naturalWidth > 0){
+              frame.ready = true;
+              if(i === 0) drawFrame(0);
+              if(i === lastTargetIdx && i !== lastDrawnIdx) req();
+            }
+            resolve(frame);
+          };
+          if(img.decode) img.decode().then(finish).catch(finish);
+          else finish();
+        };
+        img.onload = markReady;
+        img.onerror = () => resolve(frame);
+        img.src = frameSrc(i);
+      });
+
+      return frame.promise;
+    }
+
+    function preloadWindow(idx){
+      ensureFrame(0);
+      const start = clamp(idx - preloadRadius, 0, count - 1);
+      const end = clamp(idx + preloadRadius, 0, count - 1);
+      for(let i=start; i<=end; i++) ensureFrame(i);
+    }
+
+    function load(){
+      if(started) return;
+      started = true;
+      ensureFrame(0).then(() => req());
+      preloadWindow(0);
+    }
+
+    function draw(p){
+      if(!started) load();
+      const idx = progressToIndex(p);
+      const targetChanged = idx !== lastTargetIdx;
+      lastTargetIdx = idx;
+      preloadWindow(idx);
+      if(idx === lastDrawnIdx) return;
+      if(drawFrame(idx)) return;
+      ensureFrame(idx).then(() => req());
+      if(targetChanged && !ready && frameReady(0)) drawFrame(0);
+    }
+
+    function canReveal(p){
+      const idx = progressToIndex(p);
+      return lastDrawnIdx >= 0 || frameReady(idx) || frameReady(0);
+    }
+
+    return { load, draw, canReveal, get ready(){ return ready; }, get lastDrawnIdx(){ return lastDrawnIdx; } };
+  }
+  const introDesktopSeq = introDesktop ? makeSeq(introDesktop) : null;
+  const introMobileSeq  = introMobile ? makeSeq(introMobile) : null;
+  const sofiaSeq = makeSeq(sofiaCanvas);
+  const alexSeq  = makeSeq(alexCanvas);
+
+  function loadSequences(){
+    (introMobileQuery.matches ? introMobileSeq : introDesktopSeq)?.load();
+    sofiaSeq.load();
+    alexSeq.load();
+  }
+
+  // ── caption (same fade, with the fast-scroll-safe timer guard) ──
+  let capTimer;
+  function setCap(p){
+    let c=caps[0]; for(const x of caps) if(p>=x[0]) c=x;
+    if(!c) return;
+    const i=caps.indexOf(c);
+    dots.forEach((d,idx)=>d.classList.toggle('on', idx===i));
+    if(cap.dataset.k===c[2]) return;
+    cap.dataset.k=c[2];
+    clearTimeout(capTimer);
+    cap.style.opacity=0; cap.style.transform='translateY(8px)';
+    capTimer=setTimeout(()=>{ cap.innerHTML='<span class="num">'+esc(copy.kicker)+'</span><h3>'+esc(copy.title)+'</h3><p>'+esc(copy.subtitle)+'</p><span class="num">'+c[1]+' / '+total+'</span><h3>'+esc(c[2])+'</h3>';
+      cap.style.opacity=1; cap.style.transform='none'; },140);
+  }
+
+  // ── progress from the live track rect (correct under layout shifts); the
+  // hysteresis latch below absorbs mobile-toolbar jitter. ──
+  let committed = false, handoffLayerRevealed = false, ticking = false;
+  function update(){
+    ticking = false;
+    const vh = window.innerHeight;
+    const r = track.getBoundingClientRect();
+    if(r.bottom < -vh || r.top > vh*2) return;     // off-screen: skip
+    const dist = track.offsetHeight - vh;
+    const p = dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
+    demo.style.setProperty('--p', p.toFixed(4));
+    setCap(p);
+
+    const introProgress = clamp(p / 0.25, 0, 1);
+    const transitionProgress = clamp((p - 0.25) / 0.15, 0, 1);
+    const handoffProgress = clamp((p - 0.40) / 0.60, 0, 1);
+    const onMobile = introMobileQuery.matches;
+    const sofiaProgress = clamp(handoffProgress / 0.5, 0, 1);
+    const alexProgress = clamp((handoffProgress - 0.5) / 0.5, 0, 1);
+    const alexActive = handoffProgress >= 0.5;
+    const activeIntroSeq = onMobile ? introMobileSeq : introDesktopSeq;
+    const activePhoneSeq = alexActive ? alexSeq : sofiaSeq;
+    const activePhoneProgress = alexActive ? alexProgress : sofiaProgress;
+
+    activeIntroSeq?.draw(introProgress);
+    sofiaSeq.draw(sofiaProgress);
+    alexSeq.draw(alexProgress);
+
+    if(p >= 0.40) committed = true;
+    else if(p < 0.25){
+      committed = false;
+      handoffLayerRevealed = false;
+    }
+
+    if(activePhoneSeq.canReveal(activePhoneProgress) && (transitionProgress > 0 || committed)){
+      handoffLayerRevealed = true;
+    }
+
+    const revealTarget = committed ? 1 : transitionProgress;
+    const revealT = handoffLayerRevealed ? revealTarget : 0;
+    demo.style.setProperty('--intro-opacity', (1 - revealT).toFixed(4));
+    demo.style.setProperty('--intro-scale', (1 + revealT * 0.08).toFixed(4));
+    demo.style.setProperty('--handoff-opacity', revealT.toFixed(4));
+    demo.style.setProperty('--handoff-scale', (0.94 + revealT * 0.06).toFixed(4));
+
+    demo.dataset.activePerson = alexActive ? 'alex' : 'sofia';
+    handoffSteps.forEach(step => {
+      const k = step.dataset.step;
+      const isAlex = k.startsWith('alex-');
+      const thr = isAlex ? alexStepThresholds[k] : sofiaStepThresholds[k];
+      const sp = isAlex ? alexProgress : sofiaProgress;
+      step.classList.toggle('is-complete', sp >= thr);
+    });
+    sofiaPerson?.classList.toggle('active', !alexActive);
+    sofiaPerson?.classList.toggle('inactive', alexActive);
+    alexPerson?.classList.toggle('active', alexActive);
+    alexPerson?.classList.toggle('inactive', !alexActive);
+  }
+  function req(){ if(ticking) return; ticking = true; requestAnimationFrame(update); }
+
+  window.addEventListener('scroll', req, { passive:true });
+  window.addEventListener('resize', req);
+  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', () => { loadSequences(); req(); });
+
+  // lazy-load the sequences as the chapter approaches
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting){ loadSequences(); req(); } });
+    }, { rootMargin: '200% 0px' });
+    io.observe(demo);
+  } else {
+    loadSequences();
+  }
+  req();
 })();
 
 /* ════════════════════════════════════════════════════════════
