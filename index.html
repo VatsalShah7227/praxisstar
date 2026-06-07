@@ -4705,7 +4705,13 @@ if (phoneTabs.length && phoneViews.length) {
     const dir = canvas.dataset.seq, count = parseInt(canvas.dataset.count, 10);
     const ctx = canvas.getContext('2d');
     const frames = new Array(count);
-    const preloadRadius = 6;
+    const preloadRadius = 28;
+    const decodeConcurrency = 4;
+    const warmConcurrency = 4;
+    const decodeQueue = [];
+    const warmed = new Set();
+    const warmQueue = [];
+    let decoding = 0, warming = 0;
     let started = false, sized = false, lastTargetIdx = -1, lastDrawnIdx = -1, ready = false;
 
     const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.jpg';
@@ -4736,59 +4742,122 @@ if (phoneTabs.length && phoneViews.length) {
       return true;
     }
 
-    function ensureFrame(i){
-      i = clamp(i, 0, count - 1);
-      if(frames[i]) return frames[i].promise;
-      const img = new Image();
-      img.decoding = 'async';
-      const frame = { img, ready:false, promise:null };
-      frames[i] = frame;
-
-      frame.promise = new Promise(resolve => {
+    function pumpDecodeQueue(){
+      if(decoding >= decodeConcurrency || !decodeQueue.length) return;
+      decodeQueue.sort((a,b) => b.priority - a.priority);
+      while(decoding < decodeConcurrency && decodeQueue.length){
+        const frame = decodeQueue.shift();
+        frame.queued = false;
+        if(frame.ready || frame.loading) continue;
+        frame.loading = true;
+        decoding++;
+        const img = new Image();
+        img.decoding = 'async';
+        frame.img = img;
+        const done = () => {
+          decoding--;
+          frame.resolve(frame);
+          pumpDecodeQueue();
+        };
         const markReady = () => {
           const finish = () => {
             if(img.complete && img.naturalWidth > 0){
               frame.ready = true;
-              if(i === 0) drawFrame(0);
-              if(i === lastTargetIdx && i !== lastDrawnIdx) req();
+              if(frame.idx === 0) drawFrame(0);
+              if(frame.idx === lastTargetIdx && frame.idx !== lastDrawnIdx) req();
             }
-            resolve(frame);
+            done();
           };
           if(img.decode) img.decode().then(finish).catch(finish);
           else finish();
         };
         img.onload = markReady;
-        img.onerror = () => resolve(frame);
-        img.src = frameSrc(i);
-      });
+        img.onerror = done;
+        img.src = frameSrc(frame.idx);
+      }
+    }
 
+    function ensureFrame(i, priority = 0){
+      i = clamp(i, 0, count - 1);
+      let frame = frames[i];
+      if(frame){
+        frame.priority = Math.max(frame.priority || 0, priority);
+        if(frame.queued) pumpDecodeQueue();
+        return frame.promise;
+      }
+      frame = { idx:i, img:null, ready:false, loading:false, queued:true, priority, promise:null, resolve:null };
+      frame.promise = new Promise(resolve => { frame.resolve = resolve; });
+      frames[i] = frame;
+      decodeQueue.push(frame);
+      pumpDecodeQueue();
       return frame.promise;
     }
 
-    function preloadWindow(idx){
-      ensureFrame(0);
-      const start = clamp(idx - preloadRadius, 0, count - 1);
-      const end = clamp(idx + preloadRadius, 0, count - 1);
-      for(let i=start; i<=end; i++) ensureFrame(i);
+    function pumpWarmQueue(){
+      if(warming >= warmConcurrency || !warmQueue.length || !window.fetch) return;
+      while(warming < warmConcurrency && warmQueue.length){
+        const i = warmQueue.shift();
+        warming++;
+        fetch(frameSrc(i), { cache:'force-cache' })
+          .then(r => r.blob())
+          .catch(() => {})
+          .finally(() => { warming--; pumpWarmQueue(); });
+      }
+    }
+
+    function warmFrame(i){
+      i = clamp(i, 0, count - 1);
+      if(warmed.has(i) || frames[i]?.ready) return;
+      warmed.add(i);
+      warmQueue.push(i);
+      pumpWarmQueue();
+    }
+
+    function warmAll(){
+      for(let i=0; i<count; i++) warmFrame(i);
+    }
+
+    function preloadWindow(idx, direction = 1){
+      ensureFrame(0, 1000);
+      ensureFrame(idx, 1200);
+      for(let d=1; d<=preloadRadius; d++){
+        const ahead = idx + d * direction;
+        const behind = idx - d * direction;
+        if(ahead >= 0 && ahead < count) ensureFrame(ahead, 1000 - d);
+        if(behind >= 0 && behind < count) ensureFrame(behind, 700 - d);
+      }
+    }
+
+    function closestReadyIndex(idx){
+      if(frameReady(idx)) return idx;
+      for(let d=1; d<count; d++){
+        const before = idx - d;
+        const after = idx + d;
+        if(before >= 0 && frameReady(before)) return before;
+        if(after < count && frameReady(after)) return after;
+      }
+      return -1;
     }
 
     function load(){
       if(started) return;
       started = true;
-      ensureFrame(0).then(() => req());
+      ensureFrame(0, 1200).then(() => req());
       preloadWindow(0);
+      warmAll();
     }
 
     function draw(p){
       if(!started) load();
       const idx = progressToIndex(p);
-      const targetChanged = idx !== lastTargetIdx;
+      const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
       lastTargetIdx = idx;
-      preloadWindow(idx);
+      preloadWindow(idx, direction);
       if(idx === lastDrawnIdx) return;
       if(drawFrame(idx)) return;
-      ensureFrame(idx).then(() => req());
-      if(targetChanged && !ready && frameReady(0)) drawFrame(0);
+      ensureFrame(idx, 1400).then(() => req());
+      const nearestIdx = closestReadyIndex(idx);
+      if(nearestIdx >= 0 && nearestIdx !== lastDrawnIdx) drawFrame(nearestIdx);
     }
 
     function canReveal(p){
