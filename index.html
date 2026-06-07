@@ -3296,10 +3296,10 @@ footer{
       <div class="app-demo-dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span></div>
 
       <div class="app-demo-intro-layer" aria-hidden="true">
-        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" muted playsinline preload="auto" tabindex="-1">
+        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" muted playsinline preload="metadata" tabindex="-1">
           <source src="chapter-1-intro-girl-working-test.mp4" type="video/mp4">
         </video>
-        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" muted playsinline preload="auto" tabindex="-1">
+        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" muted playsinline preload="metadata" tabindex="-1">
           <source src="chapter-1-intro-girl-working-mobile.mp4" type="video/mp4">
         </video>
       </div>
@@ -3309,7 +3309,7 @@ footer{
           <div class="app-demo-frame">
             <div class="app-demo-island"></div>
             <div class="app-demo-viewport">
-              <video class="app-demo-video" muted playsinline preload="auto" tabindex="-1">
+              <video class="app-demo-video" muted playsinline preload="metadata" tabindex="-1">
                 <source src="praxis-demo-01-feed.mp4" type="video/mp4">
               </video>
             </div>
@@ -3348,7 +3348,7 @@ footer{
         <div class="app-demo-frame">
           <div class="app-demo-island"></div>
           <div class="app-demo-viewport">
-            <video class="app-demo-video" muted playsinline preload="auto" tabindex="-1">
+            <video class="app-demo-video" muted playsinline preload="metadata" tabindex="-1">
               <source src="praxis-demo-02-profile.mp4" type="video/mp4">
             </video>
           </div>
@@ -3406,10 +3406,10 @@ footer{
       <div class="app-demo-dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
 
       <div class="app-demo-intro-layer" aria-hidden="true">
-        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" muted playsinline preload="auto" tabindex="-1">
+        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" muted playsinline preload="metadata" tabindex="-1">
           <source src="chapter-3-intro-sofia-alex-phones.mp4" type="video/mp4">
         </video>
-        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" muted playsinline preload="auto" tabindex="-1">
+        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" muted playsinline preload="metadata" tabindex="-1">
           <source src="chapter-3-intro-sofia-alex-phones-mobile.mp4" type="video/mp4">
         </video>
       </div>
@@ -3470,7 +3470,7 @@ footer{
             <div class="app-demo-frame">
               <div class="app-demo-island"></div>
               <div class="app-demo-viewport">
-                <video class="app-demo-video app-demo-sofia-video" muted playsinline preload="auto" tabindex="-1">
+                <video class="app-demo-video app-demo-sofia-video" muted playsinline preload="metadata" tabindex="-1">
                   <source src="praxis-demo-03-sofia-send-request.mp4" type="video/mp4">
                 </video>
               </div>
@@ -3484,7 +3484,7 @@ footer{
             <div class="app-demo-frame">
               <div class="app-demo-island"></div>
               <div class="app-demo-viewport">
-                <video class="app-demo-video app-demo-alex-video" muted playsinline preload="auto" tabindex="-1">
+                <video class="app-demo-video app-demo-alex-video" muted playsinline preload="metadata" tabindex="-1">
                   <source src="praxis-demo-03-alex-accept-request.mp4" type="video/mp4">
                 </video>
               </div>
@@ -4640,6 +4640,29 @@ if (phoneTabs.length && phoneViews.length) {
     }
     updateAppDemo();
   });
+})();
+
+/* ════════════════════════════════════════════════════════════
+   APP DEMO — LAZY VIDEO BUFFERING
+   Videos ship as preload="metadata" (tiny) so the page loads fast.
+   Each chapter is upgraded to full buffering only as you approach it,
+   and the hidden desktop/mobile intro variant is skipped entirely.
+   ════════════════════════════════════════════════════════════ */
+(function(){
+  const sections = document.querySelectorAll('.app-demo');
+  if(!sections.length || !('IntersectionObserver' in window)) return;
+  const upgrade = section => {
+    section.querySelectorAll('video').forEach(v => {
+      if(v.offsetParent === null) return;        // skip the hidden variant
+      if(v.preload === 'auto') return;            // already buffering
+      v.preload = 'auto';
+      try{ v.load(); }catch(e){}
+    });
+  };
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) upgrade(e.target); });
+  }, { rootMargin: '150% 0px' });                 // start buffering ~1.5 screens early
+  sections.forEach(s => io.observe(s));
 })();
 
 
