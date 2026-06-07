@@ -4494,6 +4494,7 @@ if (phoneTabs.length && phoneViews.length) {
     }
 
     let ticking = false;
+    let handoffCommitted = false;
 
     function progress(){
       const vh=window.innerHeight;
@@ -4540,10 +4541,14 @@ if (phoneTabs.length && phoneViews.length) {
       const transitionProgress = hasHandoffIntro ? clamp((p - 0.25) / 0.15, 0, 1) : 1;
       if(hasHandoffIntro){
         const introProgress = clamp(p / 0.25, 0, 1);
-        // Hold the intro layer until both phone videos have a paintable frame,
-        // so the phone-pair never crossfades in black on mobile.
-        const phonesReady = videoReady(sofiaVideo) && videoReady(alexVideo);
-        const revealT = phonesReady ? transitionProgress : 0;
+        // One-way latch: once the crossfade completes (p >= 0.40), the handoff is
+        // committed and the intro can never be pulled back by readiness flicker.
+        if(p >= 0.40) handoffCommitted = true;
+        // Gate the reveal on the *visible* Sofia phone only (Alex is hidden on
+        // mobile and its readyState flickers). Readiness may delay the fade-in,
+        // but the latch guarantees it can never reverse the timeline.
+        const gateOk = handoffCommitted || videoReady(sofiaVideo);
+        const revealT = gateOk ? transitionProgress : 0;
         demo.style.setProperty('--intro-opacity', (1 - revealT).toFixed(4));
         demo.style.setProperty('--intro-scale', (1 + revealT * 0.08).toFixed(4));
         demo.style.setProperty('--handoff-opacity', revealT.toFixed(4));
