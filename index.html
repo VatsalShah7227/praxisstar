@@ -4424,11 +4424,6 @@ if (phoneTabs.length && phoneViews.length) {
 
     // Hard guarantee the video can never run by itself.
     const videos = isHandoff ? (hasHandoffIntro ? [...introVideos, sofiaVideo, alexVideo] : [sofiaVideo, alexVideo]) : (isIntroFeed ? [...introVideos, feedVideo] : [appDemoVideo]);
-    videos.forEach(video => {
-      video.pause();
-      video.currentTime = 0;
-      video.addEventListener('play', () => { video.pause(); });
-    });
 
     function setCap(p){
       let c=caps[0]; for(const x of caps) if(p>=x[0]) c=x;
@@ -4451,11 +4446,13 @@ if (phoneTabs.length && phoneViews.length) {
     }
     function setVideoTime(video, videoProgress){
       const dur = video.duration;
-      if(Number.isFinite(dur) && dur > 0 && !video.seeking){
-        const targetTime = clamp(videoProgress * dur, 0, dur - 0.05);
-        if(Math.abs(targetTime - video.currentTime) > 0.02){
-          try{ video.currentTime = targetTime; }catch(e){}
-        }
+      if(!Number.isFinite(dur) || dur <= 0 || video.seeking){
+        video.pause();
+        return;
+      }
+      const targetTime = clamp(videoProgress * dur, 0, dur - 0.05);
+      if(Math.abs(targetTime - video.currentTime) > 0.02){
+        try{ video.currentTime = targetTime; }catch(e){}
       }
       video.pause();
     }
@@ -4536,11 +4533,14 @@ if (phoneTabs.length && phoneViews.length) {
     }
     function req(){ if(ticking) return; ticking=true; requestAnimationFrame(updateAppDemo); }
 
-    videos.forEach(video => video.addEventListener('loadedmetadata', () => {
+    videos.forEach(video => {
       video.pause();
-      video.currentTime = 0;
-      updateAppDemo();
-    }));
+      video.addEventListener('play', () => { video.pause(); });
+      ['loadedmetadata','loadeddata','canplay'].forEach(eventName => {
+        video.addEventListener(eventName, req);
+      });
+      try{ video.load(); }catch(e){}
+    });
 
     window.addEventListener('scroll', req, { passive:true });
     window.addEventListener('resize', req);
@@ -4548,7 +4548,6 @@ if (phoneTabs.length && phoneViews.length) {
     else introMobileQuery?.addListener?.(req);
     if(isIntroFeed && mobileIntroVideo){
       mobileIntroVideo.addEventListener('error', req);
-      mobileIntroVideo.addEventListener('loadedmetadata', req);
     }
     updateAppDemo();
   });
