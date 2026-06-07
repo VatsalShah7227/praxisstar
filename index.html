@@ -4824,9 +4824,8 @@ if (phoneTabs.length && phoneViews.length) {
       cap.style.opacity=1; cap.style.transform='none'; },140);
   }
 
-  // ── progress from the live track rect (correct under layout shifts); the
-  // hysteresis latch below absorbs mobile-toolbar jitter. ──
-  let committed = false, handoffLayerRevealed = false, ticking = false;
+  // ── progress from the live track rect (correct under layout shifts) ──
+  let ticking = false;
   function update(){
     ticking = false;
     const vh = window.innerHeight;
@@ -4845,25 +4844,12 @@ if (phoneTabs.length && phoneViews.length) {
     const alexProgress = clamp((handoffProgress - 0.5) / 0.5, 0, 1);
     const alexActive = handoffProgress >= 0.5;
     const activeIntroSeq = onMobile ? introMobileSeq : introDesktopSeq;
-    const activePhoneSeq = alexActive ? alexSeq : sofiaSeq;
-    const activePhoneProgress = alexActive ? alexProgress : sofiaProgress;
 
     activeIntroSeq?.draw(introProgress);
     sofiaSeq.draw(sofiaProgress);
     alexSeq.draw(alexProgress);
 
-    if(p >= 0.40) committed = true;
-    else if(p < 0.25){
-      committed = false;
-      handoffLayerRevealed = false;
-    }
-
-    if(activePhoneSeq.canReveal(activePhoneProgress) && (transitionProgress > 0 || committed)){
-      handoffLayerRevealed = true;
-    }
-
-    const revealTarget = committed ? 1 : transitionProgress;
-    const revealT = handoffLayerRevealed ? revealTarget : 0;
+    const revealT = p <= 0.25 ? 0 : p >= 0.40 ? 1 : transitionProgress;
     demo.style.setProperty('--intro-opacity', (1 - revealT).toFixed(4));
     demo.style.setProperty('--intro-scale', (1 + revealT * 0.08).toFixed(4));
     demo.style.setProperty('--handoff-opacity', revealT.toFixed(4));
