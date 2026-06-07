@@ -4482,23 +4482,28 @@ if (phoneTabs.length && phoneViews.length) {
     // Hard guarantee the video can never run by itself.
     const videos = isHandoff ? (hasHandoffIntro ? [...introVideos, sofiaVideo, alexVideo] : [sofiaVideo, alexVideo]) : (isIntroFeed ? [...introVideos, feedVideo] : [appDemoVideo]);
 
+    let capTimer;
     function setCap(p){
       let c=caps[0]; for(const x of caps) if(p>=x[0]) c=x;
       const i=caps.indexOf(c);
       dots.forEach((d,idx)=>d.classList.toggle('on', idx===i));
       if(cap.dataset.k===c[2]) return;
       cap.dataset.k=c[2];
+      // Cancel any pending fade so fast scroll can't stack dozens of
+      // 140ms timers (which made the caption blink on/off).
+      clearTimeout(capTimer);
       cap.style.opacity=0; cap.style.transform='translateY(8px)';
-      setTimeout(()=>{ cap.innerHTML='<span class="num">'+esc(copy.kicker)+'</span><h3>'+esc(copy.title)+'</h3><p>'+esc(copy.subtitle)+'</p><span class="num">'+c[1]+' / '+total+'</span><h3>'+esc(c[2])+'</h3>';
+      capTimer=setTimeout(()=>{ cap.innerHTML='<span class="num">'+esc(copy.kicker)+'</span><h3>'+esc(copy.title)+'</h3><p>'+esc(copy.subtitle)+'</p><span class="num">'+c[1]+' / '+total+'</span><h3>'+esc(c[2])+'</h3>';
         cap.style.opacity=1; cap.style.transform='none'; },140);
     }
 
     let ticking = false;
     let handoffCommitted = false;
+    let isScrolling = false;     // true while the user is actively scrolling
+    let settleTimer;
 
-    function progress(){
+    function progress(r){
       const vh=window.innerHeight;
-      const r=track.getBoundingClientRect();
       const dist=track.offsetHeight - vh;
       return dist>0 ? clamp(-r.top/dist, 0, 1) : 0;
     }
@@ -4510,7 +4515,12 @@ if (phoneTabs.length && phoneViews.length) {
       }
       const targetTime = clamp(videoProgress * dur, 0, dur - 0.05);
       if(Math.abs(targetTime - video.currentTime) > 0.02){
-        try{ video.currentTime = targetTime; }catch(e){}
+        try{
+          // While actively scrolling, snap to the nearest keyframe — cheap and
+          // smooth on iOS. When scrolling settles, land the exact frame.
+          if(isScrolling && typeof video.fastSeek === 'function') video.fastSeek(targetTime);
+          else video.currentTime = targetTime;
+        }catch(e){}
       }
       video.pause();
     }
@@ -4520,9 +4530,11 @@ if (phoneTabs.length && phoneViews.length) {
         try{ video.currentTime = 0; }catch(e){}
       }
     }
-    // A video is "ready" once it has decoded a paintable frame.
+    // A video is "ready" once it has decoded a paintable frame. Use the sticky
+    // class only — NOT live readyState, which dips on every seek during a fast
+    // scrub and would make the gated layers flicker.
     function videoReady(video){
-      return !!video && (video.classList.contains('is-video-ready') || video.readyState >= 3);
+      return !!video && video.classList.contains('is-video-ready');
     }
     // Mobile Safari/Chrome don't paint a frame from preload/metadata alone — they
     // only paint after a completed seek. Nudge currentTime once to force a decode.
@@ -4611,7 +4623,12 @@ if (phoneTabs.length && phoneViews.length) {
     }
     function updateAppDemo(){
       ticking=false;
-      const p=progress();
+      const vh=window.innerHeight;
+      const r=track.getBoundingClientRect();
+      // Skip sections that are well off-screen so a fast scroll never seeks all
+      // three heavy videos at once (the on-screen one keeps full fidelity).
+      if(r.bottom < -vh || r.top > vh*2) return;
+      const p=progress(r);
       demo.style.setProperty('--p', p.toFixed(4));
       setCap(p);
 
@@ -4635,7 +4652,13 @@ if (phoneTabs.length && phoneViews.length) {
       try{ video.load(); }catch(e){}
     });
 
-    window.addEventListener('scroll', req, { passive:true });
+    window.addEventListener('scroll', () => {
+      isScrolling = true;
+      clearTimeout(settleTimer);
+      // ~110ms after the last scroll, do one precise pass to land the exact frame.
+      settleTimer = setTimeout(() => { isScrolling = false; req(); }, 110);
+      req();
+    }, { passive:true });
     window.addEventListener('resize', req);
     if(introMobileQuery?.addEventListener) introMobileQuery.addEventListener('change', req);
     else introMobileQuery?.addListener?.(req);
