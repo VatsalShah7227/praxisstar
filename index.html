@@ -2910,7 +2910,8 @@ footer{
 }
 @media (max-width:1040px){
   #app-demo-relationships .handoff-story-card{ display:none; }
-  #app-demo-relationships .handoff-mobile-progress{ display:block; }
+  #app-demo-relationships .handoff-mobile-progress{ display:block; opacity:0; transition:opacity .24s ease; }
+  #app-demo-relationships.handoff-strip-visible .handoff-mobile-progress{ opacity:1; }
 }
 @media (max-width:700px){
   .app-demo-intro-feed .app-demo-intro-video-desktop{ display:block; }
@@ -4909,7 +4910,7 @@ if (phoneTabs.length && phoneViews.length) {
   }
 
   // ── progress from the live track rect (correct under layout shifts) ──
-  let ticking = false;
+  let mobileStripVisible = false, ticking = false;
   function update(){
     ticking = false;
     const vh = window.innerHeight;
@@ -4928,6 +4929,15 @@ if (phoneTabs.length && phoneViews.length) {
     const alexProgress = clamp((handoffProgress - 0.5) / 0.5, 0, 1);
     const alexActive = handoffProgress >= 0.5;
     const activeIntroSeq = onMobile ? introMobileSeq : introDesktopSeq;
+
+    if(onMobile){
+      if(p > 0.42) mobileStripVisible = true;
+      else if(p < 0.38) mobileStripVisible = false;
+      demo.classList.toggle('handoff-strip-visible', mobileStripVisible);
+    } else if(mobileStripVisible){
+      mobileStripVisible = false;
+      demo.classList.remove('handoff-strip-visible');
+    }
 
     if(onMobile){
       activeIntroSeq?.draw(introProgress);
