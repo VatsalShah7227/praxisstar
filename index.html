@@ -4445,8 +4445,11 @@ if (phoneTabs.length && phoneViews.length) {
   demos.forEach(demo => {
     // Chapter 3 is driven by the canvas image-sequence renderer below.
     if(demo.id === 'app-demo-relationships') return;
+<<<<<<< HEAD
     if(demo.id === 'app-demo-profile') return; // Chapter 2 now uses the canvas image-sequence engine below
     if(demo.id === 'app-demo') return;         // Chapter 1 now uses the canvas image-sequence engine below
+=======
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
     const track = demo.querySelector('.app-demo-track');
     const cap   = demo.querySelector('.app-demo-cap-inner');
     const dots  = [...demo.querySelectorAll('.app-demo-dots span')];
@@ -4720,22 +4723,39 @@ if (phoneTabs.length && phoneViews.length) {
   const sofiaStepThresholds = { 'sofia-profile':0.02, 'sofia-follow':0.08, 'sofia-request':0.39 };
   const alexStepThresholds  = { 'alex-activity':0.57, 'alex-request':0.62, 'alex-accept':0.85 };
 
+<<<<<<< HEAD
   // ── frame sequence: poster-first, then bounded fallback drawing ──
+=======
+  // ── frame sequence: load decoded frames on demand, draw only when ready ──
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
   function makeSeq(canvas){
     const dir = canvas.dataset.seq, count = parseInt(canvas.dataset.count, 10);
     const ctx = canvas.getContext('2d');
     const frames = new Array(count);
     const preloadRadius = 28;
     const desktopDecodeConcurrency = 4;
+<<<<<<< HEAD
     const decodeQueue = [];
     let decoding = 0;
     let started = false, sized = false;
     let hasDrawn = false, posterDrawn = false;
     let lastTargetIdx = -1, lastDrawnIdx = -1;
+=======
+    const desktopWarmConcurrency = 4;
+    const decodeQueue = [];
+    const warmed = new Set();
+    const warmQueue = [];
+    let decoding = 0, warming = 0;
+    let started = false, sized = false, lastTargetIdx = -1, lastDrawnIdx = -1, ready = false;
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
 
     const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.jpg';
     const progressToIndex = p => clamp(Math.round(p*(count-1)), 0, count-1);
     const decodeLimit = () => timelineMobileQuery.matches ? 2 : desktopDecodeConcurrency;
+<<<<<<< HEAD
+=======
+    const warmLimit = () => timelineMobileQuery.matches ? 1 : desktopWarmConcurrency;
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
     const frameReady = i => {
       const f = frames[i];
       return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
@@ -4755,9 +4775,16 @@ if (phoneTabs.length && phoneViews.length) {
       if(!canvas.width || !canvas.height) return false;
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       lastDrawnIdx = i;
+<<<<<<< HEAD
       hasDrawn = true;
       if(i === 0) posterDrawn = true;
       canvas.classList.add('is-video-ready');
+=======
+      if(i === 0 && !ready){
+        ready = true;
+        canvas.classList.add('is-video-ready');
+      }
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
       return true;
     }
 
@@ -4783,7 +4810,11 @@ if (phoneTabs.length && phoneViews.length) {
             if(img.complete && img.naturalWidth > 0){
               frame.ready = true;
               if(frame.idx === 0) drawFrame(0);
+<<<<<<< HEAD
               if(frame.idx === 0 || frame.idx === lastTargetIdx || lastDrawnIdx < 0) req();
+=======
+              if(frame.idx === lastTargetIdx && frame.idx !== lastDrawnIdx) req();
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
             }
             done();
           };
@@ -4812,6 +4843,33 @@ if (phoneTabs.length && phoneViews.length) {
       return frame.promise;
     }
 
+<<<<<<< HEAD
+=======
+    function pumpWarmQueue(){
+      if(warming >= warmLimit() || !warmQueue.length || !window.fetch) return;
+      while(warming < warmLimit() && warmQueue.length){
+        const i = warmQueue.shift();
+        warming++;
+        fetch(frameSrc(i), { cache:'force-cache' })
+          .then(r => r.blob())
+          .catch(() => {})
+          .finally(() => { warming--; pumpWarmQueue(); });
+      }
+    }
+
+    function warmFrame(i){
+      i = clamp(i, 0, count - 1);
+      if(warmed.has(i) || frames[i]?.ready) return;
+      warmed.add(i);
+      warmQueue.push(i);
+      pumpWarmQueue();
+    }
+
+    function warmAll(){
+      for(let i=0; i<count; i++) warmFrame(i);
+    }
+
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
     function preloadWindow(idx, direction = 1, radius = preloadRadius, targetPriority = 1200, aheadPriority = 1000, behindPriority = 700){
       ensureFrame(0, 1000);
       ensureFrame(idx, targetPriority);
@@ -4823,10 +4881,16 @@ if (phoneTabs.length && phoneViews.length) {
       }
     }
 
+<<<<<<< HEAD
     function closestReadyIndex(idx, maxDistance = count - 1){
       if(frameReady(idx)) return idx;
       const limit = Math.min(maxDistance, count - 1);
       for(let d=1; d<=limit; d++){
+=======
+    function closestReadyIndex(idx){
+      if(frameReady(idx)) return idx;
+      for(let d=1; d<count; d++){
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
         const before = idx - d;
         const after = idx + d;
         if(before >= 0 && frameReady(before)) return before;
@@ -4835,6 +4899,7 @@ if (phoneTabs.length && phoneViews.length) {
       return -1;
     }
 
+<<<<<<< HEAD
     function load(radius = preloadRadius){
       if(started) return;
       started = true;
@@ -4844,11 +4909,24 @@ if (phoneTabs.length && phoneViews.length) {
 
     function prepare(p, radius = 8, priority = 520){
       if(!started) load(0);
+=======
+    function load(opts = {}){
+      if(started) return;
+      started = true;
+      ensureFrame(0, 1200).then(() => req());
+      preloadWindow(0, 1, opts.radius ?? preloadRadius);
+      if(opts.warm !== false && !timelineMobileQuery.matches) warmAll();
+    }
+
+    function prepare(p, radius = 8, priority = 520){
+      if(!started) load({ radius:0, warm:false });
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
       const idx = progressToIndex(p);
       const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
       preloadWindow(idx, direction, radius, priority + 200, priority, priority - 120);
     }
 
+<<<<<<< HEAD
     function drawPoster(){
       started = true;
       return ensureFrame(0, 5000).then(() => {
@@ -4890,11 +4968,28 @@ if (phoneTabs.length && phoneViews.length) {
       get lastDrawnIdx(){ return lastDrawnIdx; },
       get lastTargetIdx(){ return lastTargetIdx; }
     };
+=======
+    function draw(p){
+      if(!started) load();
+      const idx = progressToIndex(p);
+      const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
+      lastTargetIdx = idx;
+      preloadWindow(idx, direction);
+      if(idx === lastDrawnIdx) return;
+      if(drawFrame(idx)) return;
+      ensureFrame(idx, 1400).then(() => req());
+      const nearestIdx = closestReadyIndex(idx);
+      if(nearestIdx >= 0 && nearestIdx !== lastDrawnIdx) drawFrame(nearestIdx);
+    }
+
+    return { load, draw, prepare, get ready(){ return ready; }, get lastDrawnIdx(){ return lastDrawnIdx; } };
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
   }
   const introDesktopSeq = introDesktop ? makeSeq(introDesktop) : null;
   const introMobileSeq  = introMobile ? makeSeq(introMobile) : null;
   const sofiaSeq = makeSeq(sofiaCanvas);
   const alexSeq  = makeSeq(alexCanvas);
+<<<<<<< HEAD
   const chapter3Seqs = [introDesktopSeq, introMobileSeq, sofiaSeq, alexSeq].filter(Boolean);
   const activeIntroSeq = () => introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
   let allPostersDrawn = false;
@@ -4911,18 +5006,36 @@ if (phoneTabs.length && phoneViews.length) {
       req();
     });
     req();
+=======
+
+  function loadSequences(){
+    if(timelineMobileQuery.matches){
+      (introMobileQuery.matches ? introMobileSeq : introDesktopSeq)?.load({ warm:false });
+      sofiaSeq.load({ radius:8, warm:false });
+      alexSeq.load({ radius:0, warm:false });
+      return;
+    }
+    introDesktopSeq?.load();
+    sofiaSeq.load();
+    alexSeq.load();
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
   }
 
   // ── caption (same fade, with the fast-scroll-safe timer guard) ──
   let capTimer;
+<<<<<<< HEAD
   function capHTML(c){
     return '<span class="num">'+esc(copy.kicker)+'</span><h3>'+esc(copy.title)+'</h3><p>'+esc(copy.subtitle)+'</p><span class="num">'+c[1]+' / '+total+'</span><h3>'+esc(c[2])+'</h3>';
   }
   function setCap(p, isMobile = timelineMobileQuery.matches){
+=======
+  function setCap(p){
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
     let c=caps[0]; for(const x of caps) if(p>=x[0]) c=x;
     if(!c) return;
     const i=caps.indexOf(c);
     dots.forEach((d,idx)=>d.classList.toggle('on', idx===i));
+<<<<<<< HEAD
     if(isMobile){
       clearTimeout(capTimer);
       cap.dataset.k=c[2];
@@ -4931,11 +5044,17 @@ if (phoneTabs.length && phoneViews.length) {
       cap.style.transform='none';
       return;
     }
+=======
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
     if(cap.dataset.k===c[2]) return;
     cap.dataset.k=c[2];
     clearTimeout(capTimer);
     cap.style.opacity=0; cap.style.transform='translateY(8px)';
+<<<<<<< HEAD
     capTimer=setTimeout(()=>{ cap.innerHTML=capHTML(c);
+=======
+    capTimer=setTimeout(()=>{ cap.innerHTML='<span class="num">'+esc(copy.kicker)+'</span><h3>'+esc(copy.title)+'</h3><p>'+esc(copy.subtitle)+'</p><span class="num">'+c[1]+' / '+total+'</span><h3>'+esc(c[2])+'</h3>';
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
       cap.style.opacity=1; cap.style.transform='none'; },140);
   }
 
@@ -4943,9 +5062,12 @@ if (phoneTabs.length && phoneViews.length) {
   let ticking = false;
   let stableMobileHeight = window.innerHeight;
   let stableMobileWidth = window.innerWidth;
+<<<<<<< HEAD
   let targetProgress = 0;
   let renderedProgress = 0;
   let hasRenderedProgress = false;
+=======
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
 
   function viewportHeight(isMobile){
     if(!isMobile) return window.innerHeight;
@@ -4961,6 +5083,10 @@ if (phoneTabs.length && phoneViews.length) {
   function getProgress(isMobile){
     const vh = viewportHeight(isMobile);
     const r = track.getBoundingClientRect();
+<<<<<<< HEAD
+=======
+    if(r.bottom < -vh || r.top > vh*2) return null;
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
     const dist = track.offsetHeight - vh;
     return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
   }
@@ -5005,6 +5131,7 @@ if (phoneTabs.length && phoneViews.length) {
     };
   }
 
+<<<<<<< HEAD
   function visiblePhase(t){
     if(t.introOpacity > 0.01) return 'intro';
     if(t.alexOpacity > t.sofiaOpacity && t.alexOpacity > 0.01) return 'alex';
@@ -5059,14 +5186,31 @@ if (phoneTabs.length && phoneViews.length) {
       else sofiaSeq.prepare(t.sofiaProgress, 4, 360);
 
       if(t.alexOpacity > 0) alexSeq.drawOrPoster(t.alexProgress, 10);
+=======
+  function renderFrames(t){
+    const activeIntroSeq = introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
+    if(t.isMobile){
+      if(t.introOpacity > 0) activeIntroSeq?.draw(t.introProgress);
+      if(t.sofiaOpacity > 0) sofiaSeq.draw(t.sofiaProgress);
+      else if(t.p < 0.40) sofiaSeq.prepare(0, 8);
+      else sofiaSeq.prepare(t.sofiaProgress, 4, 360);
+
+      if(t.alexOpacity > 0) alexSeq.draw(t.alexProgress);
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
       else if(t.p >= 0.40) alexSeq.prepare(0, 8);
       else alexSeq.prepare(0, 3, 320);
       return;
     }
 
+<<<<<<< HEAD
     introSeq?.drawOrPoster(t.introProgress);
     sofiaSeq.drawOrPoster(t.sofiaProgress);
     alexSeq.drawOrPoster(t.alexProgress);
+=======
+    activeIntroSeq?.draw(t.introProgress);
+    sofiaSeq.draw(t.sofiaProgress);
+    alexSeq.draw(t.alexProgress);
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
   }
 
   function applyUI(t){
@@ -5096,6 +5240,7 @@ if (phoneTabs.length && phoneViews.length) {
   function update(){
     ticking = false;
     const isMobile = timelineMobileQuery.matches;
+<<<<<<< HEAD
 
     targetProgress = getProgress(isMobile);
 
@@ -5122,10 +5267,20 @@ if (phoneTabs.length && phoneViews.length) {
     if(!isMobile && Math.abs(targetProgress - renderedProgress) > 0.0008){
       req();
     }
+=======
+    const p = getProgress(isMobile);
+    if(p === null) return;
+    const timeline = getTimeline(p, isMobile);
+    demo.style.setProperty('--p', timeline.p.toFixed(4));
+    setCap(timeline.p);
+    renderFrames(timeline);
+    applyUI(timeline);
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
   }
   function req(){ if(ticking) return; ticking = true; requestAnimationFrame(update); }
 
   window.addEventListener('scroll', req, { passive:true });
+<<<<<<< HEAD
   window.addEventListener('resize', () => {
     hasRenderedProgress = false;
     req();
@@ -5134,16 +5289,23 @@ if (phoneTabs.length && phoneViews.length) {
     if(!timelineMobileQuery.matches) hasRenderedProgress = false;
     req();
   });
+=======
+  window.addEventListener('resize', req);
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
   const modeChanged = () => { loadSequences(); req(); };
   if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
   else introMobileQuery.addListener?.(modeChanged);
   if(timelineMobileQuery.addEventListener) timelineMobileQuery.addEventListener('change', modeChanged);
   else timelineMobileQuery.addListener?.(modeChanged);
 
+<<<<<<< HEAD
   // Start Chapter 3 posters/full preload immediately for the stable test-proven path.
   loadSequences();
 
   // Keep the observer as a harmless retry if the page is restored from cache or re-entered.
+=======
+  // lazy-load the sequences as the chapter approaches
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
   if('IntersectionObserver' in window){
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => { if(e.isIntersecting){ loadSequences(); req(); } });
@@ -5156,6 +5318,7 @@ if (phoneTabs.length && phoneViews.length) {
 })();
 
 /* ════════════════════════════════════════════════════════════
+<<<<<<< HEAD
    APP DEMO — CHAPTER 1 IMAGE-SEQUENCE RENDERER (canvas scrub)
    intro sequence -> crossfade -> feed sequence. Scroll progress only.
    No video.currentTime. Same stable engine as Chapter 2/3. Frame
@@ -5690,6 +5853,8 @@ if (phoneTabs.length && phoneViews.length) {
 })();
 
 /* ════════════════════════════════════════════════════════════
+=======
+>>>>>>> 97f67019b363582c1b63e525dec8f3e178eecfaf
    APP DEMO — LAZY VIDEO BUFFERING
    Videos ship as preload="metadata" (tiny) so the page loads fast.
    Each chapter is upgraded to full buffering only as you approach it,
