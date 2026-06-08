@@ -2907,11 +2907,28 @@ footer{
   #app-demo-relationships[data-active-person="alex"] .app-demo-person[data-person="sofia"]{
     opacity:.42; filter:blur(2px); transform:translate(-112%, -50%) translateY(18px) scale(.68); z-index:1; pointer-events:none;
   }
+  #app-demo-relationships .app-demo-person[data-person="sofia"]{
+    opacity:var(--sofia-opacity,1); filter:none; transform:translate(-50%, -50%) scale(1); z-index:1; pointer-events:none;
+  }
+  #app-demo-relationships .app-demo-person[data-person="alex"]{
+    opacity:var(--alex-opacity,0); filter:none; transform:translate(-50%, -50%) scale(1); z-index:1; pointer-events:none;
+  }
+  #app-demo-relationships[data-active-person="sofia"] .app-demo-person[data-person="sofia"],
+  #app-demo-relationships[data-active-person="alex"] .app-demo-person[data-person="alex"]{
+    z-index:2; pointer-events:auto;
+  }
+  #app-demo-relationships[data-active-person] .app-demo-person[data-person="sofia"]{
+    opacity:var(--sofia-opacity,1); filter:none; transform:translate(-50%, -50%) scale(1);
+  }
+  #app-demo-relationships[data-active-person] .app-demo-person[data-person="alex"]{
+    opacity:var(--alex-opacity,0); filter:none; transform:translate(-50%, -50%) scale(1);
+  }
 }
 @media (max-width:1040px){
   #app-demo-relationships .handoff-story-card{ display:none; }
-  #app-demo-relationships .handoff-mobile-progress{ display:block; opacity:0; transition:opacity .24s ease; }
-  #app-demo-relationships.handoff-strip-visible .handoff-mobile-progress{ opacity:1; }
+  #app-demo-relationships .handoff-mobile-progress{
+    display:block; opacity:var(--strip-opacity,0); transition:opacity .18s linear;
+  }
 }
 @media (max-width:700px){
   .app-demo-intro-feed .app-demo-intro-video-desktop{ display:block; }
@@ -2948,10 +2965,8 @@ footer{
   .app-demo-phone-pair{ min-height:500px; }
   .app-demo-handoff .app-demo-phone{ width:min(218px,64vw); }
   .app-demo-person.inactive{ opacity:0; transform:translate(-50%, -50%) translateY(18px) scale(.72); }
-  #app-demo-relationships[data-active-person="sofia"] .app-demo-person[data-person="alex"],
-  #app-demo-relationships[data-active-person="alex"] .app-demo-person[data-person="sofia"]{
-    opacity:0; transform:translate(-50%, -50%) translateY(18px) scale(.72);
-  }
+  #app-demo-relationships .app-demo-person[data-person="sofia"]{ opacity:var(--sofia-opacity,1); transform:translate(-50%, -50%) scale(1); }
+  #app-demo-relationships .app-demo-person[data-person="alex"]{ opacity:var(--alex-opacity,0); transform:translate(-50%, -50%) scale(1); }
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -4678,6 +4693,7 @@ if (phoneTabs.length && phoneViews.length) {
   const cap   = demo.querySelector('.app-demo-cap-inner');
   const dots  = [...demo.querySelectorAll('.app-demo-dots span')];
   const introMobileQuery = window.matchMedia('(max-width:700px)');
+  const timelineMobileQuery = window.matchMedia('(max-width:1040px)');
   const introDesktop = demo.querySelector('.app-demo-intro-video-desktop');
   const introMobile  = demo.querySelector('.app-demo-intro-video-mobile');
   const sofiaCanvas  = demo.querySelector('.app-demo-sofia-video');
@@ -4717,8 +4733,8 @@ if (phoneTabs.length && phoneViews.length) {
 
     const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.jpg';
     const progressToIndex = p => clamp(Math.round(p*(count-1)), 0, count-1);
-    const decodeLimit = () => introMobileQuery.matches ? 2 : desktopDecodeConcurrency;
-    const warmLimit = () => introMobileQuery.matches ? 1 : desktopWarmConcurrency;
+    const decodeLimit = () => timelineMobileQuery.matches ? 2 : desktopDecodeConcurrency;
+    const warmLimit = () => timelineMobileQuery.matches ? 1 : desktopWarmConcurrency;
     const frameReady = i => {
       const f = frames[i];
       return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
@@ -4847,7 +4863,7 @@ if (phoneTabs.length && phoneViews.length) {
       started = true;
       ensureFrame(0, 1200).then(() => req());
       preloadWindow(0, 1, opts.radius ?? preloadRadius);
-      if(opts.warm !== false && !introMobileQuery.matches) warmAll();
+      if(opts.warm !== false && !timelineMobileQuery.matches) warmAll();
     }
 
     function prepare(p, radius = 8, priority = 520){
@@ -4870,12 +4886,7 @@ if (phoneTabs.length && phoneViews.length) {
       if(nearestIdx >= 0 && nearestIdx !== lastDrawnIdx) drawFrame(nearestIdx);
     }
 
-    function canReveal(p){
-      const idx = progressToIndex(p);
-      return lastDrawnIdx >= 0 || frameReady(idx) || frameReady(0);
-    }
-
-    return { load, draw, prepare, canReveal, get ready(){ return ready; }, get lastDrawnIdx(){ return lastDrawnIdx; } };
+    return { load, draw, prepare, get ready(){ return ready; }, get lastDrawnIdx(){ return lastDrawnIdx; } };
   }
   const introDesktopSeq = introDesktop ? makeSeq(introDesktop) : null;
   const introMobileSeq  = introMobile ? makeSeq(introMobile) : null;
@@ -4883,8 +4894,8 @@ if (phoneTabs.length && phoneViews.length) {
   const alexSeq  = makeSeq(alexCanvas);
 
   function loadSequences(){
-    if(introMobileQuery.matches){
-      introMobileSeq?.load({ warm:false });
+    if(timelineMobileQuery.matches){
+      (introMobileQuery.matches ? introMobileSeq : introDesktopSeq)?.load({ warm:false });
       sofiaSeq.load({ radius:8, warm:false });
       alexSeq.load({ radius:0, warm:false });
       return;
@@ -4909,80 +4920,133 @@ if (phoneTabs.length && phoneViews.length) {
       cap.style.opacity=1; cap.style.transform='none'; },140);
   }
 
-  // ── progress from the live track rect (correct under layout shifts) ──
-  let mobileStripVisible = false, ticking = false;
-  function update(){
-    ticking = false;
-    const vh = window.innerHeight;
+  // ── progress → timeline → render frames → apply UI ──
+  let ticking = false;
+  let stableMobileHeight = window.innerHeight;
+  let stableMobileWidth = window.innerWidth;
+
+  function viewportHeight(isMobile){
+    if(!isMobile) return window.innerHeight;
+    const width = window.innerWidth;
+    if(Math.abs(width - stableMobileWidth) > 24){
+      stableMobileWidth = width;
+      stableMobileHeight = window.innerHeight;
+    }
+    stableMobileHeight = Math.max(stableMobileHeight, window.innerHeight, window.visualViewport?.height || 0);
+    return stableMobileHeight;
+  }
+
+  function getProgress(isMobile){
+    const vh = viewportHeight(isMobile);
     const r = track.getBoundingClientRect();
-    if(r.bottom < -vh || r.top > vh*2) return;     // off-screen: skip
+    if(r.bottom < -vh || r.top > vh*2) return null;
     const dist = track.offsetHeight - vh;
-    const p = dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
-    demo.style.setProperty('--p', p.toFixed(4));
-    setCap(p);
+    return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
+  }
 
-    const introProgress = clamp(p / 0.25, 0, 1);
-    const transitionProgress = clamp((p - 0.25) / 0.15, 0, 1);
+  function getTimeline(p, isMobile){
+    if(isMobile){
+      const introToSofia = clamp((p - 0.30) / 0.10, 0, 1);
+      const sofiaToAlex = clamp((p - 0.68) / 0.08, 0, 1);
+      return {
+        p,
+        isMobile:true,
+        introOpacity:1 - introToSofia,
+        introScale:1 + introToSofia * 0.08,
+        handoffOpacity:introToSofia,
+        handoffScale:0.94 + introToSofia * 0.06,
+        sofiaOpacity:introToSofia * (1 - sofiaToAlex),
+        alexOpacity:sofiaToAlex,
+        stripOpacity:clamp((p - 0.40) / 0.06, 0, 1),
+        activePerson:p < 0.72 ? 'sofia' : 'alex',
+        introProgress:clamp(p / 0.30, 0, 1),
+        sofiaProgress:clamp((p - 0.40) / 0.28, 0, 1),
+        alexProgress:clamp((p - 0.76) / 0.24, 0, 1)
+      };
+    }
+
+    const revealT = p <= 0.25 ? 0 : p >= 0.40 ? 1 : clamp((p - 0.25) / 0.15, 0, 1);
     const handoffProgress = clamp((p - 0.40) / 0.60, 0, 1);
-    const onMobile = introMobileQuery.matches;
-    const sofiaProgress = clamp(handoffProgress / 0.5, 0, 1);
-    const alexProgress = clamp((handoffProgress - 0.5) / 0.5, 0, 1);
-    const alexActive = handoffProgress >= 0.5;
-    const activeIntroSeq = onMobile ? introMobileSeq : introDesktopSeq;
+    return {
+      p,
+      isMobile:false,
+      introOpacity:1 - revealT,
+      introScale:1 + revealT * 0.08,
+      handoffOpacity:revealT,
+      handoffScale:0.94 + revealT * 0.06,
+      sofiaOpacity:1,
+      alexOpacity:1,
+      stripOpacity:0,
+      activePerson:handoffProgress < 0.5 ? 'sofia' : 'alex',
+      introProgress:clamp(p / 0.25, 0, 1),
+      sofiaProgress:clamp(handoffProgress / 0.5, 0, 1),
+      alexProgress:clamp((handoffProgress - 0.5) / 0.5, 0, 1)
+    };
+  }
 
-    if(onMobile){
-      if(p > 0.42) mobileStripVisible = true;
-      else if(p < 0.38) mobileStripVisible = false;
-      demo.classList.toggle('handoff-strip-visible', mobileStripVisible);
-    } else if(mobileStripVisible){
-      mobileStripVisible = false;
-      demo.classList.remove('handoff-strip-visible');
+  function renderFrames(t){
+    const activeIntroSeq = introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
+    if(t.isMobile){
+      if(t.introOpacity > 0) activeIntroSeq?.draw(t.introProgress);
+      if(t.sofiaOpacity > 0) sofiaSeq.draw(t.sofiaProgress);
+      else if(t.p < 0.40) sofiaSeq.prepare(0, 8);
+      else sofiaSeq.prepare(t.sofiaProgress, 4, 360);
+
+      if(t.alexOpacity > 0) alexSeq.draw(t.alexProgress);
+      else if(t.p >= 0.40) alexSeq.prepare(0, 8);
+      else alexSeq.prepare(0, 3, 320);
+      return;
     }
 
-    if(onMobile){
-      activeIntroSeq?.draw(introProgress);
-      if(p < 0.25){
-        sofiaSeq.prepare(0, 8);
-      } else if(p < 0.40){
-        sofiaSeq.draw(0);
-        alexSeq.prepare(0, 3, 420);
-      } else if(!alexActive){
-        sofiaSeq.draw(sofiaProgress);
-        alexSeq.prepare(0, 8);
-      } else {
-        alexSeq.draw(alexProgress);
-        sofiaSeq.prepare(1, 4, 360);
-      }
-    } else {
-      activeIntroSeq?.draw(introProgress);
-      sofiaSeq.draw(sofiaProgress);
-      alexSeq.draw(alexProgress);
-    }
+    activeIntroSeq?.draw(t.introProgress);
+    sofiaSeq.draw(t.sofiaProgress);
+    alexSeq.draw(t.alexProgress);
+  }
 
-    const revealT = p <= 0.25 ? 0 : p >= 0.40 ? 1 : transitionProgress;
-    demo.style.setProperty('--intro-opacity', (1 - revealT).toFixed(4));
-    demo.style.setProperty('--intro-scale', (1 + revealT * 0.08).toFixed(4));
-    demo.style.setProperty('--handoff-opacity', revealT.toFixed(4));
-    demo.style.setProperty('--handoff-scale', (0.94 + revealT * 0.06).toFixed(4));
+  function applyUI(t){
+    demo.style.setProperty('--intro-opacity', t.introOpacity.toFixed(4));
+    demo.style.setProperty('--intro-scale', t.introScale.toFixed(4));
+    demo.style.setProperty('--handoff-opacity', t.handoffOpacity.toFixed(4));
+    demo.style.setProperty('--handoff-scale', t.handoffScale.toFixed(4));
+    demo.style.setProperty('--sofia-opacity', t.sofiaOpacity.toFixed(4));
+    demo.style.setProperty('--alex-opacity', t.alexOpacity.toFixed(4));
+    demo.style.setProperty('--strip-opacity', t.stripOpacity.toFixed(4));
 
-    demo.dataset.activePerson = alexActive ? 'alex' : 'sofia';
+    demo.dataset.activePerson = t.activePerson;
     handoffSteps.forEach(step => {
       const k = step.dataset.step;
       const isAlex = k.startsWith('alex-');
       const thr = isAlex ? alexStepThresholds[k] : sofiaStepThresholds[k];
-      const sp = isAlex ? alexProgress : sofiaProgress;
+      const sp = isAlex ? t.alexProgress : t.sofiaProgress;
       step.classList.toggle('is-complete', sp >= thr);
     });
+    const alexActive = t.activePerson === 'alex';
     sofiaPerson?.classList.toggle('active', !alexActive);
     sofiaPerson?.classList.toggle('inactive', alexActive);
     alexPerson?.classList.toggle('active', alexActive);
     alexPerson?.classList.toggle('inactive', !alexActive);
   }
+
+  function update(){
+    ticking = false;
+    const isMobile = timelineMobileQuery.matches;
+    const p = getProgress(isMobile);
+    if(p === null) return;
+    const timeline = getTimeline(p, isMobile);
+    demo.style.setProperty('--p', timeline.p.toFixed(4));
+    setCap(timeline.p);
+    renderFrames(timeline);
+    applyUI(timeline);
+  }
   function req(){ if(ticking) return; ticking = true; requestAnimationFrame(update); }
 
   window.addEventListener('scroll', req, { passive:true });
   window.addEventListener('resize', req);
-  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', () => { loadSequences(); req(); });
+  const modeChanged = () => { loadSequences(); req(); };
+  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
+  else introMobileQuery.addListener?.(modeChanged);
+  if(timelineMobileQuery.addEventListener) timelineMobileQuery.addEventListener('change', modeChanged);
+  else timelineMobileQuery.addListener?.(modeChanged);
 
   // lazy-load the sequences as the chapter approaches
   if('IntersectionObserver' in window){
