@@ -4706,8 +4706,8 @@ if (phoneTabs.length && phoneViews.length) {
     const ctx = canvas.getContext('2d');
     const frames = new Array(count);
     const preloadRadius = 28;
-    const decodeConcurrency = 4;
-    const warmConcurrency = 4;
+    const desktopDecodeConcurrency = 4;
+    const desktopWarmConcurrency = 4;
     const decodeQueue = [];
     const warmed = new Set();
     const warmQueue = [];
@@ -4716,6 +4716,8 @@ if (phoneTabs.length && phoneViews.length) {
 
     const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.jpg';
     const progressToIndex = p => clamp(Math.round(p*(count-1)), 0, count-1);
+    const decodeLimit = () => introMobileQuery.matches ? 2 : desktopDecodeConcurrency;
+    const warmLimit = () => introMobileQuery.matches ? 1 : desktopWarmConcurrency;
     const frameReady = i => {
       const f = frames[i];
       return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
@@ -4743,9 +4745,9 @@ if (phoneTabs.length && phoneViews.length) {
     }
 
     function pumpDecodeQueue(){
-      if(decoding >= decodeConcurrency || !decodeQueue.length) return;
+      if(decoding >= decodeLimit() || !decodeQueue.length) return;
       decodeQueue.sort((a,b) => b.priority - a.priority);
-      while(decoding < decodeConcurrency && decodeQueue.length){
+      while(decoding < decodeLimit() && decodeQueue.length){
         const frame = decodeQueue.shift();
         frame.queued = false;
         if(frame.ready || frame.loading) continue;
@@ -4794,8 +4796,8 @@ if (phoneTabs.length && phoneViews.length) {
     }
 
     function pumpWarmQueue(){
-      if(warming >= warmConcurrency || !warmQueue.length || !window.fetch) return;
-      while(warming < warmConcurrency && warmQueue.length){
+      if(warming >= warmLimit() || !warmQueue.length || !window.fetch) return;
+      while(warming < warmLimit() && warmQueue.length){
         const i = warmQueue.shift();
         warming++;
         fetch(frameSrc(i), { cache:'force-cache' })
@@ -4817,14 +4819,14 @@ if (phoneTabs.length && phoneViews.length) {
       for(let i=0; i<count; i++) warmFrame(i);
     }
 
-    function preloadWindow(idx, direction = 1){
+    function preloadWindow(idx, direction = 1, radius = preloadRadius, targetPriority = 1200, aheadPriority = 1000, behindPriority = 700){
       ensureFrame(0, 1000);
-      ensureFrame(idx, 1200);
-      for(let d=1; d<=preloadRadius; d++){
+      ensureFrame(idx, targetPriority);
+      for(let d=1; d<=radius; d++){
         const ahead = idx + d * direction;
         const behind = idx - d * direction;
-        if(ahead >= 0 && ahead < count) ensureFrame(ahead, 1000 - d);
-        if(behind >= 0 && behind < count) ensureFrame(behind, 700 - d);
+        if(ahead >= 0 && ahead < count) ensureFrame(ahead, aheadPriority - d);
+        if(behind >= 0 && behind < count) ensureFrame(behind, behindPriority - d);
       }
     }
 
@@ -4839,12 +4841,19 @@ if (phoneTabs.length && phoneViews.length) {
       return -1;
     }
 
-    function load(){
+    function load(opts = {}){
       if(started) return;
       started = true;
       ensureFrame(0, 1200).then(() => req());
-      preloadWindow(0);
-      warmAll();
+      preloadWindow(0, 1, opts.radius ?? preloadRadius);
+      if(opts.warm !== false && !introMobileQuery.matches) warmAll();
+    }
+
+    function prepare(p, radius = 8, priority = 520){
+      if(!started) load({ radius:0, warm:false });
+      const idx = progressToIndex(p);
+      const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
+      preloadWindow(idx, direction, radius, priority + 200, priority, priority - 120);
     }
 
     function draw(p){
@@ -4865,7 +4874,7 @@ if (phoneTabs.length && phoneViews.length) {
       return lastDrawnIdx >= 0 || frameReady(idx) || frameReady(0);
     }
 
-    return { load, draw, canReveal, get ready(){ return ready; }, get lastDrawnIdx(){ return lastDrawnIdx; } };
+    return { load, draw, prepare, canReveal, get ready(){ return ready; }, get lastDrawnIdx(){ return lastDrawnIdx; } };
   }
   const introDesktopSeq = introDesktop ? makeSeq(introDesktop) : null;
   const introMobileSeq  = introMobile ? makeSeq(introMobile) : null;
@@ -4873,7 +4882,13 @@ if (phoneTabs.length && phoneViews.length) {
   const alexSeq  = makeSeq(alexCanvas);
 
   function loadSequences(){
-    (introMobileQuery.matches ? introMobileSeq : introDesktopSeq)?.load();
+    if(introMobileQuery.matches){
+      introMobileSeq?.load({ warm:false });
+      sofiaSeq.load({ radius:8, warm:false });
+      alexSeq.load({ radius:0, warm:false });
+      return;
+    }
+    introDesktopSeq?.load();
     sofiaSeq.load();
     alexSeq.load();
   }
@@ -4914,9 +4929,25 @@ if (phoneTabs.length && phoneViews.length) {
     const alexActive = handoffProgress >= 0.5;
     const activeIntroSeq = onMobile ? introMobileSeq : introDesktopSeq;
 
-    activeIntroSeq?.draw(introProgress);
-    sofiaSeq.draw(sofiaProgress);
-    alexSeq.draw(alexProgress);
+    if(onMobile){
+      activeIntroSeq?.draw(introProgress);
+      if(p < 0.25){
+        sofiaSeq.prepare(0, 8);
+      } else if(p < 0.40){
+        sofiaSeq.draw(0);
+        alexSeq.prepare(0, 3, 420);
+      } else if(!alexActive){
+        sofiaSeq.draw(sofiaProgress);
+        alexSeq.prepare(0, 8);
+      } else {
+        alexSeq.draw(alexProgress);
+        sofiaSeq.prepare(1, 4, 360);
+      }
+    } else {
+      activeIntroSeq?.draw(introProgress);
+      sofiaSeq.draw(sofiaProgress);
+      alexSeq.draw(alexProgress);
+    }
 
     const revealT = p <= 0.25 ? 0 : p >= 0.40 ? 1 : transitionProgress;
     demo.style.setProperty('--intro-opacity', (1 - revealT).toFixed(4));
