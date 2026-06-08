@@ -2907,10 +2907,28 @@ footer{
   #app-demo-relationships[data-active-person="alex"] .app-demo-person[data-person="sofia"]{
     opacity:.42; filter:blur(2px); transform:translate(-112%, -50%) translateY(18px) scale(.68); z-index:1; pointer-events:none;
   }
+  #app-demo-relationships .app-demo-person[data-person="sofia"]{
+    opacity:var(--sofia-opacity,1); filter:none; transform:translate(-50%, -50%) scale(1); z-index:1; pointer-events:none;
+  }
+  #app-demo-relationships .app-demo-person[data-person="alex"]{
+    opacity:var(--alex-opacity,0); filter:none; transform:translate(-50%, -50%) scale(1); z-index:1; pointer-events:none;
+  }
+  #app-demo-relationships[data-active-person="sofia"] .app-demo-person[data-person="sofia"],
+  #app-demo-relationships[data-active-person="alex"] .app-demo-person[data-person="alex"]{
+    z-index:2; pointer-events:auto;
+  }
+  #app-demo-relationships[data-active-person] .app-demo-person[data-person="sofia"]{
+    opacity:var(--sofia-opacity,1); filter:none; transform:translate(-50%, -50%) scale(1);
+  }
+  #app-demo-relationships[data-active-person] .app-demo-person[data-person="alex"]{
+    opacity:var(--alex-opacity,0); filter:none; transform:translate(-50%, -50%) scale(1);
+  }
 }
 @media (max-width:1040px){
   #app-demo-relationships .handoff-story-card{ display:none; }
-  #app-demo-relationships .handoff-mobile-progress{ display:block; }
+  #app-demo-relationships .handoff-mobile-progress{
+    display:block; opacity:var(--strip-opacity,0); transition:opacity .18s linear;
+  }
 }
 @media (max-width:700px){
   .app-demo-intro-feed .app-demo-intro-video-desktop{ display:block; }
@@ -2919,6 +2937,15 @@ footer{
   .app-demo-intro-feed.mobile-intro-ready .app-demo-intro-video-mobile{ display:block; }
   #app-demo-relationships .app-demo-intro-video-desktop{ display:none; }
   #app-demo-relationships .app-demo-intro-video-mobile{ display:block; }
+  #app-demo-relationships .app-demo-cap-inner,
+  #app-demo-relationships .app-demo-person,
+  #app-demo-relationships .app-demo-person-label,
+  #app-demo-relationships .app-demo-video,
+  #app-demo-relationships .handoff-mobile-progress,
+  #app-demo-relationships .handoff-mobile-step,
+  #app-demo-relationships .handoff-mobile-step .step-marker{
+    transition:none !important;
+  }
   .app-demo-intro-feed .app-demo-intro-video{
     object-fit:contain; object-position:center center;
     width:100%; height:100%; background:#06060c;
@@ -2947,10 +2974,8 @@ footer{
   .app-demo-phone-pair{ min-height:500px; }
   .app-demo-handoff .app-demo-phone{ width:min(218px,64vw); }
   .app-demo-person.inactive{ opacity:0; transform:translate(-50%, -50%) translateY(18px) scale(.72); }
-  #app-demo-relationships[data-active-person="sofia"] .app-demo-person[data-person="alex"],
-  #app-demo-relationships[data-active-person="alex"] .app-demo-person[data-person="sofia"]{
-    opacity:0; transform:translate(-50%, -50%) translateY(18px) scale(.72);
-  }
+  #app-demo-relationships .app-demo-person[data-person="sofia"]{ opacity:var(--sofia-opacity,1); transform:translate(-50%, -50%) scale(1); }
+  #app-demo-relationships .app-demo-person[data-person="alex"]{ opacity:var(--alex-opacity,0); transform:translate(-50%, -50%) scale(1); }
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -3296,12 +3321,8 @@ footer{
       <div class="app-demo-dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span></div>
 
       <div class="app-demo-intro-layer" aria-hidden="true">
-        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" muted playsinline preload="metadata" tabindex="-1">
-          <source src="chapter-1-intro-girl-working-test.mp4" type="video/mp4">
-        </video>
-        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" muted playsinline preload="metadata" tabindex="-1">
-          <source src="chapter-1-intro-girl-working-mobile.mp4" type="video/mp4">
-        </video>
+        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" data-seq="frames/ch1-intro-desktop" data-count="77"></canvas>
+        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" data-seq="frames/ch1-intro-mobile" data-count="77"></canvas>
       </div>
 
       <div class="app-demo-feed-layer">
@@ -3309,9 +3330,7 @@ footer{
           <div class="app-demo-frame">
             <div class="app-demo-island"></div>
             <div class="app-demo-viewport">
-              <video class="app-demo-video" muted playsinline preload="metadata" tabindex="-1">
-                <source src="praxis-demo-01-feed.mp4" type="video/mp4">
-              </video>
+              <canvas class="app-demo-video ch1-feed-canvas" data-seq="frames/ch1-feed" data-count="183"></canvas>
             </div>
           </div>
         </div>
@@ -3348,9 +3367,7 @@ footer{
         <div class="app-demo-frame">
           <div class="app-demo-island"></div>
           <div class="app-demo-viewport">
-            <video class="app-demo-video" muted playsinline preload="metadata" tabindex="-1">
-              <source src="praxis-demo-02-profile.mp4" type="video/mp4">
-            </video>
+            <canvas class="app-demo-video app-demo-profile-canvas" data-seq="frames/ch2-profile" data-count="158"></canvas>
           </div>
         </div>
       </div>
@@ -3406,12 +3423,8 @@ footer{
       <div class="app-demo-dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
 
       <div class="app-demo-intro-layer" aria-hidden="true">
-        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" muted playsinline preload="metadata" tabindex="-1">
-          <source src="chapter-3-intro-sofia-alex-phones.mp4" type="video/mp4">
-        </video>
-        <video class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" muted playsinline preload="metadata" tabindex="-1">
-          <source src="chapter-3-intro-sofia-alex-phones-mobile.mp4" type="video/mp4">
-        </video>
+        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" data-seq="frames/ch3-intro-desktop" data-count="78"></canvas>
+        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" data-seq="frames/ch3-intro-mobile" data-count="78"></canvas>
       </div>
 
       <div class="handoff-story-card handoff-story-left" aria-hidden="true">
@@ -3470,9 +3483,7 @@ footer{
             <div class="app-demo-frame">
               <div class="app-demo-island"></div>
               <div class="app-demo-viewport">
-                <video class="app-demo-video app-demo-sofia-video" muted playsinline preload="metadata" tabindex="-1">
-                  <source src="praxis-demo-03-sofia-send-request.mp4" type="video/mp4">
-                </video>
+                <canvas class="app-demo-video app-demo-sofia-video" data-seq="frames/ch3-sofia" data-count="109"></canvas>
               </div>
             </div>
           </div>
@@ -3484,9 +3495,7 @@ footer{
             <div class="app-demo-frame">
               <div class="app-demo-island"></div>
               <div class="app-demo-viewport">
-                <video class="app-demo-video app-demo-alex-video" muted playsinline preload="metadata" tabindex="-1">
-                  <source src="praxis-demo-03-alex-accept-request.mp4" type="video/mp4">
-                </video>
+                <canvas class="app-demo-video app-demo-alex-video" data-seq="frames/ch3-alex" data-count="128"></canvas>
               </div>
             </div>
           </div>
@@ -4434,6 +4443,10 @@ if (phoneTabs.length && phoneViews.length) {
   const stops = [0.00,0.18,0.38,0.62,0.82];
 
   demos.forEach(demo => {
+    // Chapter 3 is driven by the canvas image-sequence renderer below.
+    if(demo.id === 'app-demo-relationships') return;
+    if(demo.id === 'app-demo-profile') return; // Chapter 2 now uses the canvas image-sequence engine below
+    if(demo.id === 'app-demo') return;         // Chapter 1 now uses the canvas image-sequence engine below
     const track = demo.querySelector('.app-demo-track');
     const cap   = demo.querySelector('.app-demo-cap-inner');
     const dots  = [...demo.querySelectorAll('.app-demo-dots span')];
@@ -4670,6 +4683,1013 @@ if (phoneTabs.length && phoneViews.length) {
 })();
 
 /* ════════════════════════════════════════════════════════════
+   APP DEMO — CHAPTER 3 IMAGE-SEQUENCE RENDERER (canvas scrub)
+   Scroll maps to a frame index of a pre-extracted JPEG sequence and
+   draws it to a <canvas> — no video decoder, so the scrub is
+   frame-perfect and jank-free on mobile. Same timeline / latch as
+   before, just rendered from frames instead of video.currentTime.
+   ════════════════════════════════════════════════════════════ */
+(function(){
+  const demo = document.querySelector('#app-demo-relationships');
+  if(!demo) return;
+  const track = demo.querySelector('.app-demo-track');
+  const cap   = demo.querySelector('.app-demo-cap-inner');
+  const dots  = [...demo.querySelectorAll('.app-demo-dots span')];
+  const introMobileQuery = window.matchMedia('(max-width:700px)');
+  const timelineMobileQuery = window.matchMedia('(max-width:1040px)');
+  const introDesktop = demo.querySelector('.app-demo-intro-video-desktop');
+  const introMobile  = demo.querySelector('.app-demo-intro-video-mobile');
+  const sofiaCanvas  = demo.querySelector('.app-demo-sofia-video');
+  const alexCanvas   = demo.querySelector('.app-demo-alex-video');
+  const sofiaPerson  = demo.querySelector('.app-demo-person[data-person="sofia"]');
+  const alexPerson   = demo.querySelector('.app-demo-person[data-person="alex"]');
+  const handoffSteps = [...demo.querySelectorAll('.handoff-story-step[data-step], .handoff-mobile-step[data-step]')];
+  if(!track || !cap || !sofiaCanvas || !alexCanvas) return;
+
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const copy = {
+    kicker: demo.dataset.kicker || '',
+    title: demo.dataset.title || '',
+    subtitle: demo.dataset.subtitle || '',
+    captions: demo.dataset.captions ? demo.dataset.captions.split('|') : []
+  };
+  const total = String(copy.captions.length).padStart(2,'0');
+  const sectionStops = [0.40,0.50,0.60,0.70,0.82,0.92];
+  const caps = copy.captions.map((text, idx) => [ sectionStops[idx] ?? (idx/Math.max(copy.captions.length-1,1)), String(idx+1).padStart(2,'0'), text ]);
+  const sofiaStepThresholds = { 'sofia-profile':0.02, 'sofia-follow':0.08, 'sofia-request':0.39 };
+  const alexStepThresholds  = { 'alex-activity':0.57, 'alex-request':0.62, 'alex-accept':0.85 };
+
+  // ── frame sequence: poster-first, then bounded fallback drawing ──
+  function makeSeq(canvas){
+    const dir = canvas.dataset.seq, count = parseInt(canvas.dataset.count, 10);
+    const ctx = canvas.getContext('2d');
+    const frames = new Array(count);
+    const preloadRadius = 28;
+    const desktopDecodeConcurrency = 4;
+    const decodeQueue = [];
+    let decoding = 0;
+    let started = false, sized = false;
+    let hasDrawn = false, posterDrawn = false;
+    let lastTargetIdx = -1, lastDrawnIdx = -1;
+
+    const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.jpg';
+    const progressToIndex = p => clamp(Math.round(p*(count-1)), 0, count-1);
+    const decodeLimit = () => timelineMobileQuery.matches ? 2 : desktopDecodeConcurrency;
+    const frameReady = i => {
+      const f = frames[i];
+      return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
+    };
+
+    function sizeTo(img){
+      if(sized) return;
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      sized = true;
+    }
+
+    function drawFrame(i){
+      if(!frameReady(i)) return false;
+      const img = frames[i].img;
+      sizeTo(img);
+      if(!canvas.width || !canvas.height) return false;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      lastDrawnIdx = i;
+      hasDrawn = true;
+      if(i === 0) posterDrawn = true;
+      canvas.classList.add('is-video-ready');
+      return true;
+    }
+
+    function pumpDecodeQueue(){
+      if(decoding >= decodeLimit() || !decodeQueue.length) return;
+      decodeQueue.sort((a,b) => b.priority - a.priority);
+      while(decoding < decodeLimit() && decodeQueue.length){
+        const frame = decodeQueue.shift();
+        frame.queued = false;
+        if(frame.ready || frame.loading) continue;
+        frame.loading = true;
+        decoding++;
+        const img = new Image();
+        img.decoding = 'async';
+        frame.img = img;
+        const done = () => {
+          decoding--;
+          frame.resolve(frame);
+          pumpDecodeQueue();
+        };
+        const markReady = () => {
+          const finish = () => {
+            if(img.complete && img.naturalWidth > 0){
+              frame.ready = true;
+              if(frame.idx === 0) drawFrame(0);
+              if(frame.idx === 0 || frame.idx === lastTargetIdx || lastDrawnIdx < 0) req();
+            }
+            done();
+          };
+          if(img.decode) img.decode().then(finish).catch(finish);
+          else finish();
+        };
+        img.onload = markReady;
+        img.onerror = done;
+        img.src = frameSrc(frame.idx);
+      }
+    }
+
+    function ensureFrame(i, priority = 0){
+      i = clamp(i, 0, count - 1);
+      let frame = frames[i];
+      if(frame){
+        frame.priority = Math.max(frame.priority || 0, priority);
+        if(frame.queued) pumpDecodeQueue();
+        return frame.promise;
+      }
+      frame = { idx:i, img:null, ready:false, loading:false, queued:true, priority, promise:null, resolve:null };
+      frame.promise = new Promise(resolve => { frame.resolve = resolve; });
+      frames[i] = frame;
+      decodeQueue.push(frame);
+      pumpDecodeQueue();
+      return frame.promise;
+    }
+
+    function preloadWindow(idx, direction = 1, radius = preloadRadius, targetPriority = 1200, aheadPriority = 1000, behindPriority = 700){
+      ensureFrame(0, 1000);
+      ensureFrame(idx, targetPriority);
+      for(let d=1; d<=radius; d++){
+        const ahead = idx + d * direction;
+        const behind = idx - d * direction;
+        if(ahead >= 0 && ahead < count) ensureFrame(ahead, aheadPriority - d);
+        if(behind >= 0 && behind < count) ensureFrame(behind, behindPriority - d);
+      }
+    }
+
+    function closestReadyIndex(idx, maxDistance = count - 1){
+      if(frameReady(idx)) return idx;
+      const limit = Math.min(maxDistance, count - 1);
+      for(let d=1; d<=limit; d++){
+        const before = idx - d;
+        const after = idx + d;
+        if(before >= 0 && frameReady(before)) return before;
+        if(after < count && frameReady(after)) return after;
+      }
+      return -1;
+    }
+
+    function load(radius = preloadRadius){
+      if(started) return;
+      started = true;
+      ensureFrame(0, 1200).then(() => req());
+      preloadWindow(0, 1, radius);
+    }
+
+    function prepare(p, radius = 8, priority = 520){
+      if(!started) load(0);
+      const idx = progressToIndex(p);
+      const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
+      preloadWindow(idx, direction, radius, priority + 200, priority, priority - 120);
+    }
+
+    function drawPoster(){
+      started = true;
+      return ensureFrame(0, 5000).then(() => {
+        drawFrame(0);
+        return posterDrawn;
+      });
+    }
+
+    function preloadAll(){
+      started = true;
+      for(let i=0; i<count; i++) ensureFrame(i, 120);
+    }
+
+    function drawOrPoster(p, radius = timelineMobileQuery.matches ? 10 : 24){
+      if(!started) load();
+      const idx = progressToIndex(p);
+      const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
+      preloadWindow(idx, direction, radius);
+      lastTargetIdx = idx;
+      if(idx === lastDrawnIdx) return;
+      if(drawFrame(idx)) return;
+      ensureFrame(idx, 1400).then(() => req());
+      const nearestIdx = closestReadyIndex(idx, timelineMobileQuery.matches ? 10 : 36);
+      if(nearestIdx >= 0){
+        if(nearestIdx !== lastDrawnIdx) drawFrame(nearestIdx);
+        return;
+      }
+      if(lastDrawnIdx < 0 && frameReady(0)) drawFrame(0);
+    }
+
+    return {
+      load,
+      drawOrPoster,
+      drawPoster,
+      prepare,
+      preloadAll,
+      get hasDrawn(){ return hasDrawn; },
+      get posterDrawn(){ return posterDrawn; },
+      get lastDrawnIdx(){ return lastDrawnIdx; },
+      get lastTargetIdx(){ return lastTargetIdx; }
+    };
+  }
+  const introDesktopSeq = introDesktop ? makeSeq(introDesktop) : null;
+  const introMobileSeq  = introMobile ? makeSeq(introMobile) : null;
+  const sofiaSeq = makeSeq(sofiaCanvas);
+  const alexSeq  = makeSeq(alexCanvas);
+  const chapter3Seqs = [introDesktopSeq, introMobileSeq, sofiaSeq, alexSeq].filter(Boolean);
+  const activeIntroSeq = () => introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
+  let allPostersDrawn = false;
+  let postersStarted = false;
+  let lastVisiblePhase = 'intro';
+
+  function loadSequences(){
+    if(postersStarted) return;
+    postersStarted = true;
+    Promise.all(chapter3Seqs.map(seq => seq.drawPoster())).then(() => {
+      allPostersDrawn = chapter3Seqs.every(seq => seq.posterDrawn);
+      if(allPostersDrawn) demo.classList.add('posters-ready');
+      chapter3Seqs.forEach(seq => seq.preloadAll());
+      req();
+    });
+    req();
+  }
+
+  // ── caption (same fade, with the fast-scroll-safe timer guard) ──
+  let capTimer;
+  function capHTML(c){
+    return '<span class="num">'+esc(copy.kicker)+'</span><h3>'+esc(copy.title)+'</h3><p>'+esc(copy.subtitle)+'</p><span class="num">'+c[1]+' / '+total+'</span><h3>'+esc(c[2])+'</h3>';
+  }
+  function setCap(p, isMobile = timelineMobileQuery.matches){
+    let c=caps[0]; for(const x of caps) if(p>=x[0]) c=x;
+    if(!c) return;
+    const i=caps.indexOf(c);
+    dots.forEach((d,idx)=>d.classList.toggle('on', idx===i));
+    if(isMobile){
+      clearTimeout(capTimer);
+      cap.dataset.k=c[2];
+      cap.innerHTML=capHTML(c);
+      cap.style.opacity=1;
+      cap.style.transform='none';
+      return;
+    }
+    if(cap.dataset.k===c[2]) return;
+    cap.dataset.k=c[2];
+    clearTimeout(capTimer);
+    cap.style.opacity=0; cap.style.transform='translateY(8px)';
+    capTimer=setTimeout(()=>{ cap.innerHTML=capHTML(c);
+      cap.style.opacity=1; cap.style.transform='none'; },140);
+  }
+
+  // ── progress → timeline → render frames → apply UI ──
+  let ticking = false;
+  let stableMobileHeight = window.innerHeight;
+  let stableMobileWidth = window.innerWidth;
+  let targetProgress = 0;
+  let renderedProgress = 0;
+  let hasRenderedProgress = false;
+
+  function viewportHeight(isMobile){
+    if(!isMobile) return window.innerHeight;
+    const width = window.innerWidth;
+    if(Math.abs(width - stableMobileWidth) > 24){
+      stableMobileWidth = width;
+      stableMobileHeight = window.innerHeight;
+    }
+    stableMobileHeight = Math.max(stableMobileHeight, window.innerHeight, window.visualViewport?.height || 0);
+    return stableMobileHeight;
+  }
+
+  function getProgress(isMobile){
+    const vh = viewportHeight(isMobile);
+    const r = track.getBoundingClientRect();
+    const dist = track.offsetHeight - vh;
+    return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
+  }
+
+  function getTimeline(p, isMobile){
+    if(isMobile){
+      const introToSofia = clamp((p - 0.30) / 0.10, 0, 1);
+      const sofiaToAlex = clamp((p - 0.68) / 0.08, 0, 1);
+      return {
+        p,
+        isMobile:true,
+        introOpacity:1 - introToSofia,
+        introScale:1 + introToSofia * 0.08,
+        handoffOpacity:introToSofia,
+        handoffScale:0.94 + introToSofia * 0.06,
+        sofiaOpacity:introToSofia * (1 - sofiaToAlex),
+        alexOpacity:sofiaToAlex,
+        stripOpacity:clamp((p - 0.40) / 0.06, 0, 1),
+        activePerson:p < 0.72 ? 'sofia' : 'alex',
+        introProgress:clamp(p / 0.30, 0, 1),
+        sofiaProgress:clamp((p - 0.40) / 0.28, 0, 1),
+        alexProgress:clamp((p - 0.76) / 0.24, 0, 1)
+      };
+    }
+
+    const revealT = p <= 0.25 ? 0 : p >= 0.40 ? 1 : clamp((p - 0.25) / 0.15, 0, 1);
+    const handoffProgress = clamp((p - 0.40) / 0.60, 0, 1);
+    return {
+      p,
+      isMobile:false,
+      introOpacity:1 - revealT,
+      introScale:1 + revealT * 0.08,
+      handoffOpacity:revealT,
+      handoffScale:0.94 + revealT * 0.06,
+      sofiaOpacity:1,
+      alexOpacity:1,
+      stripOpacity:0,
+      activePerson:handoffProgress < 0.5 ? 'sofia' : 'alex',
+      introProgress:clamp(p / 0.25, 0, 1),
+      sofiaProgress:clamp(handoffProgress / 0.5, 0, 1),
+      alexProgress:clamp((handoffProgress - 0.5) / 0.5, 0, 1)
+    };
+  }
+
+  function visiblePhase(t){
+    if(t.introOpacity > 0.01) return 'intro';
+    if(t.alexOpacity > t.sofiaOpacity && t.alexOpacity > 0.01) return 'alex';
+    if(t.sofiaOpacity > 0.01) return 'sofia';
+    return lastVisiblePhase;
+  }
+
+  function forcePhase(t, phase){
+    const gated = { ...t };
+    if(phase === 'intro'){
+      gated.introOpacity = 1;
+      gated.handoffOpacity = 0;
+      gated.sofiaOpacity = 0;
+      gated.alexOpacity = 0;
+      gated.stripOpacity = 0;
+    } else if(phase === 'sofia'){
+      gated.introOpacity = 0;
+      gated.handoffOpacity = 1;
+      gated.sofiaOpacity = 1;
+      gated.alexOpacity = 0;
+      gated.stripOpacity = Math.max(gated.stripOpacity || 0, t.isMobile ? 1 : 0);
+    } else {
+      gated.introOpacity = 0;
+      gated.handoffOpacity = 1;
+      gated.sofiaOpacity = 0;
+      gated.alexOpacity = 1;
+      gated.stripOpacity = Math.max(gated.stripOpacity || 0, t.isMobile ? 1 : 0);
+    }
+    return gated;
+  }
+
+  function posterGate(t){
+    if(!allPostersDrawn) return forcePhase(t, lastVisiblePhase);
+    if(!t.isMobile) return t;
+
+    const nextPhase = visiblePhase(t);
+    const nextSeq = nextPhase === 'intro' ? activeIntroSeq() : nextPhase === 'sofia' ? sofiaSeq : alexSeq;
+    if(!nextSeq?.posterDrawn) return forcePhase(t, lastVisiblePhase);
+
+    lastVisiblePhase = nextPhase;
+    return t;
+  }
+
+  function renderFrames(t){
+    const introSeq = activeIntroSeq();
+    if(t.isMobile){
+      if(t.introOpacity > 0) introSeq?.drawOrPoster(t.introProgress);
+      else introSeq?.prepare(1, 3);
+
+      if(t.sofiaOpacity > 0) sofiaSeq.drawOrPoster(t.sofiaProgress, 10);
+      else if(t.p < 0.40) sofiaSeq.prepare(0, 8);
+      else sofiaSeq.prepare(t.sofiaProgress, 4, 360);
+
+      if(t.alexOpacity > 0) alexSeq.drawOrPoster(t.alexProgress, 10);
+      else if(t.p >= 0.40) alexSeq.prepare(0, 8);
+      else alexSeq.prepare(0, 3, 320);
+      return;
+    }
+
+    introSeq?.drawOrPoster(t.introProgress);
+    sofiaSeq.drawOrPoster(t.sofiaProgress);
+    alexSeq.drawOrPoster(t.alexProgress);
+  }
+
+  function applyUI(t){
+    demo.style.setProperty('--intro-opacity', t.introOpacity.toFixed(4));
+    demo.style.setProperty('--intro-scale', t.introScale.toFixed(4));
+    demo.style.setProperty('--handoff-opacity', t.handoffOpacity.toFixed(4));
+    demo.style.setProperty('--handoff-scale', t.handoffScale.toFixed(4));
+    demo.style.setProperty('--sofia-opacity', t.sofiaOpacity.toFixed(4));
+    demo.style.setProperty('--alex-opacity', t.alexOpacity.toFixed(4));
+    demo.style.setProperty('--strip-opacity', t.stripOpacity.toFixed(4));
+
+    demo.dataset.activePerson = t.activePerson;
+    handoffSteps.forEach(step => {
+      const k = step.dataset.step;
+      const isAlex = k.startsWith('alex-');
+      const thr = isAlex ? alexStepThresholds[k] : sofiaStepThresholds[k];
+      const sp = isAlex ? t.alexProgress : t.sofiaProgress;
+      step.classList.toggle('is-complete', sp >= thr);
+    });
+    const alexActive = t.activePerson === 'alex';
+    sofiaPerson?.classList.toggle('active', !alexActive);
+    sofiaPerson?.classList.toggle('inactive', alexActive);
+    alexPerson?.classList.toggle('active', alexActive);
+    alexPerson?.classList.toggle('inactive', !alexActive);
+  }
+
+  function update(){
+    ticking = false;
+    const isMobile = timelineMobileQuery.matches;
+
+    targetProgress = getProgress(isMobile);
+
+    if(isMobile){
+      renderedProgress = targetProgress;
+      hasRenderedProgress = true;
+    } else if(!hasRenderedProgress){
+      renderedProgress = targetProgress;
+      hasRenderedProgress = true;
+    } else {
+      renderedProgress += (targetProgress - renderedProgress) * 0.35;
+      if(Math.abs(targetProgress - renderedProgress) < 0.0008){
+        renderedProgress = targetProgress;
+      }
+    }
+
+    const rawTimeline = getTimeline(renderedProgress, isMobile);
+    const timeline = posterGate(rawTimeline);
+    demo.style.setProperty('--p', timeline.p.toFixed(4));
+    renderFrames(timeline);
+    applyUI(timeline);
+    setCap(renderedProgress, timeline.isMobile);
+
+    if(!isMobile && Math.abs(targetProgress - renderedProgress) > 0.0008){
+      req();
+    }
+  }
+  function req(){ if(ticking) return; ticking = true; requestAnimationFrame(update); }
+
+  window.addEventListener('scroll', req, { passive:true });
+  window.addEventListener('resize', () => {
+    hasRenderedProgress = false;
+    req();
+  });
+  window.visualViewport?.addEventListener('resize', () => {
+    if(!timelineMobileQuery.matches) hasRenderedProgress = false;
+    req();
+  });
+  const modeChanged = () => { loadSequences(); req(); };
+  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
+  else introMobileQuery.addListener?.(modeChanged);
+  if(timelineMobileQuery.addEventListener) timelineMobileQuery.addEventListener('change', modeChanged);
+  else timelineMobileQuery.addListener?.(modeChanged);
+
+  // Start Chapter 3 posters/full preload immediately for the stable test-proven path.
+  loadSequences();
+
+  // Keep the observer as a harmless retry if the page is restored from cache or re-entered.
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting){ loadSequences(); req(); } });
+    }, { rootMargin: '200% 0px' });
+    io.observe(demo);
+  } else {
+    loadSequences();
+  }
+  req();
+})();
+
+/* ════════════════════════════════════════════════════════════
+   APP DEMO — CHAPTER 1 IMAGE-SEQUENCE RENDERER (canvas scrub)
+   intro sequence -> crossfade -> feed sequence. Scroll progress only.
+   No video.currentTime. Same stable engine as Chapter 2/3. Frame
+   readiness only decides WHICH frame is drawn — never the layer
+   opacity (pure scroll progress + a one-time poster-gate so the
+   first paint / feed reveal is never black).
+   ════════════════════════════════════════════════════════════ */
+(() => {
+  const demo = document.querySelector('#app-demo');
+  if(!demo) return;
+  const track       = demo.querySelector('.app-demo-track');
+  const introDesktop= demo.querySelector('.app-demo-intro-video-desktop');
+  const introMobile = demo.querySelector('.app-demo-intro-video-mobile');
+  const feedCanvas  = demo.querySelector('.ch1-feed-canvas');
+  const cap         = demo.querySelector('.app-demo-cap-inner');
+  const dots        = [...demo.querySelectorAll('.app-demo-dots span')];
+  if(!track || !introDesktop || !introMobile || !feedCanvas || !cap) return;
+
+  const introMobileQuery = window.matchMedia('(max-width: 700px)');
+  const mobileQuery      = window.matchMedia('(max-width: 720px)');
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+  const copy = {
+    kicker:   demo.dataset.kicker   || 'Chapter 1 · Feed',
+    title:    demo.dataset.title    || 'Start with what’s happening around you.',
+    subtitle: demo.dataset.subtitle || 'Praxis opens to a real-world feed of people, places, check-ins, and moments nearby.',
+    captions: (demo.dataset.captions || '').split('|')
+  };
+  const total = String(copy.captions.length).padStart(2, '0');
+  const stops = [0.00, 0.40, 0.55, 0.70, 0.85]; // index.html isIntroFeed stops
+  const caps = copy.captions.map((t, i) => [ stops[i] ?? (i / Math.max(copy.captions.length - 1, 1)), String(i + 1).padStart(2, '0'), t ]);
+
+  function framePath(dir, index){ return `${dir}/${String(index).padStart(4, '0')}.jpg`; }
+
+  function makeSequence(canvas){
+    const dir = canvas.dataset.seq;
+    const count = Number.parseInt(canvas.dataset.count, 10);
+    const ctx = canvas.getContext('2d');
+    const frames = new Array(count);
+    const queue = [];
+    let activeLoads = 0;
+    let started = false, sized = false;
+    let hasDrawn = false, posterDrawn = false;
+    let lastTarget = -1, lastDrawn = -1;
+
+    const loadLimit = () => mobileQuery.matches ? 2 : 4;
+    const indexFor = p => clamp(Math.round(p * (count - 1)), 0, count - 1);
+    const ready = i => {
+      const f = frames[i];
+      return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
+    };
+
+    function pump(){
+      if(activeLoads >= loadLimit() || !queue.length) return;
+      queue.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+      while(activeLoads < loadLimit() && queue.length){
+        const frame = queue.shift();
+        frame.queued = false;
+        if(frame.ready || frame.loading) continue;
+        const img = new Image();
+        img.decoding = 'async';
+        frame.img = img;
+        frame.loading = true;
+        activeLoads++;
+        const done = () => { frame.loading = false; activeLoads--; pump(); };
+        img.onload = () => {
+          const finish = () => {
+            frame.ready = true;
+            frame.resolve(frame);
+            if(frame.idx === 0 || frame.idx === lastTarget || lastDrawn < 0) requestUpdate();
+            done();
+          };
+          if(img.decode) img.decode().then(finish).catch(finish);
+          else finish();
+        };
+        img.onerror = () => { frame.error = true; frame.resolve(frame); done(); };
+        img.src = framePath(dir, frame.idx);
+      }
+    }
+
+    function ensure(index, priority = 0){
+      index = clamp(index, 0, count - 1);
+      let frame = frames[index];
+      if(frame){
+        frame.priority = Math.max(frame.priority || 0, priority);
+        if(frame.queued) pump();
+        return frame.promise;
+      }
+      let resolveFrame;
+      frame = {
+        idx:index, img:null, ready:false, error:false, loading:false, queued:true, priority,
+        promise:new Promise(resolve => { resolveFrame = resolve; }), resolve:resolveFrame
+      };
+      frames[index] = frame;
+      queue.push(frame);
+      pump();
+      return frame.promise;
+    }
+
+    function drawIndex(index){
+      if(!ready(index)) return false;
+      const img = frames[index].img;
+      if(!sized || canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight){
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        sized = true;
+      }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height); /* overwrites — never clearRect */
+      canvas.classList.add('is-video-ready');
+      hasDrawn = true;
+      if(index === 0) posterDrawn = true;
+      lastDrawn = index;
+      return true;
+    }
+
+    function nearestReady(index, maxDistance = count - 1){
+      if(ready(index)) return index;
+      const limit = Math.min(maxDistance, count - 1);
+      for(let d = 1; d <= limit; d++){
+        if(index - d >= 0 && ready(index - d)) return index - d;
+        if(index + d < count && ready(index + d)) return index + d;
+      }
+      return -1;
+    }
+
+    function preload(index, radius = 12, targetPriority = 1200, direction = 1){
+      ensure(0, 900);
+      ensure(index, targetPriority);
+      for(let d = 1; d <= radius; d++){
+        const ahead = index + d * direction;
+        const behind = index - d * direction;
+        if(ahead >= 0 && ahead < count) ensure(ahead, targetPriority - d);
+        if(behind >= 0 && behind < count) ensure(behind, targetPriority - 180 - d);
+      }
+    }
+
+    function load(radius = 10){ if(started) return; started = true; preload(0, radius); }
+
+    function drawPoster(){
+      started = true;
+      return ensure(0, 5000).then(() => { drawIndex(0); return posterDrawn; });
+    }
+
+    function preloadAll(){ started = true; for(let i = 0; i < count; i++) ensure(i, 120); }
+
+    function prepare(p, radius = 6){
+      if(!started) load(2);
+      const index = indexFor(p);
+      const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
+      preload(index, radius, 700, direction);
+    }
+
+    function drawOrPoster(p, radius = mobileQuery.matches ? 10 : 24){
+      if(!started) load();
+      const index = indexFor(p);
+      const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
+      preload(index, radius, 1200, direction);
+      lastTarget = index;
+      if(index === lastDrawn) return;
+      if(drawIndex(index)) return;
+      const maxFallback = mobileQuery.matches ? 10 : 36;
+      const fallback = nearestReady(index, maxFallback);
+      if(fallback >= 0){ if(fallback !== lastDrawn) drawIndex(fallback); return; }
+      if(lastDrawn < 0 && ready(0)) drawIndex(0);
+    }
+
+    return {
+      load, drawOrPoster, drawPoster, prepare, preloadAll,
+      get hasDrawn(){ return hasDrawn; },
+      get posterDrawn(){ return posterDrawn; },
+      get lastDrawn(){ return lastDrawn; }
+    };
+  }
+
+  const introDesktopSeq = makeSequence(introDesktop);
+  const introMobileSeq  = makeSequence(introMobile);
+  const feedSeq         = makeSequence(feedCanvas);
+  let allPostersDrawn = false;
+
+  const activeIntroSeq = () => (introMobileQuery.matches && introMobileSeq.posterDrawn) ? introMobileSeq : introDesktopSeq;
+
+  function progress(){
+    const vh = window.innerHeight;
+    const r = track.getBoundingClientRect();
+    const dist = track.offsetHeight - vh;
+    return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
+  }
+
+  function timeline(p){
+    const introProgress = clamp(p / 0.25, 0, 1);
+    const revealT       = clamp((p - 0.25) / 0.15, 0, 1);
+    const feedProgress  = clamp((p - 0.40) / 0.60, 0, 1);
+    return {
+      p,
+      introOpacity: 1 - revealT,
+      introScale:   1 + revealT * 0.08,
+      feedOpacity:  revealT,
+      feedScale:    0.94 + revealT * 0.06,
+      introProgress,
+      feedProgress
+    };
+  }
+
+  function posterGate(t){
+    if(!allPostersDrawn) return { ...t, introOpacity:1, introScale:1, feedOpacity:0, feedScale:0.94 };
+    return t;
+  }
+
+  function renderFrames(t){
+    demo.classList.toggle('mobile-intro-ready', introMobileQuery.matches && introMobileSeq.posterDrawn);
+    const introSeq = activeIntroSeq();
+    if(t.introOpacity > 0) introSeq.drawOrPoster(t.introProgress);
+    else introSeq.prepare(1, 3);
+    feedSeq.drawOrPoster(t.feedProgress);
+  }
+
+  function applyTimeline(t){
+    demo.style.setProperty('--p', t.p.toFixed(4));
+    demo.style.setProperty('--intro-opacity', t.introOpacity.toFixed(4));
+    demo.style.setProperty('--intro-scale', t.introScale.toFixed(4));
+    demo.style.setProperty('--feed-opacity', t.feedOpacity.toFixed(4));
+    demo.style.setProperty('--feed-scale', t.feedScale.toFixed(4));
+  }
+
+  let activeStep = -1, capTimer = 0;
+  function writeCap(c){
+    cap.innerHTML = '<span class="num">' + esc(copy.kicker) + '</span><h3>' + esc(copy.title) + '</h3><p>' + esc(copy.subtitle) +
+      '</p><span class="num">' + c[1] + ' / ' + total + '</span><h3>' + esc(c[2]) + '</h3>';
+  }
+  function setCap(p){
+    let c = caps[0]; for(const x of caps) if(p >= x[0]) c = x;
+    if(!c) return;
+    const i = caps.indexOf(c);
+    dots.forEach((d, idx) => d.classList.toggle('on', idx === i));
+    if(mobileQuery.matches){
+      window.clearTimeout(capTimer);
+      if(cap.dataset.k !== c[2]){ cap.dataset.k = c[2]; writeCap(c); }
+      cap.style.opacity = '1'; cap.style.transform = 'none';
+      activeStep = i; return;
+    }
+    if(i === activeStep) return;
+    activeStep = i;
+    if(cap.dataset.k === c[2]) return;
+    cap.dataset.k = c[2];
+    window.clearTimeout(capTimer);
+    cap.style.opacity = '0'; cap.style.transform = 'translateY(8px)';
+    capTimer = window.setTimeout(() => { writeCap(c); cap.style.opacity = '1'; cap.style.transform = 'none'; }, 140);
+  }
+
+  let ticking = false, targetP = 0, renderedP = 0, hasRendered = false;
+  function update(){
+    ticking = false;
+    targetP = progress();
+    const isMobile = mobileQuery.matches;
+    if(isMobile){ renderedP = targetP; hasRendered = true; }
+    else if(!hasRendered){ renderedP = targetP; hasRendered = true; }
+    else {
+      renderedP += (targetP - renderedP) * 0.35;
+      if(Math.abs(targetP - renderedP) < 0.0008) renderedP = targetP;
+    }
+    const t = posterGate(timeline(renderedP));
+    applyTimeline(t);
+    renderFrames(t);
+    setCap(renderedP);
+    if(!isMobile && Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
+  }
+  function requestUpdate(){ if(ticking) return; ticking = true; window.requestAnimationFrame(update); }
+
+  function start(){
+    Promise.all([ introDesktopSeq.drawPoster(), introMobileSeq.drawPoster(), feedSeq.drawPoster() ]).then(() => {
+      allPostersDrawn = introDesktopSeq.posterDrawn && introMobileSeq.posterDrawn && feedSeq.posterDrawn;
+      if(allPostersDrawn) demo.classList.add('posters-ready');
+      introDesktopSeq.preloadAll();
+      introMobileSeq.preloadAll();
+      feedSeq.preloadAll();
+      requestUpdate();
+    });
+    requestUpdate();
+  }
+
+  window.addEventListener('scroll', requestUpdate, { passive:true });
+  window.addEventListener('resize', () => { hasRendered = false; requestUpdate(); });
+  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', requestUpdate);
+  else introMobileQuery.addListener?.(requestUpdate);
+  if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', requestUpdate);
+  else mobileQuery.addListener?.(requestUpdate);
+
+  start();
+})();
+
+/* ════════════════════════════════════════════════════════════
+   APP DEMO — CHAPTER 2 IMAGE-SEQUENCE RENDERER (canvas scrub)
+   Scroll progress -> frame index -> drawImage on a <canvas>.
+   No video.currentTime. Same stable engine as Chapter 3:
+   poster-first load, drawOrPoster, nearest-ready fallback,
+   preloadAll, never clear the canvas, one clean rAF update loop.
+   ════════════════════════════════════════════════════════════ */
+(() => {
+  const demo   = document.querySelector('#app-demo-profile');
+  if(!demo) return;
+  const track  = demo.querySelector('.app-demo-track');
+  const canvas = demo.querySelector('.app-demo-profile-canvas');
+  const cap    = demo.querySelector('.app-demo-cap-inner');
+  const dots   = [...demo.querySelectorAll('.app-demo-dots span')];
+  if(!track || !canvas || !cap) return;
+
+  const mobileQuery = window.matchMedia('(max-width: 720px)');
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+  const copy = {
+    kicker:   demo.dataset.kicker   || 'Chapter 2 · Profile',
+    title:    demo.dataset.title    || '',
+    subtitle: demo.dataset.subtitle || '',
+    captions: (demo.dataset.captions || '').split('|')
+  };
+  const total = String(copy.captions.length).padStart(2, '0');
+  const stops = [0.00, 0.18, 0.38, 0.62, 0.82];
+  const caps = copy.captions.map((t, i) => [ stops[i] ?? (i / Math.max(copy.captions.length - 1, 1)), String(i + 1).padStart(2, '0'), t ]);
+
+  function framePath(dir, index){ return `${dir}/${String(index).padStart(4, '0')}.jpg`; }
+
+  function makeSequence(canvas){
+    const dir = canvas.dataset.seq;
+    const count = Number.parseInt(canvas.dataset.count, 10);
+    const ctx = canvas.getContext('2d');
+    const frames = new Array(count);
+    const queue = [];
+    let activeLoads = 0;
+    let started = false, sized = false;
+    let hasDrawn = false, posterDrawn = false;
+    let lastTarget = -1, lastDrawn = -1;
+
+    const loadLimit = () => mobileQuery.matches ? 2 : 4;
+    const indexFor = p => clamp(Math.round(p * (count - 1)), 0, count - 1);
+    const ready = i => {
+      const f = frames[i];
+      return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
+    };
+
+    function pump(){
+      if(activeLoads >= loadLimit() || !queue.length) return;
+      queue.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+      while(activeLoads < loadLimit() && queue.length){
+        const frame = queue.shift();
+        frame.queued = false;
+        if(frame.ready || frame.loading) continue;
+        const img = new Image();
+        img.decoding = 'async';
+        frame.img = img;
+        frame.loading = true;
+        activeLoads++;
+        const done = () => { frame.loading = false; activeLoads--; pump(); };
+        img.onload = () => {
+          const finish = () => {
+            frame.ready = true;
+            frame.resolve(frame);
+            if(frame.idx === 0 || frame.idx === lastTarget || lastDrawn < 0) requestUpdate();
+            done();
+          };
+          if(img.decode) img.decode().then(finish).catch(finish);
+          else finish();
+        };
+        img.onerror = () => { frame.error = true; frame.resolve(frame); done(); };
+        img.src = framePath(dir, frame.idx);
+      }
+    }
+
+    function ensure(index, priority = 0){
+      index = clamp(index, 0, count - 1);
+      let frame = frames[index];
+      if(frame){
+        frame.priority = Math.max(frame.priority || 0, priority);
+        if(frame.queued) pump();
+        return frame.promise;
+      }
+      let resolveFrame;
+      frame = {
+        idx:index, img:null, ready:false, error:false, loading:false, queued:true, priority,
+        promise:new Promise(resolve => { resolveFrame = resolve; }), resolve:resolveFrame
+      };
+      frames[index] = frame;
+      queue.push(frame);
+      pump();
+      return frame.promise;
+    }
+
+    function drawIndex(index){
+      if(!ready(index)) return false;
+      const img = frames[index].img;
+      if(!sized || canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight){
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        sized = true;
+      }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height); /* overwrites — never clearRect */
+      canvas.classList.add('is-video-ready');
+      hasDrawn = true;
+      if(index === 0) posterDrawn = true;
+      lastDrawn = index;
+      return true;
+    }
+
+    function nearestReady(index, maxDistance = count - 1){
+      if(ready(index)) return index;
+      const limit = Math.min(maxDistance, count - 1);
+      for(let d = 1; d <= limit; d++){
+        if(index - d >= 0 && ready(index - d)) return index - d;
+        if(index + d < count && ready(index + d)) return index + d;
+      }
+      return -1;
+    }
+
+    function preload(index, radius = 12, targetPriority = 1200, direction = 1){
+      ensure(0, 900);
+      ensure(index, targetPriority);
+      for(let d = 1; d <= radius; d++){
+        const ahead = index + d * direction;
+        const behind = index - d * direction;
+        if(ahead >= 0 && ahead < count) ensure(ahead, targetPriority - d);
+        if(behind >= 0 && behind < count) ensure(behind, targetPriority - 180 - d);
+      }
+    }
+
+    function load(radius = 10){ if(started) return; started = true; preload(0, radius); }
+
+    function drawPoster(){
+      started = true;
+      return ensure(0, 5000).then(() => { drawIndex(0); return posterDrawn; });
+    }
+
+    function preloadAll(){ started = true; for(let i = 0; i < count; i++) ensure(i, 120); }
+
+    function prepare(p, radius = 6){
+      if(!started) load(2);
+      const index = indexFor(p);
+      const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
+      preload(index, radius, 700, direction);
+    }
+
+    function drawOrPoster(p, radius = mobileQuery.matches ? 10 : 24){
+      if(!started) load();
+      const index = indexFor(p);
+      const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
+      preload(index, radius, 1200, direction);
+      lastTarget = index;
+      if(index === lastDrawn) return;
+      if(drawIndex(index)) return;
+      const maxFallback = mobileQuery.matches ? 10 : 36;
+      const fallback = nearestReady(index, maxFallback);
+      if(fallback >= 0){ if(fallback !== lastDrawn) drawIndex(fallback); return; }
+      if(lastDrawn < 0 && ready(0)) drawIndex(0);
+    }
+
+    return {
+      load, drawOrPoster, drawPoster, prepare, preloadAll,
+      get hasDrawn(){ return hasDrawn; },
+      get posterDrawn(){ return posterDrawn; },
+      get lastDrawn(){ return lastDrawn; }
+    };
+  }
+
+  const seq = makeSequence(canvas);
+
+  function progress(){
+    const vh = window.innerHeight;
+    const r = track.getBoundingClientRect();
+    const dist = track.offsetHeight - vh;
+    return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
+  }
+
+  let activeStep = -1, capTimer = 0;
+  function writeCap(c){
+    cap.innerHTML = '<span class="num">' + esc(copy.kicker) + '</span><h3>' + esc(copy.title) + '</h3><p>' + esc(copy.subtitle) +
+      '</p><span class="num">' + c[1] + ' / ' + total + '</span><h3>' + esc(c[2]) + '</h3>';
+  }
+  function setCap(p){
+    let c = caps[0]; for(const x of caps) if(p >= x[0]) c = x;
+    if(!c) return;
+    const i = caps.indexOf(c);
+    dots.forEach((d, idx) => d.classList.toggle('on', idx === i));
+    if(mobileQuery.matches){
+      window.clearTimeout(capTimer);
+      if(cap.dataset.k !== c[2]){ cap.dataset.k = c[2]; writeCap(c); }
+      cap.style.opacity = '1'; cap.style.transform = 'none';
+      activeStep = i; return;
+    }
+    if(i === activeStep) return;
+    activeStep = i;
+    if(cap.dataset.k === c[2]) return;
+    cap.dataset.k = c[2];
+    window.clearTimeout(capTimer);
+    cap.style.opacity = '0'; cap.style.transform = 'translateY(8px)';
+    capTimer = window.setTimeout(() => { writeCap(c); cap.style.opacity = '1'; cap.style.transform = 'none'; }, 140);
+  }
+
+  let ticking = false, targetP = 0, renderedP = 0, hasRendered = false, postersReady = false;
+  function update(){
+    ticking = false;
+    targetP = progress();
+    const isMobile = mobileQuery.matches;
+    if(isMobile){ renderedP = targetP; hasRendered = true; }
+    else if(!hasRendered){ renderedP = targetP; hasRendered = true; }
+    else {
+      renderedP += (targetP - renderedP) * 0.35;
+      if(Math.abs(targetP - renderedP) < 0.0008) renderedP = targetP;
+    }
+    demo.style.setProperty('--p', renderedP.toFixed(4));
+    if(postersReady) seq.drawOrPoster(renderedP);
+    setCap(renderedP);
+    if(!isMobile && Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
+  }
+  function requestUpdate(){ if(ticking) return; ticking = true; window.requestAnimationFrame(update); }
+
+  function start(){
+    seq.drawPoster().then(() => {
+      postersReady = true;
+      demo.classList.add('posters-ready');
+      seq.preloadAll();
+      requestUpdate();
+    });
+    requestUpdate();
+  }
+
+  window.addEventListener('scroll', requestUpdate, { passive:true });
+  window.addEventListener('resize', () => { hasRendered = false; requestUpdate(); });
+  if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', requestUpdate);
+  else mobileQuery.addListener?.(requestUpdate);
+
+  start();
+})();
+
+/* ════════════════════════════════════════════════════════════
    APP DEMO — LAZY VIDEO BUFFERING
    Videos ship as preload="metadata" (tiny) so the page loads fast.
    Each chapter is upgraded to full buffering only as you approach it,
@@ -4784,14 +5804,38 @@ if(_formSuccessEl){
   }).observe(_formSuccessEl, {attributes:true, attributeFilter:['style']});
 }
 
-/* ── SCROLL PROGRESS BAR ── */
+/* ── SCROLL UI: progress bar + back-to-top visibility (single rAF-throttled handler) ──
+   One passive scroll listener + one requestAnimationFrame per frame + one scrollTop read,
+   instead of two separate scroll listeners each reading scrollTop every event. Prevents
+   mobile-Safari main-thread/layout pressure during the Chapter 3 canvas scrub. */
 const _scrollProg = document.getElementById('scroll-progress');
-function _updateScrollProgress(){
-  const pct = document.documentElement.scrollTop /
-    (document.documentElement.scrollHeight - window.innerHeight) * 100;
-  _scrollProg.style.width = Math.min(100, pct) + '%';
+const _bttBtn     = document.getElementById('back-to-top');
+
+let scrollUiTicking = false;
+
+function updateScrollUI(){
+  scrollUiTicking = false;
+
+  const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+  const doc = document.documentElement;
+  const max = Math.max(doc.scrollHeight - window.innerHeight, 1);
+  const pct = Math.min(100, (scrollTop / max) * 100);
+
+  if (_scrollProg) _scrollProg.style.width = pct + '%';
+
+  if (_bttBtn) {
+    _bttBtn.classList.toggle('visible', scrollTop > 700);
+  }
 }
-window.addEventListener('scroll', _updateScrollProgress, {passive:true});
+
+function requestScrollUIUpdate(){
+  if(scrollUiTicking) return;
+  scrollUiTicking = true;
+  requestAnimationFrame(updateScrollUI);
+}
+
+window.addEventListener('scroll', requestScrollUIUpdate, { passive:true });
+requestScrollUIUpdate();
 
 /* ── CURSOR GLOW ── */
 const _cursorGlow = document.getElementById('cursor-glow');
@@ -4801,11 +5845,7 @@ if(window.matchMedia('(hover:hover)').matches){
   }, {passive:true});
 }
 
-/* ── BACK TO TOP ── */
-const _bttBtn = document.getElementById('back-to-top');
-window.addEventListener('scroll', () => {
-  _bttBtn.classList.toggle('visible', document.documentElement.scrollTop > 700);
-}, {passive:true});
+/* ── BACK TO TOP (visibility handled by the merged rAF scroll handler above) ── */
 _bttBtn.addEventListener('click', () => {
   window.scrollTo({top:0, behavior:'smooth'});
 });
