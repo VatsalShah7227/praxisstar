@@ -2907,11 +2907,28 @@ footer{
   #app-demo-relationships[data-active-person="alex"] .app-demo-person[data-person="sofia"]{
     opacity:.42; filter:blur(2px); transform:translate(-112%, -50%) translateY(18px) scale(.68); z-index:1; pointer-events:none;
   }
+  #app-demo-relationships .app-demo-person[data-person="sofia"]{
+    opacity:var(--sofia-opacity,1); filter:none; transform:translate(-50%, -50%) scale(1); z-index:1; pointer-events:none;
+  }
+  #app-demo-relationships .app-demo-person[data-person="alex"]{
+    opacity:var(--alex-opacity,0); filter:none; transform:translate(-50%, -50%) scale(1); z-index:1; pointer-events:none;
+  }
+  #app-demo-relationships[data-active-person="sofia"] .app-demo-person[data-person="sofia"],
+  #app-demo-relationships[data-active-person="alex"] .app-demo-person[data-person="alex"]{
+    z-index:2; pointer-events:auto;
+  }
+  #app-demo-relationships[data-active-person] .app-demo-person[data-person="sofia"]{
+    opacity:var(--sofia-opacity,1); filter:none; transform:translate(-50%, -50%) scale(1);
+  }
+  #app-demo-relationships[data-active-person] .app-demo-person[data-person="alex"]{
+    opacity:var(--alex-opacity,0); filter:none; transform:translate(-50%, -50%) scale(1);
+  }
 }
 @media (max-width:1040px){
   #app-demo-relationships .handoff-story-card{ display:none; }
-  #app-demo-relationships .handoff-mobile-progress{ display:block; opacity:0; transition:opacity .24s ease; }
-  #app-demo-relationships.handoff-strip-visible .handoff-mobile-progress{ opacity:1; }
+  #app-demo-relationships .handoff-mobile-progress{
+    display:block; opacity:var(--strip-opacity,0); transition:opacity .18s linear;
+  }
 }
 @media (max-width:700px){
   .app-demo-intro-feed .app-demo-intro-video-desktop{ display:block; }
@@ -2948,10 +2965,8 @@ footer{
   .app-demo-phone-pair{ min-height:500px; }
   .app-demo-handoff .app-demo-phone{ width:min(218px,64vw); }
   .app-demo-person.inactive{ opacity:0; transform:translate(-50%, -50%) translateY(18px) scale(.72); }
-  #app-demo-relationships[data-active-person="sofia"] .app-demo-person[data-person="alex"],
-  #app-demo-relationships[data-active-person="alex"] .app-demo-person[data-person="sofia"]{
-    opacity:0; transform:translate(-50%, -50%) translateY(18px) scale(.72);
-  }
+  #app-demo-relationships .app-demo-person[data-person="sofia"]{ opacity:var(--sofia-opacity,1); transform:translate(-50%, -50%) scale(1); }
+  #app-demo-relationships .app-demo-person[data-person="alex"]{ opacity:var(--alex-opacity,0); transform:translate(-50%, -50%) scale(1); }
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -2993,106 +3008,6 @@ footer{
 
   /* G. drop the "Scroll to play" hint on mobile */
   .app-demo-hint{ display:none; }
-}
-
-/* New Chapter-3 mobile UI is hidden by default (desktop / tablet untouched) */
-.ch3-mobile-chip,
-.ch3-mobile-meter{ display:none; }
-
-/* ════════════════════════════════════════════════════════════
-   CHAPTER 3 — MOBILE ONE-PHONE RELAY (≤700px · mobile only)
-   Replaces the two-phone / sliding / floating-strip model.
-   Persistent layers: identity chip · one centered phone · caption · meter.
-   Opacity is owned by the timeline (--m-*), never by frame readiness.
-   ════════════════════════════════════════════════════════════ */
-@media (max-width:700px){
-  /* — retire the old two-phone behaviour on mobile — */
-  #app-demo-relationships .handoff-mobile-progress,
-  #app-demo-relationships .handoff-story-card,
-  #app-demo-relationships .app-demo-person-label{ display:none !important; }
-
-  /* — single centered slot; both devices stacked in the exact same place — */
-  #app-demo-relationships .app-demo-phone-pair{
-    position:relative; width:100%;
-    min-height:min(560px, 64vh);
-    display:grid; place-items:center; gap:0;
-  }
-  #app-demo-relationships .app-demo-person{
-    position:absolute; left:50%; top:50%; margin:0;
-    transform:translate(-50%,-50%) !important;
-    filter:none !important; pointer-events:none;
-    transition:opacity .25s linear !important;
-  }
-  #app-demo-relationships .app-demo-person[data-person="sofia"]{
-    opacity:var(--m-sofia,1) !important; z-index:1;
-  }
-  #app-demo-relationships .app-demo-person[data-person="alex"]{
-    opacity:var(--m-alex,0) !important; z-index:2;
-  }
-
-  /* — intro plays centered in the same silhouette, then crossfades to Sofia — */
-  #app-demo-relationships .app-demo-intro-layer{
-    inset:0; padding:104px 0 64px;
-    display:flex; align-items:center; justify-content:center;
-    background:transparent !important;
-    opacity:var(--m-intro,1); transform:none; z-index:5;
-  }
-  #app-demo-relationships .app-demo-intro-layer::after{ display:none; }
-  #app-demo-relationships .app-demo-intro-video-mobile{
-    position:relative; inset:auto;
-    width:min(215px, 56vw, calc((100vh - 280px) * 9 / 19.5));
-    aspect-ratio:9 / 19.5; height:auto;
-    border-radius:46px; overflow:hidden;
-  }
-
-  /* — frame readiness must NOT gate visibility: canvases always opaque,
-       the timeline-driven parent owns the crossfade — */
-  #app-demo-relationships .app-demo-video{ opacity:1; transition:none; }
-
-  /* — identity chip above the phone — */
-  #app-demo-relationships .ch3-mobile-chip{
-    display:flex; align-items:center; justify-content:center;
-    position:absolute; left:50%; top:74px; transform:translateX(-50%);
-    z-index:6; opacity:var(--m-ui,0); pointer-events:none;
-    padding:7px 16px; border-radius:999px;
-    background:rgba(255,255,255,.78);
-    border:1px solid var(--line-strong);
-    backdrop-filter:blur(20px) saturate(160%);
-    -webkit-backdrop-filter:blur(20px) saturate(160%);
-    box-shadow:0 8px 24px rgba(10,10,30,.08);
-  }
-  #app-demo-relationships .ch3-chip-text{
-    font-family:'Syne',sans-serif; font-weight:700;
-    font-size:14px; letter-spacing:-.01em; line-height:1;
-    color:var(--text); white-space:nowrap;
-  }
-
-  /* — caption below the phone (above the meter) — */
-  #app-demo-relationships .app-demo-copy{
-    bottom:calc(72px + env(safe-area-inset-bottom));
-  }
-
-  /* — persistent segmented meter below the caption — */
-  #app-demo-relationships .ch3-mobile-meter{
-    display:flex; align-items:center; justify-content:center; gap:6px;
-    position:absolute; left:50%; bottom:calc(34px + env(safe-area-inset-bottom));
-    transform:translateX(-50%);
-    z-index:6; opacity:var(--m-ui,0); pointer-events:none;
-    width:min(280px, calc(100% - 72px));
-  }
-  #app-demo-relationships .ch3-seg{
-    flex:1 1 0; height:4px; border-radius:999px;
-    background:rgba(10,10,30,.14);
-    transition:background .35s ease, box-shadow .35s ease;
-  }
-  #app-demo-relationships .ch3-seg.is-full{
-    background:var(--accent);
-    box-shadow:0 0 12px var(--accent-glow);
-  }
-  #app-demo-relationships .ch3-meter-div{
-    flex:0 0 1px; align-self:stretch; height:12px; margin:0 2px;
-    background:var(--line-strong);
-  }
 }
 
 /* APP DEMO — light premium background override for Chapters 1–3 */
@@ -3584,18 +3499,6 @@ footer{
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Mobile one-phone relay UI (≤700px only) -->
-      <div class="ch3-mobile-chip" aria-hidden="true"><span class="ch3-chip-text">Sofia</span></div>
-      <div class="ch3-mobile-meter" aria-hidden="true">
-        <span class="ch3-seg" data-seg="1"></span>
-        <span class="ch3-seg" data-seg="2"></span>
-        <span class="ch3-seg" data-seg="3"></span>
-        <span class="ch3-meter-div"></span>
-        <span class="ch3-seg" data-seg="4"></span>
-        <span class="ch3-seg" data-seg="5"></span>
-        <span class="ch3-seg" data-seg="6"></span>
       </div>
 
       <div class="app-demo-caption app-demo-copy">
@@ -4276,7 +4179,7 @@ footer{
       <div class="section-head reveal">
         <span class="kicker">Questions</span>
         <h2>Everything you need to know.</h2>
-        <p>Still curious? <a href="/cdn-cgi/l/email-protection#1f777a7373705f6f6d7e67766c6c6b7e6d317c7072" style="color:var(--pink);text-decoration:none;border-bottom:1px solid currentColor;">Say hello</a>.</p>
+        <p>Still curious? <a href="mailto:hello@praxisstar.com" style="color:var(--pink);text-decoration:none;border-bottom:1px solid currentColor;">Say hello</a>.</p>
       </div>
 
       <div class="faq-list reveal" style="transition-delay:.1s;">
@@ -4306,7 +4209,7 @@ footer{
         </div>
         <div class="faq-item">
           <button class="faq-q">Are you raising funding?<span class="faq-arrow">+</span></button>
-          <div class="faq-a"><div class="faq-a-inner">We're currently in pre-launch development and open to conversations with strategic investors who understand social products and location-based experiences. Reach out at <a href="/cdn-cgi/l/email-protection#127b7c64776166526260736a7b61616673603c717d7f"><span class="__cf_email__" data-cfemail="036a6d75667077437371627b6a70707762712d606c6e">[email&#160;protected]</span></a>.</div></div>
+          <div class="faq-a"><div class="faq-a-inner">We're currently in pre-launch development and open to conversations with strategic investors who understand social products and location-based experiences. Reach out at <a href="mailto:invest@praxisstar.com">invest@praxisstar.com</a>.</div></div>
         </div>
       </div>
     </div>
@@ -4338,7 +4241,7 @@ footer{
               LinkedIn
             </a>
 
-            <a class="contact-btn" href="/cdn-cgi/l/email-protection#244d4a52415750645456455c4d57575045560a474b49">
+            <a class="contact-btn" href="mailto:invest@praxisstar.com">
               Investor enquiries
             </a>
           </div>
@@ -4347,7 +4250,7 @@ footer{
         <div>
           <div class="contact-group-label">Build with us</div>
 
-          <a class="contact-btn primary" href="/cdn-cgi/l/email-protection#482b293a2d2d3a3b08383a2930213b3b3c293a662b2725">
+          <a class="contact-btn primary" href="mailto:careers@praxisstar.com">
             Join the founding team →
           </a>
         </div>
@@ -4363,8 +4266,8 @@ footer{
           </p>
         </div>
 
-        <a class="contact-btn" href="/cdn-cgi/l/email-protection#3e565b5252517e4e4c5f46574d4d4a5f4c105d5153">
-          <span class="email-copy" data-email="hello@praxisstar.com"><span class="__cf_email__" data-cfemail="7d15181111123d0d0f1c05140e0e091c0f531e1210">[email&#160;protected]</span></span>
+        <a class="contact-btn" href="mailto:hello@praxisstar.com">
+          <span class="email-copy" data-email="hello@praxisstar.com">hello@praxisstar.com</span>
         </a>
       </div>
     </div>
@@ -4403,8 +4306,8 @@ footer{
         <span class="brand-wordmark">PRAXIS</span>
       </div>
       <div class="foot-links">
-        <a href="/cdn-cgi/l/email-protection#e78e8991829493a79795869f8e9494938695c984888a">Investors</a>
-        <a href="/cdn-cgi/l/email-protection#543c3138383b142426352c3d27272035267a373b39">Contact</a>
+        <a href="mailto:invest@praxisstar.com">Investors</a>
+        <a href="mailto:hello@praxisstar.com">Contact</a>
         <a class="soc-btn" href="https://instagram.com/praxis_app_" target="_blank" rel="noopener" aria-label="Instagram">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
         </a>
@@ -4448,7 +4351,7 @@ footer{
 <button id="back-to-top"  class="back-to-top"     aria-label="Back to top">↑</button>
 <div id="toast-msg"       class="toast"           role="status" aria-live="polite"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 
 /* ════════════════════════════════════════════════════════════
    SCROLL REVEAL
@@ -4790,6 +4693,7 @@ if (phoneTabs.length && phoneViews.length) {
   const cap   = demo.querySelector('.app-demo-cap-inner');
   const dots  = [...demo.querySelectorAll('.app-demo-dots span')];
   const introMobileQuery = window.matchMedia('(max-width:700px)');
+  const timelineMobileQuery = window.matchMedia('(max-width:1040px)');
   const introDesktop = demo.querySelector('.app-demo-intro-video-desktop');
   const introMobile  = demo.querySelector('.app-demo-intro-video-mobile');
   const sofiaCanvas  = demo.querySelector('.app-demo-sofia-video');
@@ -4797,8 +4701,6 @@ if (phoneTabs.length && phoneViews.length) {
   const sofiaPerson  = demo.querySelector('.app-demo-person[data-person="sofia"]');
   const alexPerson   = demo.querySelector('.app-demo-person[data-person="alex"]');
   const handoffSteps = [...demo.querySelectorAll('.handoff-story-step[data-step], .handoff-mobile-step[data-step]')];
-  const chipText  = demo.querySelector('.ch3-chip-text');
-  const meterSegs = [...demo.querySelectorAll('.ch3-seg')];
   if(!track || !cap || !sofiaCanvas || !alexCanvas) return;
 
   const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
@@ -4831,8 +4733,8 @@ if (phoneTabs.length && phoneViews.length) {
 
     const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.jpg';
     const progressToIndex = p => clamp(Math.round(p*(count-1)), 0, count-1);
-    const decodeLimit = () => introMobileQuery.matches ? 2 : desktopDecodeConcurrency;
-    const warmLimit = () => introMobileQuery.matches ? 1 : desktopWarmConcurrency;
+    const decodeLimit = () => timelineMobileQuery.matches ? 2 : desktopDecodeConcurrency;
+    const warmLimit = () => timelineMobileQuery.matches ? 1 : desktopWarmConcurrency;
     const frameReady = i => {
       const f = frames[i];
       return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
@@ -4961,7 +4863,7 @@ if (phoneTabs.length && phoneViews.length) {
       started = true;
       ensureFrame(0, 1200).then(() => req());
       preloadWindow(0, 1, opts.radius ?? preloadRadius);
-      if(opts.warm !== false && !introMobileQuery.matches) warmAll();
+      if(opts.warm !== false && !timelineMobileQuery.matches) warmAll();
     }
 
     function prepare(p, radius = 8, priority = 520){
@@ -4984,12 +4886,7 @@ if (phoneTabs.length && phoneViews.length) {
       if(nearestIdx >= 0 && nearestIdx !== lastDrawnIdx) drawFrame(nearestIdx);
     }
 
-    function canReveal(p){
-      const idx = progressToIndex(p);
-      return lastDrawnIdx >= 0 || frameReady(idx) || frameReady(0);
-    }
-
-    return { load, draw, prepare, canReveal, get ready(){ return ready; }, get lastDrawnIdx(){ return lastDrawnIdx; } };
+    return { load, draw, prepare, get ready(){ return ready; }, get lastDrawnIdx(){ return lastDrawnIdx; } };
   }
   const introDesktopSeq = introDesktop ? makeSeq(introDesktop) : null;
   const introMobileSeq  = introMobile ? makeSeq(introMobile) : null;
@@ -4997,8 +4894,8 @@ if (phoneTabs.length && phoneViews.length) {
   const alexSeq  = makeSeq(alexCanvas);
 
   function loadSequences(){
-    if(introMobileQuery.matches){
-      introMobileSeq?.load({ warm:false });
+    if(timelineMobileQuery.matches){
+      (introMobileQuery.matches ? introMobileSeq : introDesktopSeq)?.load({ warm:false });
       sofiaSeq.load({ radius:8, warm:false });
       alexSeq.load({ radius:0, warm:false });
       return;
@@ -5023,130 +4920,133 @@ if (phoneTabs.length && phoneViews.length) {
       cap.style.opacity=1; cap.style.transform='none'; },140);
   }
 
-  // ════════════════════════════════════════════════════════════
-  // MOBILE CHAPTER 3 — one-phone relay
-  // progress → mobileTimeline(p) → renderer draws → UI reads timeline
-  // Pure function of scroll progress. Never reads frame readiness.
-  // ════════════════════════════════════════════════════════════
-  function mobileTimeline(p){
-    const c = v => clamp(v, 0, 1);
-    const TITLE_END = 0.12, SOFIA_END = 0.45, HANDOFF_END = 0.58, ALEX_END = 0.90;
-    // per-sequence frame scrub (0..1)
-    const intro = c(p / TITLE_END);
-    const sofia = c((p - TITLE_END)   / (SOFIA_END - TITLE_END));
-    const alex  = c((p - HANDOFF_END) / (ALEX_END  - HANDOFF_END));
-    // deterministic, reverse-safe crossfades
-    const introToSofia = c((p - TITLE_END) / 0.04);
-    const handoffMix   = c((p - SOFIA_END) / (HANDOFF_END - SOFIA_END));
-    // layer opacities (UI owns opacity)
-    const introOpacity = 1 - introToSofia;
-    const sofiaOpacity = 1 - handoffMix;
-    const alexOpacity  = handoffMix;
-    const ui = c((p - TITLE_END) / 0.03);   // chip + meter fade-in (once)
-    const phase = p < TITLE_END   ? 'title'
-                : p < SOFIA_END   ? 'sofia'
-                : p < HANDOFF_END ? 'handoff'
-                : p < ALEX_END    ? 'alex' : 'payoff';
-    const identity = phase === 'handoff' ? 'Sofia \u2192 Alex'
-                   : phase === 'payoff'  ? 'Sofia & Alex'
-                   : phase === 'alex'    ? 'Alex' : 'Sofia';
-    return { phase, intro, sofia, alex, introOpacity, sofiaOpacity, alexOpacity, ui, identity };
-  }
-  // segment fill thresholds (global p): Profile,Follow,Request | Activity,Review,Accept
-  const MOBILE_METER = [0.14, 0.26, 0.40, 0.62, 0.74, 0.86];
-  // caption stops (global p) — visible line only
-  const MOBILE_CAPS = [
-    [0.00, 'Chapter 3 \u00b7 Relationships'],
-    [0.14, 'Sofia opens Alex\u2019s profile'],
-    [0.26, 'Sofia follows for updates'],
-    [0.40, 'Sofia sends a friend request'],
-    [0.45, 'The request is on its way to Alex'],
-    [0.62, 'Alex sees it in Activity'],
-    [0.74, 'Alex opens the request'],
-    [0.86, 'Alex accepts'],
-    [0.90, 'Sofia & Alex are now friends']
-  ];
-  function setMobileCap(p){
-    let c = MOBILE_CAPS[0];
-    for(const x of MOBILE_CAPS) if(p >= x[0]) c = x;
-    if(cap.dataset.k === c[1]) return;
-    cap.dataset.k = c[1];
-    clearTimeout(capTimer);
-    cap.style.opacity = 0; cap.style.transform = 'translateY(8px)';
-    capTimer = setTimeout(()=>{
-      cap.innerHTML = '<span class="num">'+esc(copy.kicker)+'</span><h3>'+esc(copy.title)+'</h3><p>'+esc(copy.subtitle)+'</p><span class="num"></span><h3>'+esc(c[1])+'</h3>';
-      cap.style.opacity = 1; cap.style.transform = 'none';
-    }, 140);
-  }
-  function updateMobile(p){
-    const t = mobileTimeline(p);
-    // ── renderer: draw frames only ──
-    if(t.introOpacity > 0.001) introMobileSeq?.draw(t.intro);
-    if(t.phase === 'title'){        sofiaSeq.draw(0);       alexSeq.prepare(0, 3, 360); }
-    else if(t.phase === 'sofia'){   sofiaSeq.draw(t.sofia); alexSeq.prepare(0, 8); }
-    else if(t.phase === 'handoff'){ sofiaSeq.draw(1);       alexSeq.draw(0); }
-    else if(t.phase === 'alex'){    alexSeq.draw(t.alex);   sofiaSeq.prepare(1, 4, 320); }
-    else {                          alexSeq.draw(1);        sofiaSeq.prepare(1, 2, 280); }
-    // ── UI: read timeline only ──
-    demo.style.setProperty('--m-intro', t.introOpacity.toFixed(4));
-    demo.style.setProperty('--m-sofia', t.sofiaOpacity.toFixed(4));
-    demo.style.setProperty('--m-alex',  t.alexOpacity.toFixed(4));
-    demo.style.setProperty('--m-ui',    t.ui.toFixed(4));
-    if(chipText && chipText.textContent !== t.identity) chipText.textContent = t.identity;
-    meterSegs.forEach((seg, i) => seg.classList.toggle('is-full', p >= MOBILE_METER[i]));
-    setMobileCap(p);
-  }
-
-  // ── progress from the live track rect (correct under layout shifts) ──
+  // ── progress → timeline → render frames → apply UI ──
   let ticking = false;
-  function update(){
-    ticking = false;
-    const vh = window.innerHeight;
+  let stableMobileHeight = window.innerHeight;
+  let stableMobileWidth = window.innerWidth;
+
+  function viewportHeight(isMobile){
+    if(!isMobile) return window.innerHeight;
+    const width = window.innerWidth;
+    if(Math.abs(width - stableMobileWidth) > 24){
+      stableMobileWidth = width;
+      stableMobileHeight = window.innerHeight;
+    }
+    stableMobileHeight = Math.max(stableMobileHeight, window.innerHeight, window.visualViewport?.height || 0);
+    return stableMobileHeight;
+  }
+
+  function getProgress(isMobile){
+    const vh = viewportHeight(isMobile);
     const r = track.getBoundingClientRect();
-    if(r.bottom < -vh || r.top > vh*2) return;     // off-screen: skip
+    if(r.bottom < -vh || r.top > vh*2) return null;
     const dist = track.offsetHeight - vh;
-    const p = dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
-    demo.style.setProperty('--p', p.toFixed(4));
+    return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
+  }
 
-    // Mobile uses its own one-phone relay; desktop path below is untouched.
-    if(introMobileQuery.matches){ updateMobile(p); return; }
+  function getTimeline(p, isMobile){
+    if(isMobile){
+      const introToSofia = clamp((p - 0.30) / 0.10, 0, 1);
+      const sofiaToAlex = clamp((p - 0.68) / 0.08, 0, 1);
+      return {
+        p,
+        isMobile:true,
+        introOpacity:1 - introToSofia,
+        introScale:1 + introToSofia * 0.08,
+        handoffOpacity:introToSofia,
+        handoffScale:0.94 + introToSofia * 0.06,
+        sofiaOpacity:introToSofia * (1 - sofiaToAlex),
+        alexOpacity:sofiaToAlex,
+        stripOpacity:clamp((p - 0.40) / 0.06, 0, 1),
+        activePerson:p < 0.72 ? 'sofia' : 'alex',
+        introProgress:clamp(p / 0.30, 0, 1),
+        sofiaProgress:clamp((p - 0.40) / 0.28, 0, 1),
+        alexProgress:clamp((p - 0.76) / 0.24, 0, 1)
+      };
+    }
 
-    setCap(p);
-    const introProgress = clamp(p / 0.25, 0, 1);
-    const transitionProgress = clamp((p - 0.25) / 0.15, 0, 1);
+    const revealT = p <= 0.25 ? 0 : p >= 0.40 ? 1 : clamp((p - 0.25) / 0.15, 0, 1);
     const handoffProgress = clamp((p - 0.40) / 0.60, 0, 1);
-    const sofiaProgress = clamp(handoffProgress / 0.5, 0, 1);
-    const alexProgress = clamp((handoffProgress - 0.5) / 0.5, 0, 1);
-    const alexActive = handoffProgress >= 0.5;
+    return {
+      p,
+      isMobile:false,
+      introOpacity:1 - revealT,
+      introScale:1 + revealT * 0.08,
+      handoffOpacity:revealT,
+      handoffScale:0.94 + revealT * 0.06,
+      sofiaOpacity:1,
+      alexOpacity:1,
+      stripOpacity:0,
+      activePerson:handoffProgress < 0.5 ? 'sofia' : 'alex',
+      introProgress:clamp(p / 0.25, 0, 1),
+      sofiaProgress:clamp(handoffProgress / 0.5, 0, 1),
+      alexProgress:clamp((handoffProgress - 0.5) / 0.5, 0, 1)
+    };
+  }
 
-    introDesktopSeq?.draw(introProgress);
-    sofiaSeq.draw(sofiaProgress);
-    alexSeq.draw(alexProgress);
+  function renderFrames(t){
+    const activeIntroSeq = introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
+    if(t.isMobile){
+      if(t.introOpacity > 0) activeIntroSeq?.draw(t.introProgress);
+      if(t.sofiaOpacity > 0) sofiaSeq.draw(t.sofiaProgress);
+      else if(t.p < 0.40) sofiaSeq.prepare(0, 8);
+      else sofiaSeq.prepare(t.sofiaProgress, 4, 360);
 
-    const revealT = p <= 0.25 ? 0 : p >= 0.40 ? 1 : transitionProgress;
-    demo.style.setProperty('--intro-opacity', (1 - revealT).toFixed(4));
-    demo.style.setProperty('--intro-scale', (1 + revealT * 0.08).toFixed(4));
-    demo.style.setProperty('--handoff-opacity', revealT.toFixed(4));
-    demo.style.setProperty('--handoff-scale', (0.94 + revealT * 0.06).toFixed(4));
+      if(t.alexOpacity > 0) alexSeq.draw(t.alexProgress);
+      else if(t.p >= 0.40) alexSeq.prepare(0, 8);
+      else alexSeq.prepare(0, 3, 320);
+      return;
+    }
 
-    demo.dataset.activePerson = alexActive ? 'alex' : 'sofia';
+    activeIntroSeq?.draw(t.introProgress);
+    sofiaSeq.draw(t.sofiaProgress);
+    alexSeq.draw(t.alexProgress);
+  }
+
+  function applyUI(t){
+    demo.style.setProperty('--intro-opacity', t.introOpacity.toFixed(4));
+    demo.style.setProperty('--intro-scale', t.introScale.toFixed(4));
+    demo.style.setProperty('--handoff-opacity', t.handoffOpacity.toFixed(4));
+    demo.style.setProperty('--handoff-scale', t.handoffScale.toFixed(4));
+    demo.style.setProperty('--sofia-opacity', t.sofiaOpacity.toFixed(4));
+    demo.style.setProperty('--alex-opacity', t.alexOpacity.toFixed(4));
+    demo.style.setProperty('--strip-opacity', t.stripOpacity.toFixed(4));
+
+    demo.dataset.activePerson = t.activePerson;
     handoffSteps.forEach(step => {
       const k = step.dataset.step;
       const isAlex = k.startsWith('alex-');
       const thr = isAlex ? alexStepThresholds[k] : sofiaStepThresholds[k];
-      const sp = isAlex ? alexProgress : sofiaProgress;
+      const sp = isAlex ? t.alexProgress : t.sofiaProgress;
       step.classList.toggle('is-complete', sp >= thr);
     });
+    const alexActive = t.activePerson === 'alex';
     sofiaPerson?.classList.toggle('active', !alexActive);
     sofiaPerson?.classList.toggle('inactive', alexActive);
     alexPerson?.classList.toggle('active', alexActive);
     alexPerson?.classList.toggle('inactive', !alexActive);
   }
+
+  function update(){
+    ticking = false;
+    const isMobile = timelineMobileQuery.matches;
+    const p = getProgress(isMobile);
+    if(p === null) return;
+    const timeline = getTimeline(p, isMobile);
+    demo.style.setProperty('--p', timeline.p.toFixed(4));
+    setCap(timeline.p);
+    renderFrames(timeline);
+    applyUI(timeline);
+  }
   function req(){ if(ticking) return; ticking = true; requestAnimationFrame(update); }
 
   window.addEventListener('scroll', req, { passive:true });
   window.addEventListener('resize', req);
-  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', () => { loadSequences(); req(); });
+  const modeChanged = () => { loadSequences(); req(); };
+  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
+  else introMobileQuery.addListener?.(modeChanged);
+  if(timelineMobileQuery.addEventListener) timelineMobileQuery.addEventListener('change', modeChanged);
+  else timelineMobileQuery.addListener?.(modeChanged);
 
   // lazy-load the sequences as the chapter approaches
   if('IntersectionObserver' in window){
