@@ -3439,6 +3439,196 @@ footer{
 }
 </style>
 
+<style id="ch3-relationships-test">
+/* ════ Chapter 3 relationships — matches Chapter 1 & 2 design — scoped to #app-demo-relationships only ════ */
+#app-demo-relationships{
+  background:
+    radial-gradient(58% 48% at 16% 16%, rgba(124,58,255,.08), transparent 62%),
+    radial-gradient(50% 44% at 90% 82%, rgba(255,61,154,.06), transparent 64%),
+    linear-gradient(180deg,#fbfbfe 0%,#f4f5fb 58%,#eef0f8 100%);
+  color:#11121a;
+}
+#app-demo-relationships .app-demo-sticky::before{ background:none; } /* drop the shared dark radial overlay */
+
+/* full-stage intro layer crossfades (via --intro-opacity) into the two-phone demo */
+#app-demo-relationships .app-demo-intro-fullstage{ z-index:5; border-radius:0; }
+#app-demo-relationships .app-demo-intro-video{ object-fit:cover; object-position:50% 42%; }
+
+/* phones as premium product objects on the light stage */
+#app-demo-relationships .app-demo-phone{ box-shadow:none; }   /* kill the global rectangular shadow */
+#app-demo-relationships .app-demo-frame{
+  box-shadow:
+    0 2px 6px rgba(16,18,32,.06),
+    0 16px 36px rgba(16,18,32,.13),
+    0 48px 92px rgba(16,18,32,.18),
+    inset 0 0 0 1px rgba(255,255,255,.05);
+}
+#app-demo-relationships .app-demo-phone::after{   /* soft contact shadow so the phone is grounded */
+  content:""; position:absolute; left:50%; bottom:-2.5%; z-index:-1;
+  width:68%; height:6%; transform:translateX(-50%);
+  background:radial-gradient(ellipse at center, rgba(16,18,32,.28), transparent 72%);
+  filter:blur(12px); pointer-events:none;
+}
+/* person identity labels — restyled subtle for the light theme */
+#app-demo-relationships .app-demo-person-label{
+  color:rgba(17,18,26,.40); text-shadow:none;
+  font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+}
+#app-demo-relationships .app-demo-person.active .app-demo-person-label{ color:#7c3aff; text-shadow:none; }
+
+/* ── editorial header (left column) ── */
+#app-demo-relationships .ch3-kicker{
+  display:block; margin:0 0 14px;
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.22em;
+  text-transform:uppercase; color:#7c3aff;
+}
+#app-demo-relationships .ch3-headline{
+  margin:0; font-family:'Syne',sans-serif; font-weight:700;
+  font-size:clamp(26px,2.6vw,40px); line-height:1.06; letter-spacing:-.02em; color:#11121a;
+}
+#app-demo-relationships .ch3-support{
+  margin:18px 0 0; max-width:300px;
+  font-size:14px; line-height:1.55; color:rgba(17,18,26,.55);
+}
+
+/* ── editorial feature/story list (right column) — STATIC ── */
+#app-demo-relationships .ch3-feature-list{
+  list-style:none; margin:0; padding:0; text-align:left; max-width:340px;
+}
+#app-demo-relationships .ch3-feature{
+  display:grid; grid-template-columns:auto 1fr; column-gap:14px; align-items:start;
+  padding:18px 0;
+}
+#app-demo-relationships .ch3-feature + .ch3-feature{ border-top:1px solid rgba(17,18,26,.08); }
+#app-demo-relationships .ch3-num{
+  font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1; letter-spacing:.04em;
+  color:#7c3aff; padding-top:3px;   /* optical align with the title */
+}
+#app-demo-relationships .ch3-feature h3{
+  margin:0 0 3px; font-family:'Syne',sans-serif; font-weight:650;
+  font-size:16px; letter-spacing:-.01em; color:#11121a;
+}
+#app-demo-relationships .ch3-feature p{ margin:0; font-size:13px; line-height:1.5; color:rgba(17,18,26,.55); }
+
+/* ── remove heavy story cards, duplicate mobile strip, caption, hint
+   (nodes kept in the DOM so the engine never breaks) ── */
+#app-demo-relationships .handoff-story-card{ display:none !important; }
+#app-demo-relationships .handoff-mobile-progress{ display:none !important; }
+#app-demo-relationships .app-demo-copy{ display:none !important; }
+#app-demo-relationships .app-demo-hint{ display:none !important; }
+
+/* ════ DESKTOP (>940px): 3-column editorial layout, two-phone demo centered ════ */
+@media (min-width:941px){
+  #app-demo-relationships .app-demo-sticky{
+    display:grid;
+    grid-template-columns:
+      minmax(clamp(16px,3vw,40px),1fr) minmax(0,300px) auto minmax(0,300px) minmax(clamp(16px,3vw,40px),1fr);
+    grid-template-areas:". left center right .";
+    align-items:center;
+    gap:clamp(16px,2.4vw,44px);
+    max-width:none; margin:0;
+    padding:118px 0 84px;
+  }
+  #app-demo-relationships .ch3-story-head{ grid-area:left; justify-self:end; max-width:320px; text-align:left; }
+  #app-demo-relationships .app-demo-phone-pair{ grid-area:center; width:auto; gap:clamp(18px,2vw,36px); }
+  #app-demo-relationships .app-demo-handoff .app-demo-phone{
+    width:min(228px,16.5vw, calc((100vh - 230px) * 9 / 19.5));
+  }
+  #app-demo-relationships .ch3-feature-list{ grid-area:right; justify-self:start; }
+
+  /* ── subtle progress rail near the demo's right edge — engine-driven dots, like Ch1/Ch2 ── */
+  #app-demo-relationships .app-demo-dots{
+    display:flex !important; flex-direction:column; gap:9px; z-index:3;
+    position:absolute; right:max(20px, calc(50% - 300px)); top:50%; transform:translateY(-50%);
+  }
+  #app-demo-relationships .app-demo-dots span{
+    width:6px; height:6px; border-radius:50%;
+    background:rgba(17,18,26,.16); box-shadow:none;
+    transition:background .4s ease, transform .4s ease;
+  }
+  #app-demo-relationships .app-demo-dots span.on{
+    background:#7c3aff; transform:scale(1.3);
+    box-shadow:0 0 0 3px rgba(124,58,255,.10);
+  }
+}
+
+/* ════ MOBILE (≤940px): clean one column — header, centered demo (engine handoff) ════ */
+@media (max-width:940px){
+  /* phone width matched to Chapter 1 & 2 mobile scale; reused for the pair height so the demo stays centered with no empty gap */
+  #app-demo-relationships{
+    --ch3-phone-w: clamp(220px, calc((100vh - 150px) * 9 / 19.5), min(360px, 88vw));   /* EXACT match to Ch1/Ch2 mobile phone */
+  }
+  #app-demo-relationships .app-demo-sticky{
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    gap:9px; max-width:none; margin:0; padding:46px 14px 12px;
+  }
+  #app-demo-relationships .ch3-story-head{ order:1; justify-self:auto; max-width:360px; text-align:center; }
+  #app-demo-relationships .ch3-kicker{ margin-bottom:7px; }
+  #app-demo-relationships .ch3-headline{ font-size:clamp(21px,5.6vw,27px); line-height:1.05; }
+  #app-demo-relationships .ch3-support{ display:none; }
+
+  #app-demo-relationships .app-demo-phone-pair{ order:2; width:100%; min-height:calc(var(--ch3-phone-w) * 19.5 / 9); }
+  #app-demo-relationships .app-demo-handoff .app-demo-phone{ width:var(--ch3-phone-w); }
+
+  #app-demo-relationships .ch3-feature-list{ display:none; }
+  #app-demo-relationships .app-demo-dots{ display:none !important; }   /* no progress rail on mobile, like Ch1/Ch2 */
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   FINAL CH3 OVERRIDES (diagnostic) — placed last so nothing can win against them.
+   NOTE: the correct scope is #app-demo-relationships (the section's id).
+   `#app-demo.app-demo-relationships` matches nothing (id is not "app-demo",
+   and there is no "app-demo-relationships" class).
+   ════════════════════════════════════════════════════════════════════════ */
+@media (min-width:941px){
+  #app-demo-relationships .app-demo-dots{
+    display:flex !important; opacity:1 !important; visibility:visible !important; z-index:999 !important;
+    position:absolute !important; right:max(20px, calc(50% - 300px)) !important; top:50% !important;
+    transform:translateY(-50%) !important; flex-direction:column !important; gap:9px !important;
+  }
+  #app-demo-relationships .app-demo-dots span{ width:6px !important; height:6px !important; border-radius:50% !important; background:rgba(17,18,26,.18) !important; }
+  #app-demo-relationships .app-demo-dots span.on{ background:#7c3aff !important; transform:scale(1.3) !important; box-shadow:0 0 0 3px rgba(124,58,255,.12) !important; }
+}
+@media (max-width:940px){
+  #app-demo-relationships .app-demo-phone-pair .app-demo-phone{
+    width:clamp(220px, calc((100vh - 150px) * 9 / 19.5), min(360px, 88vw)) !important;   /* EXACT match to Ch1/Ch2 */
+  }
+  #app-demo-relationships .app-demo-phone-pair{
+    min-height:calc(clamp(220px, calc((100vh - 150px) * 9 / 19.5), min(360px, 88vw)) * 19.5 / 9) !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   MOBILE SLIDE-SWAP HANDOFF (≤940px) — one phone at a time that visibly MOVES
+   to the next phone. Rides the engine's EXISTING data-active-person flip and
+   .active/.inactive toggle. No engine/JS/timing/flow change — only the visual
+   transform changes (a carousel-style slide instead of a crossfade in place).
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width:940px){
+  #app-demo-relationships .app-demo-person{
+    position:absolute !important; left:50% !important; top:50% !important; z-index:1;
+    transition:transform .62s cubic-bezier(.45,.05,.2,1), opacity .4s ease !important;
+    will-change:transform; backface-visibility:hidden;
+  }
+  /* the active phone (Sofia first, then Alex) sits centered and sharp */
+  #app-demo-relationships[data-active-person="sofia"] .app-demo-person[data-person="sofia"],
+  #app-demo-relationships[data-active-person="alex"]  .app-demo-person[data-person="alex"]{
+    transform:translate(-50%,-50%) scale(1) !important;
+    opacity:1 !important; filter:none !important; z-index:2 !important; pointer-events:auto !important;
+  }
+  /* the other phone waits fully OFF-SCREEN: Alex parked right, Sofia exits left
+     → on the handoff both slide the same way (a carousel "move to the next phone") */
+  #app-demo-relationships[data-active-person="sofia"] .app-demo-person[data-person="alex"]{
+    transform:translate(calc(-50% + 110vw),-50%) scale(1) !important;
+    opacity:1 !important; filter:none !important; z-index:1 !important; pointer-events:none !important;
+  }
+  #app-demo-relationships[data-active-person="alex"] .app-demo-person[data-person="sofia"]{
+    transform:translate(calc(-50% - 110vw),-50%) scale(1) !important;
+    opacity:1 !important; filter:none !important; z-index:1 !important; pointer-events:none !important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -3726,9 +3916,16 @@ footer{
 
       <div class="app-demo-dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
 
-      <div class="app-demo-intro-layer" aria-hidden="true">
+      <div class="app-demo-intro-layer app-demo-intro-fullstage" aria-hidden="true">
         <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" data-seq="frames/ch3-intro-desktop" data-count="78"></canvas>
         <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" data-seq="frames/ch3-intro-mobile" data-count="78"></canvas>
+      </div>
+
+      <!-- LEFT · chapter header -->
+      <div class="ch3-story-head">
+        <span class="ch3-kicker">CHAPTER 03 · RELATIONSHIPS</span>
+        <h2 class="ch3-headline">A follow can become<br>a real friendship.</h2>
+        <p class="ch3-support">Follow lightly for public updates, then send a friend request when it matters.</p>
       </div>
 
       <div class="handoff-story-card handoff-story-left" aria-hidden="true">
@@ -3805,6 +4002,14 @@ footer{
           </div>
         </div>
       </div>
+
+      <!-- RIGHT · editorial relationship/story list -->
+      <ul class="ch3-feature-list" aria-label="How a relationship forms">
+        <li class="ch3-feature"><span class="ch3-num">01</span><div class="ch3-feature-text"><h3>Follow</h3><p>Start lightly without pressure.</p></div></li>
+        <li class="ch3-feature"><span class="ch3-num">02</span><div class="ch3-feature-text"><h3>Request</h3><p>Send a friend request when it matters.</p></div></li>
+        <li class="ch3-feature"><span class="ch3-num">03</span><div class="ch3-feature-text"><h3>Activity</h3><p>The request lands where it belongs.</p></div></li>
+        <li class="ch3-feature"><span class="ch3-num">04</span><div class="ch3-feature-text"><h3>Friends</h3><p>One accept turns it into a real connection.</p></div></li>
+      </ul>
 
       <div class="app-demo-caption app-demo-copy">
         <div class="app-demo-cap-inner">
