@@ -4840,29 +4840,36 @@ nav{
 
 .cta-card{
   background:#101018 !important;
-  color:#fff;
+  color:var(--text);
   border-color:rgba(255,255,255,.10) !important;
   box-shadow:
     0 40px 110px rgba(0,0,0,.34),
     inset 0 1px 0 rgba(255,255,255,.10) !important;
 }
 
-.cta-card p,
+.cta-card .kicker{
+  color:rgba(13,13,24,.72);
+}
+
+.cta-card p{
+  color:rgba(13,13,24,.66);
+}
+
 .cta-card .waitlist-proof{
-  color:rgba(255,255,255,.66);
+  color:#0c8f55;
 }
 
 .waitlist-form{
-  background:rgba(255,255,255,.08) !important;
-  border-color:rgba(255,255,255,.14) !important;
+  background:rgba(13,13,24,.04) !important;
+  border-color:rgba(13,13,24,.16) !important;
 }
 
 .waitlist-form input{
-  color:#fff;
+  color:var(--text);
 }
 
 .waitlist-form input::placeholder{
-  color:rgba(255,255,255,.46);
+  color:rgba(13,13,24,.45);
 }
 
 @media (max-width:940px){
