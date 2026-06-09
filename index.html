@@ -3629,8 +3629,108 @@ footer{
 }
 </style>
 
+<style id="px-preloader-style">
+/* ── Short premium preloader — waits only for minimum critical Chapter 1 assets ── */
+#px-preloader{
+  position:fixed; inset:0; z-index:100000;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px;
+  background:#f7f7fc;
+  opacity:1; transition:opacity .55s ease; will-change:opacity;
+}
+#px-preloader.px-hide{ opacity:0; pointer-events:none; }
+#px-preloader .px-mark{
+  font-family:'Syne',-apple-system,BlinkMacSystemFont,sans-serif; font-weight:800;
+  letter-spacing:.2em; font-size:clamp(22px,4vw,34px); line-height:1;
+  background:linear-gradient(120deg,#ff3d9a 0%,#a04bff 50%,#7c3aff 100%);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+}
+#px-preloader .px-bar{
+  width:min(180px,42vw); height:3px; border-radius:999px;
+  background:rgba(13,13,24,.10); overflow:hidden; position:relative;
+}
+#px-preloader .px-bar i{
+  position:absolute; left:0; top:0; bottom:0; width:6%;
+  background:linear-gradient(120deg,#ff3d9a,#a04bff,#7c3aff);
+  border-radius:999px; transition:width .3s ease;
+}
+#px-preloader .px-sub{
+  font-family:'JetBrains Mono',ui-monospace,monospace; font-size:10px; letter-spacing:.24em;
+  text-transform:uppercase; color:rgba(13,13,24,.42);
+}
+@media (prefers-reduced-motion: reduce){
+  #px-preloader, #px-preloader .px-bar i{ transition:none; }
+}
+</style>
+
 </head>
 <body>
+
+<!-- ════ PREMIUM PRELOADER (test) — minimum critical assets only, hard 4s cap ════ -->
+<div id="px-preloader" role="status" aria-label="Loading Praxis">
+  <div class="px-mark">PRAXIS</div>
+  <div class="px-bar"><i id="px-bar-fill"></i></div>
+  <div class="px-sub">Loading</div>
+</div>
+<script>
+/* Short premium preloader.
+   Waits ONLY for: fonts ready (if available) + Chapter 1 first intro frame
+   + the first 8 Chapter 1 feed frames. NEVER waits for all Ch1 frames, and
+   NEVER for any Chapter 2 / Chapter 3 frame. Hard fallback at 4000ms. If any
+   asset fails it continues anyway. The existing engine keeps lazy-loading all
+   remaining frames in the background after the overlay fades. */
+(function(){
+  var overlay = document.getElementById('px-preloader');
+  if(!overlay) return;
+  var fill = document.getElementById('px-bar-fill');
+  var HARD_TIMEOUT = 4000;                 // hard cap — page is never gated longer than this
+  var FEED_FRAMES  = 8;                     // first 8 feed frames only (not 20+, not all 183)
+  var pad = function(n){ return ('000' + n).slice(-4); };
+  var isMobile = window.matchMedia('(max-width:700px)').matches;
+
+  // minimum critical set — Chapter 1 only
+  var introDir = isMobile ? 'frames/ch1-intro-mobile' : 'frames/ch1-intro-desktop';
+  var critical = [ introDir + '/0000.jpg' ];           // Ch1 first intro frame
+  for(var i = 0; i < FEED_FRAMES; i++){                 // Ch1 first feed frames (first 8)
+    critical.push('frames/ch1-feed/' + pad(i) + '.jpg');
+  }
+
+  var total = critical.length + 1;                      // +1 for the fonts step
+  var loaded = 0;
+  function tick(){
+    loaded++;
+    if(fill) fill.style.width = Math.max(6, Math.min(100, Math.round(loaded / total * 100))) + '%';
+  }
+  function loadImg(src){
+    return new Promise(function(res){
+      var img = new Image();
+      try{ img.fetchPriority = 'high'; img.decoding = 'async'; }catch(e){}
+      img.onload  = function(){ tick(); res(true); };
+      img.onerror = function(){ tick(); res(false); };  // continue anyway on failure
+      img.src = src;
+    });
+  }
+
+  // fonts ready if available, else resolve immediately
+  var fontsP = (window.document.fonts && document.fonts.ready)
+    ? document.fonts.ready.then(function(){ tick(); }, function(){ tick(); })
+    : Promise.resolve().then(function(){ tick(); });
+
+  var criticalReady = Promise.all([ fontsP, Promise.all(critical.map(loadImg)) ]);
+  var hardCap = new Promise(function(res){ setTimeout(res, HARD_TIMEOUT); });   // hard fallback at 4s
+
+  var finished = false;
+  function finish(){
+    if(finished) return; finished = true;
+    if(fill) fill.style.width = '100%';
+    overlay.classList.add('px-hide');
+    setTimeout(function(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 650);
+  }
+  Promise.race([ criticalReady, hardCap ]).then(finish);
+  // absolute safety net so the overlay can never get stuck
+  setTimeout(finish, HARD_TIMEOUT + 400);
+})();
+</script>
 
 <div class="atmosphere"></div>
 <div class="grain"></div>
