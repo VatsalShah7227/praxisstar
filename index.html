@@ -5363,17 +5363,17 @@ if (phoneTabs.length && phoneViews.length) {
     const dir = canvas.dataset.seq, count = parseInt(canvas.dataset.count, 10);
     const ctx = canvas.getContext('2d');
     const frames = new Array(count);
-    const preloadRadius = 28;
-    const desktopDecodeConcurrency = 4;
+    const preloadRadius = 16;
     const decodeQueue = [];
     let decoding = 0;
     let started = false, sized = false;
     let hasDrawn = false, posterDrawn = false;
+    let backgroundStarted = false;
     let lastTargetIdx = -1, lastDrawnIdx = -1;
 
     const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.jpg';
     const progressToIndex = p => clamp(Math.round(p*(count-1)), 0, count-1);
-    const decodeLimit = () => timelineMobileQuery.matches ? 2 : desktopDecodeConcurrency;
+    const decodeLimit = () => 2;
     const frameReady = i => {
       const f = frames[i];
       return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
@@ -5420,6 +5420,7 @@ if (phoneTabs.length && phoneViews.length) {
           const finish = () => {
             if(img.complete && img.naturalWidth > 0){
               frame.ready = true;
+              frame.decoded = true;
               if(frame.idx === 0) drawFrame(0);
               if(frame.idx === 0 || frame.idx === lastTargetIdx || lastDrawnIdx < 0) req();
             }
@@ -5442,7 +5443,7 @@ if (phoneTabs.length && phoneViews.length) {
         if(frame.queued) pumpDecodeQueue();
         return frame.promise;
       }
-      frame = { idx:i, img:null, ready:false, loading:false, queued:true, priority, promise:null, resolve:null };
+      frame = { idx:i, img:null, ready:false, decoded:false, loading:false, queued:true, priority, promise:null, resolve:null };
       frame.promise = new Promise(resolve => { frame.resolve = resolve; });
       frames[i] = frame;
       decodeQueue.push(frame);
@@ -5450,13 +5451,15 @@ if (phoneTabs.length && phoneViews.length) {
       return frame.promise;
     }
 
-    function preloadWindow(idx, direction = 1, radius = preloadRadius, targetPriority = 1200, aheadPriority = 1000, behindPriority = 700){
+    function preloadWindow(idx, direction = 1, aheadCount = preloadRadius, behindCount = Math.ceil(aheadCount / 2), targetPriority = 1200, aheadPriority = 1000, behindPriority = 700){
       ensureFrame(0, 1000);
       ensureFrame(idx, targetPriority);
-      for(let d=1; d<=radius; d++){
+      for(let d=1; d<=aheadCount; d++){
         const ahead = idx + d * direction;
-        const behind = idx - d * direction;
         if(ahead >= 0 && ahead < count) ensureFrame(ahead, aheadPriority - d);
+      }
+      for(let d=1; d<=behindCount; d++){
+        const behind = idx - d * direction;
         if(behind >= 0 && behind < count) ensureFrame(behind, behindPriority - d);
       }
     }
@@ -5473,18 +5476,18 @@ if (phoneTabs.length && phoneViews.length) {
       return -1;
     }
 
-    function load(radius = preloadRadius){
+    function load(aheadCount = preloadRadius, behindCount = Math.ceil(aheadCount / 2)){
       if(started) return;
       started = true;
       ensureFrame(0, 1200).then(() => req());
-      preloadWindow(0, 1, radius);
+      preloadWindow(0, 1, aheadCount, behindCount);
     }
 
     function prepare(p, radius = 8, priority = 520){
-      if(!started) load(0);
+      if(!started) load(0, 0);
       const idx = progressToIndex(p);
       const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
-      preloadWindow(idx, direction, radius, priority + 200, priority, priority - 120);
+      preloadWindow(idx, direction, radius, Math.max(4, Math.ceil(radius / 2)), priority + 200, priority, priority - 120);
     }
 
     function drawPoster(){
@@ -5495,16 +5498,33 @@ if (phoneTabs.length && phoneViews.length) {
       });
     }
 
-    function preloadAll(){
+    function preloadRemaining(){
+      if(backgroundStarted) return;
+      backgroundStarted = true;
       started = true;
-      for(let i=0; i<count; i++) ensureFrame(i, 120);
+      let idx = 0;
+      const idle = window.requestIdleCallback
+        ? cb => window.requestIdleCallback(cb, { timeout:900 })
+        : cb => window.setTimeout(() => cb({ timeRemaining:() => 0 }), 90);
+      const step = deadline => {
+        let queued = 0;
+        while(idx < count && queued < 3 && (queued < 1 || deadline.timeRemaining() > 4)){
+          ensureFrame(idx, 90);
+          idx++;
+          queued++;
+        }
+        if(idx < count) idle(step);
+      };
+      idle(step);
     }
 
     function drawOrPoster(p, radius = timelineMobileQuery.matches ? 10 : 24){
       if(!started) load();
       const idx = progressToIndex(p);
       const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
-      preloadWindow(idx, direction, radius);
+      const ahead = Math.min(radius, timelineMobileQuery.matches ? 12 : 16);
+      const behind = timelineMobileQuery.matches ? Math.max(4, Math.ceil(ahead / 2)) : Math.max(6, Math.ceil(ahead / 2));
+      preloadWindow(idx, direction, ahead, behind);
       lastTargetIdx = idx;
       if(idx === lastDrawnIdx) return;
       if(drawFrame(idx)) return;
@@ -5522,7 +5542,7 @@ if (phoneTabs.length && phoneViews.length) {
       drawOrPoster,
       drawPoster,
       prepare,
-      preloadAll,
+      preloadRemaining,
       get hasDrawn(){ return hasDrawn; },
       get posterDrawn(){ return posterDrawn; },
       get lastDrawnIdx(){ return lastDrawnIdx; },
@@ -5533,19 +5553,23 @@ if (phoneTabs.length && phoneViews.length) {
   const introMobileSeq  = introMobile ? makeSeq(introMobile) : null;
   const sofiaSeq = makeSeq(sofiaCanvas);
   const alexSeq  = makeSeq(alexCanvas);
-  const chapter3Seqs = [introDesktopSeq, introMobileSeq, sofiaSeq, alexSeq].filter(Boolean);
   const activeIntroSeq = () => introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
+  const activeSeqs = () => [activeIntroSeq(), sofiaSeq, alexSeq].filter(Boolean);
+  const currentPostersReady = () => activeSeqs().every(seq => seq.posterDrawn);
   let allPostersDrawn = false;
   let postersStarted = false;
+  let chapterStarted = false;
   let lastVisiblePhase = 'intro';
 
   function loadSequences(){
-    if(postersStarted) return;
+    chapterStarted = true;
+    const seqs = activeSeqs();
+    if(postersStarted && currentPostersReady()) return;
     postersStarted = true;
-    Promise.all(chapter3Seqs.map(seq => seq.drawPoster())).then(() => {
-      allPostersDrawn = chapter3Seqs.every(seq => seq.posterDrawn);
+    Promise.all(seqs.map(seq => seq.drawPoster())).then(() => {
+      allPostersDrawn = currentPostersReady();
       if(allPostersDrawn) demo.classList.add('posters-ready');
-      chapter3Seqs.forEach(seq => seq.preloadAll());
+      seqs.forEach(seq => seq.preloadRemaining());
       req();
     });
     req();
@@ -5675,7 +5699,7 @@ if (phoneTabs.length && phoneViews.length) {
   }
 
   function posterGate(t){
-    if(!allPostersDrawn) return forcePhase(t, lastVisiblePhase);
+    if(!allPostersDrawn || !currentPostersReady()) return forcePhase(t, lastVisiblePhase);
     if(!t.isMobile) return t;
 
     const nextPhase = visiblePhase(t);
@@ -5733,6 +5757,7 @@ if (phoneTabs.length && phoneViews.length) {
 
   function update(){
     ticking = false;
+    if(!chapterStarted) return;
     const isMobile = timelineMobileQuery.matches;
 
     targetProgress = getProgress(isMobile);
@@ -5772,25 +5797,25 @@ if (phoneTabs.length && phoneViews.length) {
     if(!timelineMobileQuery.matches) hasRenderedProgress = false;
     req();
   });
-  const modeChanged = () => { loadSequences(); req(); };
+  const modeChanged = () => {
+    allPostersDrawn = currentPostersReady();
+    if(chapterStarted) loadSequences();
+    hasRenderedProgress = false;
+    req();
+  };
   if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
   else introMobileQuery.addListener?.(modeChanged);
   if(timelineMobileQuery.addEventListener) timelineMobileQuery.addEventListener('change', modeChanged);
   else timelineMobileQuery.addListener?.(modeChanged);
 
-  // Start Chapter 3 posters/full preload immediately for the stable test-proven path.
-  loadSequences();
-
-  // Keep the observer as a harmless retry if the page is restored from cache or re-entered.
   if('IntersectionObserver' in window){
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => { if(e.isIntersecting){ loadSequences(); req(); } });
-    }, { rootMargin: '200% 0px' });
+    }, { rootMargin: '160% 0px' });
     io.observe(demo);
   } else {
     loadSequences();
   }
-  req();
 })();
 
 /* ════════════════════════════════════════════════════════════
@@ -5838,9 +5863,10 @@ if (phoneTabs.length && phoneViews.length) {
     let activeLoads = 0;
     let started = false, sized = false;
     let hasDrawn = false, posterDrawn = false;
+    let backgroundStarted = false;
     let lastTarget = -1, lastDrawn = -1;
 
-    const loadLimit = () => mobileQuery.matches ? 2 : 4;
+    const loadLimit = () => 2;
     const indexFor = p => clamp(Math.round(p * (count - 1)), 0, count - 1);
     const ready = i => {
       const f = frames[i];
@@ -5863,6 +5889,7 @@ if (phoneTabs.length && phoneViews.length) {
         img.onload = () => {
           const finish = () => {
             frame.ready = true;
+            frame.decoded = true;
             frame.resolve(frame);
             if(frame.idx === 0 || frame.idx === lastTarget || lastDrawn < 0) requestUpdate();
             done();
@@ -5885,7 +5912,7 @@ if (phoneTabs.length && phoneViews.length) {
       }
       let resolveFrame;
       frame = {
-        idx:index, img:null, ready:false, error:false, loading:false, queued:true, priority,
+        idx:index, img:null, ready:false, decoded:false, error:false, loading:false, queued:true, priority,
         promise:new Promise(resolve => { resolveFrame = resolve; }), resolve:resolveFrame
       };
       frames[index] = frame;
@@ -5920,38 +5947,60 @@ if (phoneTabs.length && phoneViews.length) {
       return -1;
     }
 
-    function preload(index, radius = 12, targetPriority = 1200, direction = 1){
+    function preload(index, aheadCount = 12, behindCount = Math.ceil(aheadCount / 2), targetPriority = 1200, direction = 1){
       ensure(0, 900);
       ensure(index, targetPriority);
-      for(let d = 1; d <= radius; d++){
+      for(let d = 1; d <= aheadCount; d++){
         const ahead = index + d * direction;
-        const behind = index - d * direction;
         if(ahead >= 0 && ahead < count) ensure(ahead, targetPriority - d);
+      }
+      for(let d = 1; d <= behindCount; d++){
+        const behind = index - d * direction;
         if(behind >= 0 && behind < count) ensure(behind, targetPriority - 180 - d);
       }
     }
 
-    function load(radius = 10){ if(started) return; started = true; preload(0, radius); }
+    function load(aheadCount = 12, behindCount = Math.ceil(aheadCount / 2)){ if(started) return; started = true; preload(0, aheadCount, behindCount); }
 
     function drawPoster(){
       started = true;
       return ensure(0, 5000).then(() => { drawIndex(0); return posterDrawn; });
     }
 
-    function preloadAll(){ started = true; for(let i = 0; i < count; i++) ensure(i, 120); }
+    function preloadRemaining(){
+      if(backgroundStarted) return;
+      backgroundStarted = true;
+      started = true;
+      let index = 0;
+      const idle = window.requestIdleCallback
+        ? cb => window.requestIdleCallback(cb, { timeout:900 })
+        : cb => window.setTimeout(() => cb({ timeRemaining:() => 0 }), 90);
+      const step = deadline => {
+        let queued = 0;
+        while(index < count && queued < 3 && (queued < 1 || deadline.timeRemaining() > 4)){
+          ensure(index, 90);
+          index++;
+          queued++;
+        }
+        if(index < count) idle(step);
+      };
+      idle(step);
+    }
 
     function prepare(p, radius = 6){
-      if(!started) load(2);
+      if(!started) load(2, 1);
       const index = indexFor(p);
       const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
-      preload(index, radius, 700, direction);
+      preload(index, radius, Math.max(4, Math.ceil(radius / 2)), 700, direction);
     }
 
     function drawOrPoster(p, radius = mobileQuery.matches ? 10 : 24){
       if(!started) load();
       const index = indexFor(p);
       const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
-      preload(index, radius, 1200, direction);
+      const ahead = Math.min(radius, mobileQuery.matches ? 12 : 16);
+      const behind = mobileQuery.matches ? Math.max(4, Math.ceil(ahead / 2)) : Math.max(6, Math.ceil(ahead / 2));
+      preload(index, ahead, behind, 1200, direction);
       lastTarget = index;
       if(index === lastDrawn) return;
       if(drawIndex(index)) return;
@@ -5962,7 +6011,7 @@ if (phoneTabs.length && phoneViews.length) {
     }
 
     return {
-      load, drawOrPoster, drawPoster, prepare, preloadAll,
+      load, drawOrPoster, drawPoster, prepare, preloadRemaining,
       get hasDrawn(){ return hasDrawn; },
       get posterDrawn(){ return posterDrawn; },
       get lastDrawn(){ return lastDrawn; }
@@ -5973,8 +6022,10 @@ if (phoneTabs.length && phoneViews.length) {
   const introMobileSeq  = makeSequence(introMobile);
   const feedSeq         = makeSequence(feedCanvas);
   let allPostersDrawn = false;
+  let chapterStarted = false;
 
-  const activeIntroSeq = () => (introMobileQuery.matches && introMobileSeq.posterDrawn) ? introMobileSeq : introDesktopSeq;
+  const activeIntroSeq = () => introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
+  const currentPostersReady = () => activeIntroSeq().posterDrawn && feedSeq.posterDrawn;
 
   function progress(){
     const vh = window.innerHeight;
@@ -5999,7 +6050,7 @@ if (phoneTabs.length && phoneViews.length) {
   }
 
   function posterGate(t){
-    if(!allPostersDrawn) return { ...t, introOpacity:1, introScale:1, feedOpacity:0, feedScale:0.94 };
+    if(!allPostersDrawn || !currentPostersReady()) return { ...t, introOpacity:1, introScale:1, feedOpacity:0, feedScale:0.94 };
     return t;
   }
 
@@ -6047,6 +6098,7 @@ if (phoneTabs.length && phoneViews.length) {
   let ticking = false, targetP = 0, renderedP = 0, hasRendered = false;
   function update(){
     ticking = false;
+    if(!chapterStarted) return;
     targetP = progress();
     const isMobile = mobileQuery.matches;
     if(isMobile){ renderedP = targetP; hasRendered = true; }
@@ -6064,25 +6116,47 @@ if (phoneTabs.length && phoneViews.length) {
   function requestUpdate(){ if(ticking) return; ticking = true; window.requestAnimationFrame(update); }
 
   function start(){
-    Promise.all([ introDesktopSeq.drawPoster(), introMobileSeq.drawPoster(), feedSeq.drawPoster() ]).then(() => {
-      allPostersDrawn = introDesktopSeq.posterDrawn && introMobileSeq.posterDrawn && feedSeq.posterDrawn;
+    chapterStarted = true;
+    const introSeq = activeIntroSeq();
+    if(currentPostersReady()){
+      allPostersDrawn = true;
+      demo.classList.add('posters-ready');
+      introSeq.preloadRemaining();
+      feedSeq.preloadRemaining();
+      requestUpdate();
+      return;
+    }
+    Promise.all([ introSeq.drawPoster(), feedSeq.drawPoster() ]).then(() => {
+      allPostersDrawn = currentPostersReady();
       if(allPostersDrawn) demo.classList.add('posters-ready');
-      introDesktopSeq.preloadAll();
-      introMobileSeq.preloadAll();
-      feedSeq.preloadAll();
+      introSeq.preloadRemaining();
+      feedSeq.preloadRemaining();
       requestUpdate();
     });
     requestUpdate();
   }
 
   window.addEventListener('scroll', requestUpdate, { passive:true });
-  window.addEventListener('resize', () => { hasRendered = false; requestUpdate(); });
-  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', requestUpdate);
-  else introMobileQuery.addListener?.(requestUpdate);
-  if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', requestUpdate);
-  else mobileQuery.addListener?.(requestUpdate);
+  window.addEventListener('resize', () => { hasRendered = false; if(chapterStarted) start(); requestUpdate(); });
+  const modeChanged = () => {
+    allPostersDrawn = currentPostersReady();
+    hasRendered = false;
+    if(chapterStarted) start();
+    requestUpdate();
+  };
+  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
+  else introMobileQuery.addListener?.(modeChanged);
+  if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', modeChanged);
+  else mobileQuery.addListener?.(modeChanged);
 
-  start();
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if(entry.isIntersecting) start(); });
+    }, { rootMargin:'260% 0px' });
+    io.observe(demo);
+  } else {
+    start();
+  }
 })();
 
 /* ════════════════════════════════════════════════════════════
@@ -6090,7 +6164,7 @@ if (phoneTabs.length && phoneViews.length) {
    Scroll progress -> frame index -> drawImage on a <canvas>.
    No video.currentTime. Same stable engine as Chapter 3:
    poster-first load, drawOrPoster, nearest-ready fallback,
-   preloadAll, never clear the canvas, one clean rAF update loop.
+   idle background preload, never clear the canvas, one clean rAF update loop.
    ════════════════════════════════════════════════════════════ */
 (() => {
   const demo   = document.querySelector('#app-demo-profile');
@@ -6126,9 +6200,10 @@ if (phoneTabs.length && phoneViews.length) {
     let activeLoads = 0;
     let started = false, sized = false;
     let hasDrawn = false, posterDrawn = false;
+    let backgroundStarted = false;
     let lastTarget = -1, lastDrawn = -1;
 
-    const loadLimit = () => mobileQuery.matches ? 2 : 4;
+    const loadLimit = () => 4;
     const indexFor = p => clamp(Math.round(p * (count - 1)), 0, count - 1);
     const ready = i => {
       const f = frames[i];
@@ -6151,6 +6226,7 @@ if (phoneTabs.length && phoneViews.length) {
         img.onload = () => {
           const finish = () => {
             frame.ready = true;
+            frame.decoded = true;
             frame.resolve(frame);
             if(frame.idx === 0 || frame.idx === lastTarget || lastDrawn < 0) requestUpdate();
             done();
@@ -6173,7 +6249,7 @@ if (phoneTabs.length && phoneViews.length) {
       }
       let resolveFrame;
       frame = {
-        idx:index, img:null, ready:false, error:false, loading:false, queued:true, priority,
+        idx:index, img:null, ready:false, decoded:false, error:false, loading:false, queued:true, priority,
         promise:new Promise(resolve => { resolveFrame = resolve; }), resolve:resolveFrame
       };
       frames[index] = frame;
@@ -6208,38 +6284,60 @@ if (phoneTabs.length && phoneViews.length) {
       return -1;
     }
 
-    function preload(index, radius = 12, targetPriority = 1200, direction = 1){
+    function preload(index, aheadCount = 12, behindCount = Math.ceil(aheadCount / 2), targetPriority = 1200, direction = 1){
       ensure(0, 900);
       ensure(index, targetPriority);
-      for(let d = 1; d <= radius; d++){
+      for(let d = 1; d <= aheadCount; d++){
         const ahead = index + d * direction;
-        const behind = index - d * direction;
         if(ahead >= 0 && ahead < count) ensure(ahead, targetPriority - d);
+      }
+      for(let d = 1; d <= behindCount; d++){
+        const behind = index - d * direction;
         if(behind >= 0 && behind < count) ensure(behind, targetPriority - 180 - d);
       }
     }
 
-    function load(radius = 10){ if(started) return; started = true; preload(0, radius); }
+    function load(aheadCount = 12, behindCount = Math.ceil(aheadCount / 2)){ if(started) return; started = true; preload(0, aheadCount, behindCount); }
 
     function drawPoster(){
       started = true;
       return ensure(0, 5000).then(() => { drawIndex(0); return posterDrawn; });
     }
 
-    function preloadAll(){ started = true; for(let i = 0; i < count; i++) ensure(i, 120); }
+    function preloadRemaining(){
+      if(backgroundStarted) return;
+      backgroundStarted = true;
+      started = true;
+      let index = 0;
+      const idle = window.requestIdleCallback
+        ? cb => window.requestIdleCallback(cb, { timeout:900 })
+        : cb => window.setTimeout(() => cb({ timeRemaining:() => 0 }), 90);
+      const step = deadline => {
+        let queued = 0;
+        while(index < count && queued < 3 && (queued < 1 || deadline.timeRemaining() > 4)){
+          ensure(index, 90);
+          index++;
+          queued++;
+        }
+        if(index < count) idle(step);
+      };
+      idle(step);
+    }
 
     function prepare(p, radius = 6){
-      if(!started) load(2);
+      if(!started) load(2, 1);
       const index = indexFor(p);
       const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
-      preload(index, radius, 700, direction);
+      preload(index, radius, Math.max(4, Math.ceil(radius / 2)), 700, direction);
     }
 
     function drawOrPoster(p, radius = mobileQuery.matches ? 10 : 24){
       if(!started) load();
       const index = indexFor(p);
       const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
-      preload(index, radius, 1200, direction);
+      const ahead = Math.min(radius, mobileQuery.matches ? 12 : 16);
+      const behind = mobileQuery.matches ? Math.max(4, Math.ceil(ahead / 2)) : Math.max(6, Math.ceil(ahead / 2));
+      preload(index, ahead, behind, 1200, direction);
       lastTarget = index;
       if(index === lastDrawn) return;
       if(drawIndex(index)) return;
@@ -6250,7 +6348,7 @@ if (phoneTabs.length && phoneViews.length) {
     }
 
     return {
-      load, drawOrPoster, drawPoster, prepare, preloadAll,
+      load, drawOrPoster, drawPoster, prepare, preloadRemaining,
       get hasDrawn(){ return hasDrawn; },
       get posterDrawn(){ return posterDrawn; },
       get lastDrawn(){ return lastDrawn; }
@@ -6291,9 +6389,10 @@ if (phoneTabs.length && phoneViews.length) {
     capTimer = window.setTimeout(() => { writeCap(c); cap.style.opacity = '1'; cap.style.transform = 'none'; }, 140);
   }
 
-  let ticking = false, targetP = 0, renderedP = 0, hasRendered = false, postersReady = false;
+  let ticking = false, targetP = 0, renderedP = 0, hasRendered = false, postersReady = false, chapterStarted = false;
   function update(){
     ticking = false;
+    if(!chapterStarted) return;
     targetP = progress();
     const isMobile = mobileQuery.matches;
     if(isMobile){ renderedP = targetP; hasRendered = true; }
@@ -6310,10 +6409,16 @@ if (phoneTabs.length && phoneViews.length) {
   function requestUpdate(){ if(ticking) return; ticking = true; window.requestAnimationFrame(update); }
 
   function start(){
+    chapterStarted = true;
+    if(postersReady){
+      seq.preloadRemaining();
+      requestUpdate();
+      return;
+    }
     seq.drawPoster().then(() => {
       postersReady = true;
       demo.classList.add('posters-ready');
-      seq.preloadAll();
+      seq.preloadRemaining();
       requestUpdate();
     });
     requestUpdate();
@@ -6324,7 +6429,14 @@ if (phoneTabs.length && phoneViews.length) {
   if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', requestUpdate);
   else mobileQuery.addListener?.(requestUpdate);
 
-  start();
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => { if(entry.isIntersecting) start(); });
+    }, { rootMargin:'180% 0px' });
+    io.observe(demo);
+  } else {
+    start();
+  }
 })();
 
 /* ════════════════════════════════════════════════════════════
