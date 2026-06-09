@@ -1826,6 +1826,8 @@ section.block{ padding: var(--section-y) 0; }
   .story-list{
     grid-template-columns:1fr;
   }
+  #why-nearby-discovery-matters{ padding-bottom:36px; }
+  #privacy{ padding-top:52px; }
 }
 
 /* ──────────────────────────────────────────────────────────
@@ -3628,30 +3630,6 @@ footer{
   }
 }
 
-/* Mobile Safari keeps 100vh tied to the layout viewport; use the visible viewport
-   for pinned chapter scenes so the phones stay centered under browser chrome. */
-@media (max-width:760px){
-  #app-demo .ch1-stage,
-  #app-demo-profile .ch2-stage{
-    flex:1 1 auto;
-    display:grid;
-    place-items:center;
-  }
-  #app-demo-relationships .app-demo-phone-pair{
-    flex:1 1 auto;
-    align-items:center;
-  }
-  @supports (height:100dvh){
-    .app-demo .app-demo-sticky{ height:100dvh; min-height:100dvh; }
-    #app-demo .app-demo-phone,
-    #app-demo-profile .app-demo-phone{
-      width:clamp(220px, calc((100dvh - 150px) * 9 / 19.5), min(360px, 88vw));
-    }
-    #app-demo-relationships{ --ch3-phone-w:clamp(220px, calc((100dvh - 150px) * 9 / 19.5), min(360px, 88vw)); }
-    #app-demo-relationships .app-demo-phone-pair .app-demo-phone{ width:var(--ch3-phone-w) !important; }
-    #app-demo-relationships .app-demo-phone-pair{ min-height:calc(var(--ch3-phone-w) * 19.5 / 9) !important; }
-  }
-}
 </style>
 
 <style id="px-preloader-style">
@@ -5628,24 +5606,12 @@ if (phoneTabs.length && phoneViews.length) {
 
   // ── progress → timeline → render frames → apply UI ──
   let ticking = false;
-  let stableMobileHeight = window.innerHeight;
-  let stableMobileWidth = window.innerWidth;
   let targetProgress = 0;
   let renderedProgress = 0;
   let hasRenderedProgress = false;
 
-  function viewportHeight(isMobile){
-    if(!isMobile) return window.innerHeight;
-    const width = window.innerWidth;
-    if(Math.abs(width - stableMobileWidth) > 24){
-      stableMobileWidth = width;
-    }
-    stableMobileHeight = Math.round(window.visualViewport?.height || window.innerHeight);
-    return stableMobileHeight;
-  }
-
-  function getProgress(isMobile){
-    const vh = viewportHeight(isMobile);
+  function getProgress(){
+    const vh = window.innerHeight;
     const r = track.getBoundingClientRect();
     const dist = track.offsetHeight - vh;
     return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
@@ -5784,7 +5750,7 @@ if (phoneTabs.length && phoneViews.length) {
     if(!chapterStarted) return;
     const isMobile = timelineMobileQuery.matches;
 
-    targetProgress = getProgress(isMobile);
+    targetProgress = getProgress();
 
     if(!hasRenderedProgress){
       renderedProgress = targetProgress;
@@ -6048,21 +6014,8 @@ if (phoneTabs.length && phoneViews.length) {
   const activeIntroSeq = () => introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
   const currentPostersReady = () => activeIntroSeq().posterDrawn && feedSeq.posterDrawn;
 
-  let stableMobileHeight = window.innerHeight;
-  let stableMobileWidth = window.innerWidth;
-
-  function viewportHeight(isMobile){
-    if(!isMobile) return window.innerHeight;
-    const width = window.innerWidth;
-    if(Math.abs(width - stableMobileWidth) > 24){
-      stableMobileWidth = width;
-    }
-    stableMobileHeight = Math.round(window.visualViewport?.height || window.innerHeight);
-    return stableMobileHeight;
-  }
-
-  function progress(isMobile){
-    const vh = viewportHeight(isMobile);
+  function progress(){
+    const vh = window.innerHeight;
     const r = track.getBoundingClientRect();
     const dist = track.offsetHeight - vh;
     return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
@@ -6134,7 +6087,7 @@ if (phoneTabs.length && phoneViews.length) {
     ticking = false;
     if(!chapterStarted) return;
     const isMobile = mobileQuery.matches;
-    targetP = progress(isMobile);
+    targetP = progress();
     if(!hasRendered){ renderedP = targetP; hasRendered = true; }
     else {
       renderedP += (targetP - renderedP) * 0.35;
@@ -6171,7 +6124,6 @@ if (phoneTabs.length && phoneViews.length) {
 
   window.addEventListener('scroll', requestUpdate, { passive:true });
   window.addEventListener('resize', () => { hasRendered = false; if(chapterStarted) start(); requestUpdate(); });
-  window.visualViewport?.addEventListener('resize', requestUpdate);
   const modeChanged = () => {
     allPostersDrawn = currentPostersReady();
     hasRendered = false;
@@ -6391,21 +6343,8 @@ if (phoneTabs.length && phoneViews.length) {
 
   const seq = makeSequence(canvas);
 
-  let stableMobileHeight = window.innerHeight;
-  let stableMobileWidth = window.innerWidth;
-
-  function viewportHeight(isMobile){
-    if(!isMobile) return window.innerHeight;
-    const width = window.innerWidth;
-    if(Math.abs(width - stableMobileWidth) > 24){
-      stableMobileWidth = width;
-    }
-    stableMobileHeight = Math.round(window.visualViewport?.height || window.innerHeight);
-    return stableMobileHeight;
-  }
-
-  function progress(isMobile){
-    const vh = viewportHeight(isMobile);
+  function progress(){
+    const vh = window.innerHeight;
     const r = track.getBoundingClientRect();
     const dist = track.offsetHeight - vh;
     return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
@@ -6441,7 +6380,7 @@ if (phoneTabs.length && phoneViews.length) {
     ticking = false;
     if(!chapterStarted) return;
     const isMobile = mobileQuery.matches;
-    targetP = progress(isMobile);
+    targetP = progress();
     if(!hasRendered){ renderedP = targetP; hasRendered = true; }
     else {
       renderedP += (targetP - renderedP) * 0.35;
@@ -6472,7 +6411,6 @@ if (phoneTabs.length && phoneViews.length) {
 
   window.addEventListener('scroll', requestUpdate, { passive:true });
   window.addEventListener('resize', () => { hasRendered = false; requestUpdate(); });
-  window.visualViewport?.addEventListener('resize', requestUpdate);
   const modeChanged = () => { hasRendered = false; requestUpdate(); };
   if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', modeChanged);
   else mobileQuery.addListener?.(modeChanged);
