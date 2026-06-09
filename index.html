@@ -3298,15 +3298,9 @@ footer{
   #app-demo .ch1-support{ display:none; }
 
   /* MIDDLE — phone: as large as the screen allows, height-aware so it never overflows */
-  #app-demo .ch1-stage{ order:2; width:100%; min-height:0; padding:0; flex:1 1 auto; display:grid; place-items:center; }
+  #app-demo .ch1-stage{ order:2; width:100%; min-height:0; padding:0; }
   #app-demo .app-demo-phone{
     width:clamp(220px, calc((100vh - 150px) * 9 / 19.5), min(360px, 88vw));
-  }
-  @supports (height:100svh){
-    #app-demo .app-demo-sticky{ height:100svh; min-height:100svh; }
-    #app-demo .app-demo-phone{
-      width:clamp(220px, calc((100svh - 150px) * 9 / 19.5), min(360px, 88vw));
-    }
   }
   #app-demo .app-demo-dots{ display:none !important; }   /* no progress dots on mobile */
 
@@ -5620,9 +5614,8 @@ if (phoneTabs.length && phoneViews.length) {
     const width = window.innerWidth;
     if(Math.abs(width - stableMobileWidth) > 24){
       stableMobileWidth = width;
-      stableMobileHeight = window.innerHeight;
     }
-    stableMobileHeight = Math.max(stableMobileHeight, window.innerHeight, window.visualViewport?.height || 0);
+    stableMobileHeight = Math.round(window.visualViewport?.height || window.innerHeight);
     return stableMobileHeight;
   }
 
@@ -6038,9 +6031,8 @@ if (phoneTabs.length && phoneViews.length) {
     const width = window.innerWidth;
     if(Math.abs(width - stableMobileWidth) > 24){
       stableMobileWidth = width;
-      stableMobileHeight = window.innerHeight;
     }
-    stableMobileHeight = Math.max(stableMobileHeight, window.innerHeight, window.visualViewport?.height || 0);
+    stableMobileHeight = Math.round(window.visualViewport?.height || window.innerHeight);
     return stableMobileHeight;
   }
 
@@ -6382,9 +6374,8 @@ if (phoneTabs.length && phoneViews.length) {
     const width = window.innerWidth;
     if(Math.abs(width - stableMobileWidth) > 24){
       stableMobileWidth = width;
-      stableMobileHeight = window.innerHeight;
     }
-    stableMobileHeight = Math.max(stableMobileHeight, window.innerHeight, window.visualViewport?.height || 0);
+    stableMobileHeight = Math.round(window.visualViewport?.height || window.innerHeight);
     return stableMobileHeight;
   }
 
