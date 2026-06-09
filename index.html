@@ -5608,10 +5608,7 @@ if (phoneTabs.length && phoneViews.length) {
 
     targetProgress = getProgress(isMobile);
 
-    if(isMobile){
-      renderedProgress = targetProgress;
-      hasRenderedProgress = true;
-    } else if(!hasRenderedProgress){
+    if(!hasRenderedProgress){
       renderedProgress = targetProgress;
       hasRenderedProgress = true;
     } else {
@@ -5628,7 +5625,7 @@ if (phoneTabs.length && phoneViews.length) {
     applyUI(timeline);
     setCap(renderedProgress, timeline.isMobile);
 
-    if(!isMobile && Math.abs(targetProgress - renderedProgress) > 0.0008){
+    if(Math.abs(targetProgress - renderedProgress) > 0.0008){
       req();
     }
   }
@@ -5636,14 +5633,14 @@ if (phoneTabs.length && phoneViews.length) {
 
   window.addEventListener('scroll', req, { passive:true });
   window.addEventListener('resize', () => {
-    hasRenderedProgress = false;
+    if(!timelineMobileQuery.matches) hasRenderedProgress = false;
     req();
   });
   window.visualViewport?.addEventListener('resize', () => {
     if(!timelineMobileQuery.matches) hasRenderedProgress = false;
     req();
   });
-  const modeChanged = () => { loadSequences(); req(); };
+  const modeChanged = () => { loadSequences(); hasRenderedProgress = false; req(); };
   if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
   else introMobileQuery.addListener?.(modeChanged);
   if(timelineMobileQuery.addEventListener) timelineMobileQuery.addEventListener('change', modeChanged);
@@ -5847,8 +5844,21 @@ if (phoneTabs.length && phoneViews.length) {
 
   const activeIntroSeq = () => (introMobileQuery.matches && introMobileSeq.posterDrawn) ? introMobileSeq : introDesktopSeq;
 
-  function progress(){
-    const vh = window.innerHeight;
+  let stableMobileHeight = window.innerHeight;
+  let stableMobileWidth = window.innerWidth;
+  function viewportHeight(isMobile){
+    if(!isMobile) return window.innerHeight;
+    const width = window.innerWidth;
+    if(Math.abs(width - stableMobileWidth) > 24){
+      stableMobileWidth = width;
+      stableMobileHeight = window.innerHeight;
+    }
+    stableMobileHeight = Math.max(stableMobileHeight, window.innerHeight, window.visualViewport?.height || 0);
+    return stableMobileHeight;
+  }
+
+  function progress(isMobile){
+    const vh = viewportHeight(isMobile);
     const r = track.getBoundingClientRect();
     const dist = track.offsetHeight - vh;
     return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
@@ -5918,10 +5928,9 @@ if (phoneTabs.length && phoneViews.length) {
   let ticking = false, targetP = 0, renderedP = 0, hasRendered = false;
   function update(){
     ticking = false;
-    targetP = progress();
     const isMobile = mobileQuery.matches;
-    if(isMobile){ renderedP = targetP; hasRendered = true; }
-    else if(!hasRendered){ renderedP = targetP; hasRendered = true; }
+    targetP = progress(isMobile);
+    if(!hasRendered){ renderedP = targetP; hasRendered = true; }
     else {
       renderedP += (targetP - renderedP) * 0.35;
       if(Math.abs(targetP - renderedP) < 0.0008) renderedP = targetP;
@@ -5930,7 +5939,7 @@ if (phoneTabs.length && phoneViews.length) {
     applyTimeline(t);
     renderFrames(t);
     setCap(renderedP);
-    if(!isMobile && Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
+    if(Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
   }
   function requestUpdate(){ if(ticking) return; ticking = true; window.requestAnimationFrame(update); }
 
@@ -5947,11 +5956,16 @@ if (phoneTabs.length && phoneViews.length) {
   }
 
   window.addEventListener('scroll', requestUpdate, { passive:true });
-  window.addEventListener('resize', () => { hasRendered = false; requestUpdate(); });
-  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', requestUpdate);
-  else introMobileQuery.addListener?.(requestUpdate);
-  if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', requestUpdate);
-  else mobileQuery.addListener?.(requestUpdate);
+  window.addEventListener('resize', () => {
+    if(!mobileQuery.matches) hasRendered = false;
+    requestUpdate();
+  });
+  window.visualViewport?.addEventListener('resize', requestUpdate);
+  const modeChanged = () => { hasRendered = false; requestUpdate(); };
+  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
+  else introMobileQuery.addListener?.(modeChanged);
+  if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', modeChanged);
+  else mobileQuery.addListener?.(modeChanged);
 
   start();
 })();
@@ -6130,8 +6144,21 @@ if (phoneTabs.length && phoneViews.length) {
 
   const seq = makeSequence(canvas);
 
-  function progress(){
-    const vh = window.innerHeight;
+  let stableMobileHeight = window.innerHeight;
+  let stableMobileWidth = window.innerWidth;
+  function viewportHeight(isMobile){
+    if(!isMobile) return window.innerHeight;
+    const width = window.innerWidth;
+    if(Math.abs(width - stableMobileWidth) > 24){
+      stableMobileWidth = width;
+      stableMobileHeight = window.innerHeight;
+    }
+    stableMobileHeight = Math.max(stableMobileHeight, window.innerHeight, window.visualViewport?.height || 0);
+    return stableMobileHeight;
+  }
+
+  function progress(isMobile){
+    const vh = viewportHeight(isMobile);
     const r = track.getBoundingClientRect();
     const dist = track.offsetHeight - vh;
     return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
@@ -6165,10 +6192,9 @@ if (phoneTabs.length && phoneViews.length) {
   let ticking = false, targetP = 0, renderedP = 0, hasRendered = false, postersReady = false;
   function update(){
     ticking = false;
-    targetP = progress();
     const isMobile = mobileQuery.matches;
-    if(isMobile){ renderedP = targetP; hasRendered = true; }
-    else if(!hasRendered){ renderedP = targetP; hasRendered = true; }
+    targetP = progress(isMobile);
+    if(!hasRendered){ renderedP = targetP; hasRendered = true; }
     else {
       renderedP += (targetP - renderedP) * 0.35;
       if(Math.abs(targetP - renderedP) < 0.0008) renderedP = targetP;
@@ -6176,7 +6202,7 @@ if (phoneTabs.length && phoneViews.length) {
     demo.style.setProperty('--p', renderedP.toFixed(4));
     if(postersReady) seq.drawOrPoster(renderedP);
     setCap(renderedP);
-    if(!isMobile && Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
+    if(Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
   }
   function requestUpdate(){ if(ticking) return; ticking = true; window.requestAnimationFrame(update); }
 
@@ -6191,9 +6217,14 @@ if (phoneTabs.length && phoneViews.length) {
   }
 
   window.addEventListener('scroll', requestUpdate, { passive:true });
-  window.addEventListener('resize', () => { hasRendered = false; requestUpdate(); });
-  if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', requestUpdate);
-  else mobileQuery.addListener?.(requestUpdate);
+  window.addEventListener('resize', () => {
+    if(!mobileQuery.matches) hasRendered = false;
+    requestUpdate();
+  });
+  window.visualViewport?.addEventListener('resize', requestUpdate);
+  const modeChanged = () => { hasRendered = false; requestUpdate(); };
+  if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', modeChanged);
+  else mobileQuery.addListener?.(modeChanged);
 
   start();
 })();
