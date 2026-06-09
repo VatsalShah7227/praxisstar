@@ -1826,8 +1826,6 @@ section.block{ padding: var(--section-y) 0; }
   .story-list{
     grid-template-columns:1fr;
   }
-  #why-nearby-discovery-matters{ padding-bottom:36px; }
-  #privacy{ padding-top:52px; }
 }
 
 /* ──────────────────────────────────────────────────────────
@@ -5606,12 +5604,25 @@ if (phoneTabs.length && phoneViews.length) {
 
   // ── progress → timeline → render frames → apply UI ──
   let ticking = false;
+  let stableMobileHeight = window.innerHeight;
+  let stableMobileWidth = window.innerWidth;
   let targetProgress = 0;
   let renderedProgress = 0;
   let hasRenderedProgress = false;
 
-  function getProgress(){
-    const vh = window.innerHeight;
+  function viewportHeight(isMobile){
+    if(!isMobile) return window.innerHeight;
+    const width = window.innerWidth;
+    if(Math.abs(width - stableMobileWidth) > 24){
+      stableMobileWidth = width;
+      stableMobileHeight = window.innerHeight;
+    }
+    stableMobileHeight = Math.max(stableMobileHeight, window.innerHeight, window.visualViewport?.height || 0);
+    return stableMobileHeight;
+  }
+
+  function getProgress(isMobile){
+    const vh = viewportHeight(isMobile);
     const r = track.getBoundingClientRect();
     const dist = track.offsetHeight - vh;
     return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
@@ -5750,9 +5761,12 @@ if (phoneTabs.length && phoneViews.length) {
     if(!chapterStarted) return;
     const isMobile = timelineMobileQuery.matches;
 
-    targetProgress = getProgress();
+    targetProgress = getProgress(isMobile);
 
-    if(!hasRenderedProgress){
+    if(isMobile){
+      renderedProgress = targetProgress;
+      hasRenderedProgress = true;
+    } else if(!hasRenderedProgress){
       renderedProgress = targetProgress;
       hasRenderedProgress = true;
     } else {
@@ -5769,7 +5783,7 @@ if (phoneTabs.length && phoneViews.length) {
     applyUI(timeline);
     setCap(renderedProgress, timeline.isMobile);
 
-    if(Math.abs(targetProgress - renderedProgress) > 0.0008){
+    if(!isMobile && Math.abs(targetProgress - renderedProgress) > 0.0008){
       req();
     }
   }
@@ -6088,7 +6102,8 @@ if (phoneTabs.length && phoneViews.length) {
     if(!chapterStarted) return;
     const isMobile = mobileQuery.matches;
     targetP = progress();
-    if(!hasRendered){ renderedP = targetP; hasRendered = true; }
+    if(isMobile){ renderedP = targetP; hasRendered = true; }
+    else if(!hasRendered){ renderedP = targetP; hasRendered = true; }
     else {
       renderedP += (targetP - renderedP) * 0.35;
       if(Math.abs(targetP - renderedP) < 0.0008) renderedP = targetP;
@@ -6097,7 +6112,7 @@ if (phoneTabs.length && phoneViews.length) {
     applyTimeline(t);
     renderFrames(t);
     setCap(renderedP);
-    if(Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
+    if(!isMobile && Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
   }
   function requestUpdate(){ if(ticking) return; ticking = true; window.requestAnimationFrame(update); }
 
@@ -6381,7 +6396,8 @@ if (phoneTabs.length && phoneViews.length) {
     if(!chapterStarted) return;
     const isMobile = mobileQuery.matches;
     targetP = progress();
-    if(!hasRendered){ renderedP = targetP; hasRendered = true; }
+    if(isMobile){ renderedP = targetP; hasRendered = true; }
+    else if(!hasRendered){ renderedP = targetP; hasRendered = true; }
     else {
       renderedP += (targetP - renderedP) * 0.35;
       if(Math.abs(targetP - renderedP) < 0.0008) renderedP = targetP;
@@ -6389,7 +6405,7 @@ if (phoneTabs.length && phoneViews.length) {
     demo.style.setProperty('--p', renderedP.toFixed(4));
     if(postersReady) seq.drawOrPoster(renderedP);
     setCap(renderedP);
-    if(Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
+    if(!isMobile && Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
   }
   function requestUpdate(){ if(ticking) return; ticking = true; window.requestAnimationFrame(update); }
 
