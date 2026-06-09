@@ -3629,137 +3629,8 @@ footer{
 }
 </style>
 
-<style id="px-preloader-style">
-/* ── Premium preloader — minimum critical Chapter 1 assets, calm staged states ── */
-#px-preloader{
-  position:fixed; inset:0; z-index:100000;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px;
-  background:#f7f7fc;
-  opacity:1; transition:opacity .6s ease; will-change:opacity;
-}
-#px-preloader.px-hide{ opacity:0; pointer-events:none; }
-#px-preloader .px-mark{
-  font-family:'Syne',-apple-system,BlinkMacSystemFont,sans-serif; font-weight:800;
-  letter-spacing:.2em; font-size:clamp(22px,4vw,34px); line-height:1;
-  background:linear-gradient(120deg,#ff3d9a 0%,#a04bff 50%,#7c3aff 100%);
-  -webkit-background-clip:text; background-clip:text;
-  color:transparent; -webkit-text-fill-color:transparent;
-}
-#px-preloader .px-bar{
-  width:min(200px,46vw); height:3px; border-radius:999px;
-  background:rgba(13,13,24,.09); overflow:hidden; position:relative;
-}
-#px-preloader .px-bar i{
-  position:absolute; left:0; top:0; bottom:0; width:4%;
-  background:linear-gradient(120deg,#ff3d9a,#a04bff,#7c3aff);
-  border-radius:999px;
-}
-#px-preloader .px-sub{
-  font-family:'JetBrains Mono',ui-monospace,monospace; font-size:10px; letter-spacing:.24em;
-  text-transform:uppercase; color:rgba(13,13,24,.46); min-height:1em;
-  transition:opacity .22s ease;
-}
-@media (prefers-reduced-motion: reduce){
-  #px-preloader{ transition:none; }
-  #px-preloader .px-sub{ transition:none; }
-}
-</style>
-
 </head>
 <body>
-
-<!-- ════ PREMIUM PRELOADER (test) — min 3s on screen, hard 7s cap, critical assets only ════ -->
-<div id="px-preloader" role="status" aria-label="Loading Praxis">
-  <div class="px-mark">PRAXIS</div>
-  <div class="px-bar"><i id="px-bar-fill"></i></div>
-  <div class="px-sub" id="px-status">Preparing experience</div>
-</div>
-<script>
-/* Premium preloader.
-   Waits ONLY for: fonts ready (if available) + Chapter 1 first intro frame
-   + the first 8 Chapter 1 feed frames. NEVER all Ch1 frames, NEVER any Ch2/Ch3 frame.
-   Stays on screen a MINIMUM of 3000ms (even if assets are ready sooner), then reveals
-   the site as soon as assets are ready — with a HARD cap at 7000ms. If any asset fails
-   it continues anyway. The existing engine keeps lazy-loading the rest of the frames in
-   the background after the overlay fades. */
-(function(){
-  var overlay = document.getElementById('px-preloader');
-  if(!overlay) return;
-  var fill = document.getElementById('px-bar-fill');
-  var sub  = document.getElementById('px-status');
-
-  var MIN_TIME     = 3000;   // keep the loader visible at least this long
-  var HARD_TIMEOUT = 7000;   // never gate the site longer than this
-  var FEED_FRAMES  = 8;      // first 8 feed frames only (not 20+, not all 183)
-
-  var pad = function(n){ return ('000' + n).slice(-4); };
-  var isMobile = window.matchMedia('(max-width:700px)').matches;
-
-  // minimum critical set — Chapter 1 only
-  var introDir = isMobile ? 'frames/ch1-intro-mobile' : 'frames/ch1-intro-desktop';
-  var critical = [ introDir + '/0000.jpg' ];            // Ch1 first intro frame
-  for(var i = 0; i < FEED_FRAMES; i++){                 // Ch1 first feed frames (first 8)
-    critical.push('frames/ch1-feed/' + pad(i) + '.jpg');
-  }
-
-  function loadImg(src){
-    return new Promise(function(res){
-      var img = new Image();
-      try{ img.fetchPriority = 'high'; img.decoding = 'async'; }catch(e){}
-      img.onload  = function(){ res(true); };
-      img.onerror = function(){ res(false); };           // continue anyway on failure
-      img.src = src;
-    });
-  }
-  var fontsP = (window.document.fonts && document.fonts.ready)
-    ? document.fonts.ready.then(function(){}, function(){})
-    : Promise.resolve();
-
-  var criticalReady = Promise.all([ fontsP, Promise.all(critical.map(loadImg)) ]);
-
-  // ── premium staged status text (no numbers) ──
-  function setStatus(txt){
-    if(!sub || sub.textContent === txt) return;
-    sub.style.opacity = '0';
-    setTimeout(function(){ sub.textContent = txt; sub.style.opacity = '1'; }, 200);
-  }
-  var stageTimers = [
-    setTimeout(function(){ setStatus('Loading demo');  },  950),
-    setTimeout(function(){ setStatus('Almost ready'); }, 1950)
-  ];
-
-  // ── calm progress line: eases steadily upward, never stuck, snaps to 100% on finish ──
-  var start = Date.now();
-  var finished = false;
-  function setW(p){ if(fill) fill.style.width = p + '%'; }
-  function raf(){
-    if(finished) return;
-    var elapsed = Date.now() - start;
-    var target = 0.96 * (1 - Math.exp(-elapsed / 1500));  // asymptotic ease toward ~0.95
-    setW(Math.round(Math.max(0.04, target) * 100));
-    requestAnimationFrame(raf);
-  }
-  requestAnimationFrame(raf);
-
-  // ── reveal at max(ready, MIN_TIME), hard-capped at HARD_TIMEOUT ──
-  var criticalDone = false;
-  function maybeFinish(){ if(criticalDone && (Date.now() - start) >= MIN_TIME) finish(); }
-  function finish(){
-    if(finished) return; finished = true;
-    stageTimers.forEach(clearTimeout);
-    setW(100);
-    setStatus('Entering Praxis');
-    setTimeout(function(){
-      overlay.classList.add('px-hide');
-      setTimeout(function(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 700);
-    }, 260);   // let "Entering Praxis" + the full bar register before the fade
-  }
-
-  criticalReady.then(function(){ criticalDone = true; maybeFinish(); });
-  setTimeout(maybeFinish, MIN_TIME);   // re-check once the minimum has elapsed
-  setTimeout(finish, HARD_TIMEOUT);    // hard cap — reveal the site no matter what
-})();
-</script>
 
 <div class="atmosphere"></div>
 <div class="grain"></div>
@@ -5363,17 +5234,17 @@ if (phoneTabs.length && phoneViews.length) {
     const dir = canvas.dataset.seq, count = parseInt(canvas.dataset.count, 10);
     const ctx = canvas.getContext('2d');
     const frames = new Array(count);
-    const preloadRadius = 16;
+    const preloadRadius = 28;
+    const desktopDecodeConcurrency = 4;
     const decodeQueue = [];
     let decoding = 0;
     let started = false, sized = false;
     let hasDrawn = false, posterDrawn = false;
-    let backgroundStarted = false;
     let lastTargetIdx = -1, lastDrawnIdx = -1;
 
     const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.jpg';
     const progressToIndex = p => clamp(Math.round(p*(count-1)), 0, count-1);
-    const decodeLimit = () => 2;
+    const decodeLimit = () => timelineMobileQuery.matches ? 2 : desktopDecodeConcurrency;
     const frameReady = i => {
       const f = frames[i];
       return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
@@ -5420,7 +5291,6 @@ if (phoneTabs.length && phoneViews.length) {
           const finish = () => {
             if(img.complete && img.naturalWidth > 0){
               frame.ready = true;
-              frame.decoded = true;
               if(frame.idx === 0) drawFrame(0);
               if(frame.idx === 0 || frame.idx === lastTargetIdx || lastDrawnIdx < 0) req();
             }
@@ -5443,7 +5313,7 @@ if (phoneTabs.length && phoneViews.length) {
         if(frame.queued) pumpDecodeQueue();
         return frame.promise;
       }
-      frame = { idx:i, img:null, ready:false, decoded:false, loading:false, queued:true, priority, promise:null, resolve:null };
+      frame = { idx:i, img:null, ready:false, loading:false, queued:true, priority, promise:null, resolve:null };
       frame.promise = new Promise(resolve => { frame.resolve = resolve; });
       frames[i] = frame;
       decodeQueue.push(frame);
@@ -5451,15 +5321,13 @@ if (phoneTabs.length && phoneViews.length) {
       return frame.promise;
     }
 
-    function preloadWindow(idx, direction = 1, aheadCount = preloadRadius, behindCount = Math.ceil(aheadCount / 2), targetPriority = 1200, aheadPriority = 1000, behindPriority = 700){
+    function preloadWindow(idx, direction = 1, radius = preloadRadius, targetPriority = 1200, aheadPriority = 1000, behindPriority = 700){
       ensureFrame(0, 1000);
       ensureFrame(idx, targetPriority);
-      for(let d=1; d<=aheadCount; d++){
+      for(let d=1; d<=radius; d++){
         const ahead = idx + d * direction;
-        if(ahead >= 0 && ahead < count) ensureFrame(ahead, aheadPriority - d);
-      }
-      for(let d=1; d<=behindCount; d++){
         const behind = idx - d * direction;
+        if(ahead >= 0 && ahead < count) ensureFrame(ahead, aheadPriority - d);
         if(behind >= 0 && behind < count) ensureFrame(behind, behindPriority - d);
       }
     }
@@ -5476,18 +5344,18 @@ if (phoneTabs.length && phoneViews.length) {
       return -1;
     }
 
-    function load(aheadCount = preloadRadius, behindCount = Math.ceil(aheadCount / 2)){
+    function load(radius = preloadRadius){
       if(started) return;
       started = true;
       ensureFrame(0, 1200).then(() => req());
-      preloadWindow(0, 1, aheadCount, behindCount);
+      preloadWindow(0, 1, radius);
     }
 
     function prepare(p, radius = 8, priority = 520){
-      if(!started) load(0, 0);
+      if(!started) load(0);
       const idx = progressToIndex(p);
       const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
-      preloadWindow(idx, direction, radius, Math.max(4, Math.ceil(radius / 2)), priority + 200, priority, priority - 120);
+      preloadWindow(idx, direction, radius, priority + 200, priority, priority - 120);
     }
 
     function drawPoster(){
@@ -5498,33 +5366,16 @@ if (phoneTabs.length && phoneViews.length) {
       });
     }
 
-    function preloadRemaining(){
-      if(backgroundStarted) return;
-      backgroundStarted = true;
+    function preloadAll(){
       started = true;
-      let idx = 0;
-      const idle = window.requestIdleCallback
-        ? cb => window.requestIdleCallback(cb, { timeout:900 })
-        : cb => window.setTimeout(() => cb({ timeRemaining:() => 0 }), 90);
-      const step = deadline => {
-        let queued = 0;
-        while(idx < count && queued < 3 && (queued < 1 || deadline.timeRemaining() > 4)){
-          ensureFrame(idx, 90);
-          idx++;
-          queued++;
-        }
-        if(idx < count) idle(step);
-      };
-      idle(step);
+      for(let i=0; i<count; i++) ensureFrame(i, 120);
     }
 
     function drawOrPoster(p, radius = timelineMobileQuery.matches ? 10 : 24){
       if(!started) load();
       const idx = progressToIndex(p);
       const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
-      const ahead = Math.min(radius, timelineMobileQuery.matches ? 12 : 16);
-      const behind = timelineMobileQuery.matches ? Math.max(4, Math.ceil(ahead / 2)) : Math.max(6, Math.ceil(ahead / 2));
-      preloadWindow(idx, direction, ahead, behind);
+      preloadWindow(idx, direction, radius);
       lastTargetIdx = idx;
       if(idx === lastDrawnIdx) return;
       if(drawFrame(idx)) return;
@@ -5542,7 +5393,7 @@ if (phoneTabs.length && phoneViews.length) {
       drawOrPoster,
       drawPoster,
       prepare,
-      preloadRemaining,
+      preloadAll,
       get hasDrawn(){ return hasDrawn; },
       get posterDrawn(){ return posterDrawn; },
       get lastDrawnIdx(){ return lastDrawnIdx; },
@@ -5553,23 +5404,19 @@ if (phoneTabs.length && phoneViews.length) {
   const introMobileSeq  = introMobile ? makeSeq(introMobile) : null;
   const sofiaSeq = makeSeq(sofiaCanvas);
   const alexSeq  = makeSeq(alexCanvas);
+  const chapter3Seqs = [introDesktopSeq, introMobileSeq, sofiaSeq, alexSeq].filter(Boolean);
   const activeIntroSeq = () => introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
-  const activeSeqs = () => [activeIntroSeq(), sofiaSeq, alexSeq].filter(Boolean);
-  const currentPostersReady = () => activeSeqs().every(seq => seq.posterDrawn);
   let allPostersDrawn = false;
   let postersStarted = false;
-  let chapterStarted = false;
   let lastVisiblePhase = 'intro';
 
   function loadSequences(){
-    chapterStarted = true;
-    const seqs = activeSeqs();
-    if(postersStarted && currentPostersReady()) return;
+    if(postersStarted) return;
     postersStarted = true;
-    Promise.all(seqs.map(seq => seq.drawPoster())).then(() => {
-      allPostersDrawn = currentPostersReady();
+    Promise.all(chapter3Seqs.map(seq => seq.drawPoster())).then(() => {
+      allPostersDrawn = chapter3Seqs.every(seq => seq.posterDrawn);
       if(allPostersDrawn) demo.classList.add('posters-ready');
-      seqs.forEach(seq => seq.preloadRemaining());
+      chapter3Seqs.forEach(seq => seq.preloadAll());
       req();
     });
     req();
@@ -5699,7 +5546,7 @@ if (phoneTabs.length && phoneViews.length) {
   }
 
   function posterGate(t){
-    if(!allPostersDrawn || !currentPostersReady()) return forcePhase(t, lastVisiblePhase);
+    if(!allPostersDrawn) return forcePhase(t, lastVisiblePhase);
     if(!t.isMobile) return t;
 
     const nextPhase = visiblePhase(t);
@@ -5757,7 +5604,6 @@ if (phoneTabs.length && phoneViews.length) {
 
   function update(){
     ticking = false;
-    if(!chapterStarted) return;
     const isMobile = timelineMobileQuery.matches;
 
     targetProgress = getProgress(isMobile);
@@ -5797,25 +5643,25 @@ if (phoneTabs.length && phoneViews.length) {
     if(!timelineMobileQuery.matches) hasRenderedProgress = false;
     req();
   });
-  const modeChanged = () => {
-    allPostersDrawn = currentPostersReady();
-    if(chapterStarted) loadSequences();
-    hasRenderedProgress = false;
-    req();
-  };
+  const modeChanged = () => { loadSequences(); req(); };
   if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
   else introMobileQuery.addListener?.(modeChanged);
   if(timelineMobileQuery.addEventListener) timelineMobileQuery.addEventListener('change', modeChanged);
   else timelineMobileQuery.addListener?.(modeChanged);
 
+  // Start Chapter 3 posters/full preload immediately for the stable test-proven path.
+  loadSequences();
+
+  // Keep the observer as a harmless retry if the page is restored from cache or re-entered.
   if('IntersectionObserver' in window){
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => { if(e.isIntersecting){ loadSequences(); req(); } });
-    }, { rootMargin: '160% 0px' });
+    }, { rootMargin: '200% 0px' });
     io.observe(demo);
   } else {
     loadSequences();
   }
+  req();
 })();
 
 /* ════════════════════════════════════════════════════════════
@@ -5863,10 +5709,9 @@ if (phoneTabs.length && phoneViews.length) {
     let activeLoads = 0;
     let started = false, sized = false;
     let hasDrawn = false, posterDrawn = false;
-    let backgroundStarted = false;
     let lastTarget = -1, lastDrawn = -1;
 
-    const loadLimit = () => 2;
+    const loadLimit = () => mobileQuery.matches ? 2 : 4;
     const indexFor = p => clamp(Math.round(p * (count - 1)), 0, count - 1);
     const ready = i => {
       const f = frames[i];
@@ -5889,7 +5734,6 @@ if (phoneTabs.length && phoneViews.length) {
         img.onload = () => {
           const finish = () => {
             frame.ready = true;
-            frame.decoded = true;
             frame.resolve(frame);
             if(frame.idx === 0 || frame.idx === lastTarget || lastDrawn < 0) requestUpdate();
             done();
@@ -5912,7 +5756,7 @@ if (phoneTabs.length && phoneViews.length) {
       }
       let resolveFrame;
       frame = {
-        idx:index, img:null, ready:false, decoded:false, error:false, loading:false, queued:true, priority,
+        idx:index, img:null, ready:false, error:false, loading:false, queued:true, priority,
         promise:new Promise(resolve => { resolveFrame = resolve; }), resolve:resolveFrame
       };
       frames[index] = frame;
@@ -5947,60 +5791,38 @@ if (phoneTabs.length && phoneViews.length) {
       return -1;
     }
 
-    function preload(index, aheadCount = 12, behindCount = Math.ceil(aheadCount / 2), targetPriority = 1200, direction = 1){
+    function preload(index, radius = 12, targetPriority = 1200, direction = 1){
       ensure(0, 900);
       ensure(index, targetPriority);
-      for(let d = 1; d <= aheadCount; d++){
+      for(let d = 1; d <= radius; d++){
         const ahead = index + d * direction;
-        if(ahead >= 0 && ahead < count) ensure(ahead, targetPriority - d);
-      }
-      for(let d = 1; d <= behindCount; d++){
         const behind = index - d * direction;
+        if(ahead >= 0 && ahead < count) ensure(ahead, targetPriority - d);
         if(behind >= 0 && behind < count) ensure(behind, targetPriority - 180 - d);
       }
     }
 
-    function load(aheadCount = 12, behindCount = Math.ceil(aheadCount / 2)){ if(started) return; started = true; preload(0, aheadCount, behindCount); }
+    function load(radius = 10){ if(started) return; started = true; preload(0, radius); }
 
     function drawPoster(){
       started = true;
       return ensure(0, 5000).then(() => { drawIndex(0); return posterDrawn; });
     }
 
-    function preloadRemaining(){
-      if(backgroundStarted) return;
-      backgroundStarted = true;
-      started = true;
-      let index = 0;
-      const idle = window.requestIdleCallback
-        ? cb => window.requestIdleCallback(cb, { timeout:900 })
-        : cb => window.setTimeout(() => cb({ timeRemaining:() => 0 }), 90);
-      const step = deadline => {
-        let queued = 0;
-        while(index < count && queued < 3 && (queued < 1 || deadline.timeRemaining() > 4)){
-          ensure(index, 90);
-          index++;
-          queued++;
-        }
-        if(index < count) idle(step);
-      };
-      idle(step);
-    }
+    function preloadAll(){ started = true; for(let i = 0; i < count; i++) ensure(i, 120); }
 
     function prepare(p, radius = 6){
-      if(!started) load(2, 1);
+      if(!started) load(2);
       const index = indexFor(p);
       const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
-      preload(index, radius, Math.max(4, Math.ceil(radius / 2)), 700, direction);
+      preload(index, radius, 700, direction);
     }
 
     function drawOrPoster(p, radius = mobileQuery.matches ? 10 : 24){
       if(!started) load();
       const index = indexFor(p);
       const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
-      const ahead = Math.min(radius, mobileQuery.matches ? 12 : 16);
-      const behind = mobileQuery.matches ? Math.max(4, Math.ceil(ahead / 2)) : Math.max(6, Math.ceil(ahead / 2));
-      preload(index, ahead, behind, 1200, direction);
+      preload(index, radius, 1200, direction);
       lastTarget = index;
       if(index === lastDrawn) return;
       if(drawIndex(index)) return;
@@ -6011,7 +5833,7 @@ if (phoneTabs.length && phoneViews.length) {
     }
 
     return {
-      load, drawOrPoster, drawPoster, prepare, preloadRemaining,
+      load, drawOrPoster, drawPoster, prepare, preloadAll,
       get hasDrawn(){ return hasDrawn; },
       get posterDrawn(){ return posterDrawn; },
       get lastDrawn(){ return lastDrawn; }
@@ -6022,27 +5844,11 @@ if (phoneTabs.length && phoneViews.length) {
   const introMobileSeq  = makeSequence(introMobile);
   const feedSeq         = makeSequence(feedCanvas);
   let allPostersDrawn = false;
-  let chapterStarted = false;
 
-  const activeIntroSeq = () => introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
-  const currentPostersReady = () => activeIntroSeq().posterDrawn && feedSeq.posterDrawn;
+  const activeIntroSeq = () => (introMobileQuery.matches && introMobileSeq.posterDrawn) ? introMobileSeq : introDesktopSeq;
 
-  let stableMobileHeight = window.innerHeight;
-  let stableMobileWidth = window.innerWidth;
-
-  function viewportHeight(isMobile){
-    if(!isMobile) return window.innerHeight;
-    const width = window.innerWidth;
-    if(Math.abs(width - stableMobileWidth) > 24){
-      stableMobileWidth = width;
-      stableMobileHeight = window.innerHeight;
-    }
-    stableMobileHeight = Math.max(stableMobileHeight, window.innerHeight, window.visualViewport?.height || 0);
-    return stableMobileHeight;
-  }
-
-  function progress(isMobile){
-    const vh = viewportHeight(isMobile);
+  function progress(){
+    const vh = window.innerHeight;
     const r = track.getBoundingClientRect();
     const dist = track.offsetHeight - vh;
     return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
@@ -6064,7 +5870,7 @@ if (phoneTabs.length && phoneViews.length) {
   }
 
   function posterGate(t){
-    if(!allPostersDrawn || !currentPostersReady()) return { ...t, introOpacity:1, introScale:1, feedOpacity:0, feedScale:0.94 };
+    if(!allPostersDrawn) return { ...t, introOpacity:1, introScale:1, feedOpacity:0, feedScale:0.94 };
     return t;
   }
 
@@ -6112,10 +5918,10 @@ if (phoneTabs.length && phoneViews.length) {
   let ticking = false, targetP = 0, renderedP = 0, hasRendered = false;
   function update(){
     ticking = false;
-    if(!chapterStarted) return;
+    targetP = progress();
     const isMobile = mobileQuery.matches;
-    targetP = progress(isMobile);
-    if(!hasRendered){ renderedP = targetP; hasRendered = true; }
+    if(isMobile){ renderedP = targetP; hasRendered = true; }
+    else if(!hasRendered){ renderedP = targetP; hasRendered = true; }
     else {
       renderedP += (targetP - renderedP) * 0.35;
       if(Math.abs(targetP - renderedP) < 0.0008) renderedP = targetP;
@@ -6124,53 +5930,30 @@ if (phoneTabs.length && phoneViews.length) {
     applyTimeline(t);
     renderFrames(t);
     setCap(renderedP);
-    if(Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
+    if(!isMobile && Math.abs(targetP - renderedP) > 0.0008) requestUpdate();
   }
   function requestUpdate(){ if(ticking) return; ticking = true; window.requestAnimationFrame(update); }
 
   function start(){
-    chapterStarted = true;
-    const introSeq = activeIntroSeq();
-    if(currentPostersReady()){
-      allPostersDrawn = true;
-      demo.classList.add('posters-ready');
-      introSeq.preloadRemaining();
-      feedSeq.preloadRemaining();
-      requestUpdate();
-      return;
-    }
-    Promise.all([ introSeq.drawPoster(), feedSeq.drawPoster() ]).then(() => {
-      allPostersDrawn = currentPostersReady();
+    Promise.all([ introDesktopSeq.drawPoster(), introMobileSeq.drawPoster(), feedSeq.drawPoster() ]).then(() => {
+      allPostersDrawn = introDesktopSeq.posterDrawn && introMobileSeq.posterDrawn && feedSeq.posterDrawn;
       if(allPostersDrawn) demo.classList.add('posters-ready');
-      introSeq.preloadRemaining();
-      feedSeq.preloadRemaining();
+      introDesktopSeq.preloadAll();
+      introMobileSeq.preloadAll();
+      feedSeq.preloadAll();
       requestUpdate();
     });
     requestUpdate();
   }
 
   window.addEventListener('scroll', requestUpdate, { passive:true });
-  window.addEventListener('resize', () => { hasRendered = false; if(chapterStarted) start(); requestUpdate(); });
-  window.visualViewport?.addEventListener('resize', requestUpdate);
-  const modeChanged = () => {
-    allPostersDrawn = currentPostersReady();
-    hasRendered = false;
-    if(chapterStarted) start();
-    requestUpdate();
-  };
-  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
-  else introMobileQuery.addListener?.(modeChanged);
-  if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', modeChanged);
-  else mobileQuery.addListener?.(modeChanged);
+  window.addEventListener('resize', () => { hasRendered = false; requestUpdate(); });
+  if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', requestUpdate);
+  else introMobileQuery.addListener?.(requestUpdate);
+  if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', requestUpdate);
+  else mobileQuery.addListener?.(requestUpdate);
 
-  if('IntersectionObserver' in window){
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(entry => { if(entry.isIntersecting) start(); });
-    }, { rootMargin:'260% 0px' });
-    io.observe(demo);
-  } else {
-    start();
-  }
+  start();
 })();
 
 /* ════════════════════════════════════════════════════════════
@@ -6178,7 +5961,7 @@ if (phoneTabs.length && phoneViews.length) {
    Scroll progress -> frame index -> drawImage on a <canvas>.
    No video.currentTime. Same stable engine as Chapter 3:
    poster-first load, drawOrPoster, nearest-ready fallback,
-   idle background preload, never clear the canvas, one clean rAF update loop.
+   preloadAll, never clear the canvas, one clean rAF update loop.
    ════════════════════════════════════════════════════════════ */
 (() => {
   const demo   = document.querySelector('#app-demo-profile');
@@ -6214,10 +5997,9 @@ if (phoneTabs.length && phoneViews.length) {
     let activeLoads = 0;
     let started = false, sized = false;
     let hasDrawn = false, posterDrawn = false;
-    let backgroundStarted = false;
     let lastTarget = -1, lastDrawn = -1;
 
-    const loadLimit = () => 4;
+    const loadLimit = () => mobileQuery.matches ? 2 : 4;
     const indexFor = p => clamp(Math.round(p * (count - 1)), 0, count - 1);
     const ready = i => {
       const f = frames[i];
@@ -6240,7 +6022,6 @@ if (phoneTabs.length && phoneViews.length) {
         img.onload = () => {
           const finish = () => {
             frame.ready = true;
-            frame.decoded = true;
             frame.resolve(frame);
             if(frame.idx === 0 || frame.idx === lastTarget || lastDrawn < 0) requestUpdate();
             done();
@@ -6263,7 +6044,7 @@ if (phoneTabs.length && phoneViews.length) {
       }
       let resolveFrame;
       frame = {
-        idx:index, img:null, ready:false, decoded:false, error:false, loading:false, queued:true, priority,
+        idx:index, img:null, ready:false, error:false, loading:false, queued:true, priority,
         promise:new Promise(resolve => { resolveFrame = resolve; }), resolve:resolveFrame
       };
       frames[index] = frame;
@@ -6298,60 +6079,38 @@ if (phoneTabs.length && phoneViews.length) {
       return -1;
     }
 
-    function preload(index, aheadCount = 12, behindCount = Math.ceil(aheadCount / 2), targetPriority = 1200, direction = 1){
+    function preload(index, radius = 12, targetPriority = 1200, direction = 1){
       ensure(0, 900);
       ensure(index, targetPriority);
-      for(let d = 1; d <= aheadCount; d++){
+      for(let d = 1; d <= radius; d++){
         const ahead = index + d * direction;
-        if(ahead >= 0 && ahead < count) ensure(ahead, targetPriority - d);
-      }
-      for(let d = 1; d <= behindCount; d++){
         const behind = index - d * direction;
+        if(ahead >= 0 && ahead < count) ensure(ahead, targetPriority - d);
         if(behind >= 0 && behind < count) ensure(behind, targetPriority - 180 - d);
       }
     }
 
-    function load(aheadCount = 12, behindCount = Math.ceil(aheadCount / 2)){ if(started) return; started = true; preload(0, aheadCount, behindCount); }
+    function load(radius = 10){ if(started) return; started = true; preload(0, radius); }
 
     function drawPoster(){
       started = true;
       return ensure(0, 5000).then(() => { drawIndex(0); return posterDrawn; });
     }
 
-    function preloadRemaining(){
-      if(backgroundStarted) return;
-      backgroundStarted = true;
-      started = true;
-      let index = 0;
-      const idle = window.requestIdleCallback
-        ? cb => window.requestIdleCallback(cb, { timeout:900 })
-        : cb => window.setTimeout(() => cb({ timeRemaining:() => 0 }), 90);
-      const step = deadline => {
-        let queued = 0;
-        while(index < count && queued < 3 && (queued < 1 || deadline.timeRemaining() > 4)){
-          ensure(index, 90);
-          index++;
-          queued++;
-        }
-        if(index < count) idle(step);
-      };
-      idle(step);
-    }
+    function preloadAll(){ started = true; for(let i = 0; i < count; i++) ensure(i, 120); }
 
     function prepare(p, radius = 6){
-      if(!started) load(2, 1);
+      if(!started) load(2);
       const index = indexFor(p);
       const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
-      preload(index, radius, Math.max(4, Math.ceil(radius / 2)), 700, direction);
+      preload(index, radius, 700, direction);
     }
 
     function drawOrPoster(p, radius = mobileQuery.matches ? 10 : 24){
       if(!started) load();
       const index = indexFor(p);
       const direction = lastTarget < 0 || index >= lastTarget ? 1 : -1;
-      const ahead = Math.min(radius, mobileQuery.matches ? 12 : 16);
-      const behind = mobileQuery.matches ? Math.max(4, Math.ceil(ahead / 2)) : Math.max(6, Math.ceil(ahead / 2));
-      preload(index, ahead, behind, 1200, direction);
+      preload(index, radius, 1200, direction);
       lastTarget = index;
       if(index === lastDrawn) return;
       if(drawIndex(index)) return;
@@ -6362,7 +6121,7 @@ if (phoneTabs.length && phoneViews.length) {
     }
 
     return {
-      load, drawOrPoster, drawPoster, prepare, preloadRemaining,
+      load, drawOrPoster, drawPoster, prepare, preloadAll,
       get hasDrawn(){ return hasDrawn; },
       get posterDrawn(){ return posterDrawn; },
       get lastDrawn(){ return lastDrawn; }
@@ -6403,10 +6162,9 @@ if (phoneTabs.length && phoneViews.length) {
     capTimer = window.setTimeout(() => { writeCap(c); cap.style.opacity = '1'; cap.style.transform = 'none'; }, 140);
   }
 
-  let ticking = false, targetP = 0, renderedP = 0, hasRendered = false, postersReady = false, chapterStarted = false;
+  let ticking = false, targetP = 0, renderedP = 0, hasRendered = false, postersReady = false;
   function update(){
     ticking = false;
-    if(!chapterStarted) return;
     targetP = progress();
     const isMobile = mobileQuery.matches;
     if(isMobile){ renderedP = targetP; hasRendered = true; }
@@ -6423,16 +6181,10 @@ if (phoneTabs.length && phoneViews.length) {
   function requestUpdate(){ if(ticking) return; ticking = true; window.requestAnimationFrame(update); }
 
   function start(){
-    chapterStarted = true;
-    if(postersReady){
-      seq.preloadRemaining();
-      requestUpdate();
-      return;
-    }
     seq.drawPoster().then(() => {
       postersReady = true;
       demo.classList.add('posters-ready');
-      seq.preloadRemaining();
+      seq.preloadAll();
       requestUpdate();
     });
     requestUpdate();
@@ -6443,14 +6195,7 @@ if (phoneTabs.length && phoneViews.length) {
   if(mobileQuery.addEventListener) mobileQuery.addEventListener('change', requestUpdate);
   else mobileQuery.addListener?.(requestUpdate);
 
-  if('IntersectionObserver' in window){
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(entry => { if(entry.isIntersecting) start(); });
-    }, { rootMargin:'180% 0px' });
-    io.observe(demo);
-  } else {
-    start();
-  }
+  start();
 })();
 
 /* ════════════════════════════════════════════════════════════
