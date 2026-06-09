@@ -3627,6 +3627,31 @@ footer{
     opacity:1 !important; filter:none !important; z-index:1 !important; pointer-events:none !important;
   }
 }
+
+/* Mobile Safari keeps 100vh tied to the layout viewport; use the visible viewport
+   for pinned chapter scenes so the phones stay centered under browser chrome. */
+@media (max-width:760px){
+  #app-demo .ch1-stage,
+  #app-demo-profile .ch2-stage{
+    flex:1 1 auto;
+    display:grid;
+    place-items:center;
+  }
+  #app-demo-relationships .app-demo-phone-pair{
+    flex:1 1 auto;
+    align-items:center;
+  }
+  @supports (height:100dvh){
+    .app-demo .app-demo-sticky{ height:100dvh; min-height:100dvh; }
+    #app-demo .app-demo-phone,
+    #app-demo-profile .app-demo-phone{
+      width:clamp(220px, calc((100dvh - 150px) * 9 / 19.5), min(360px, 88vw));
+    }
+    #app-demo-relationships{ --ch3-phone-w:clamp(220px, calc((100dvh - 150px) * 9 / 19.5), min(360px, 88vw)); }
+    #app-demo-relationships .app-demo-phone-pair .app-demo-phone{ width:var(--ch3-phone-w) !important; }
+    #app-demo-relationships .app-demo-phone-pair{ min-height:calc(var(--ch3-phone-w) * 19.5 / 9) !important; }
+  }
+}
 </style>
 
 <style id="px-preloader-style">
