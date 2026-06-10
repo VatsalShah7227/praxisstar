@@ -6134,8 +6134,8 @@ nav{
   <div class="app-demo-track">
     <div class="app-demo-stage app-demo-sticky">
       <div class="app-demo-intro-layer app-demo-intro-fullstage" aria-hidden="true">
-        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" data-seq="frames/ch1-intro-desktop" data-count="77"></canvas>
-        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" data-seq="frames/ch1-intro-mobile" data-count="77"></canvas>
+        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" data-seq="frames/ch1-intro-desktop" data-count="39"></canvas>
+        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" data-seq="frames/ch1-intro-mobile" data-count="39"></canvas>
       </div>
 
       <!-- LEFT · chapter header -->
@@ -6155,7 +6155,7 @@ nav{
           <div class="app-demo-island"></div>
           <div class="app-demo-viewport">
             <div class="app-demo-feed-layer">
-              <canvas class="app-demo-video ch1-feed-canvas" data-seq="frames/ch1-feed" data-count="183"></canvas>
+              <canvas class="app-demo-video ch1-feed-canvas" data-seq="frames/ch1-feed" data-count="92"></canvas>
             </div>
           </div>
         </div>
@@ -6211,7 +6211,7 @@ nav{
         <div class="app-demo-frame">
           <div class="app-demo-island"></div>
           <div class="app-demo-viewport">
-            <canvas class="app-demo-video app-demo-profile-canvas" data-seq="frames/ch2-profile" data-count="158"></canvas>
+            <canvas class="app-demo-video app-demo-profile-canvas" data-seq="frames/ch2-profile" data-count="79"></canvas>
           </div>
         </div>
       </div>
@@ -6254,8 +6254,8 @@ nav{
       <div class="app-demo-dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
 
       <div class="app-demo-intro-layer app-demo-intro-fullstage" aria-hidden="true">
-        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" data-seq="frames/ch3-intro-desktop" data-count="78"></canvas>
-        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" data-seq="frames/ch3-intro-mobile" data-count="78"></canvas>
+        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-desktop" data-seq="frames/ch3-intro-desktop" data-count="39"></canvas>
+        <canvas class="app-demo-video app-demo-intro-video app-demo-intro-video-mobile" data-seq="frames/ch3-intro-mobile" data-count="39"></canvas>
       </div>
 
       <!-- LEFT · chapter header -->
@@ -6321,7 +6321,7 @@ nav{
             <div class="app-demo-frame">
               <div class="app-demo-island"></div>
               <div class="app-demo-viewport">
-                <canvas class="app-demo-video app-demo-sofia-video" data-seq="frames/ch3-sofia" data-count="109"></canvas>
+                <canvas class="app-demo-video app-demo-sofia-video" data-seq="frames/ch3-sofia" data-count="55"></canvas>
               </div>
             </div>
           </div>
@@ -6333,7 +6333,7 @@ nav{
             <div class="app-demo-frame">
               <div class="app-demo-island"></div>
               <div class="app-demo-viewport">
-                <canvas class="app-demo-video app-demo-alex-video" data-seq="frames/ch3-alex" data-count="128"></canvas>
+                <canvas class="app-demo-video app-demo-alex-video" data-seq="frames/ch3-alex" data-count="64"></canvas>
               </div>
             </div>
           </div>
@@ -8309,8 +8309,7 @@ if (phoneTabs.length && phoneViews.length) {
     Promise.all([ introDesktopSeq.drawPoster(), introMobileSeq.drawPoster(), feedSeq.drawPoster() ]).then(() => {
       allPostersDrawn = introDesktopSeq.posterDrawn && introMobileSeq.posterDrawn && feedSeq.posterDrawn;
       if(allPostersDrawn) demo.classList.add('posters-ready');
-      introDesktopSeq.preloadAll();
-      introMobileSeq.preloadAll();
+      if(introMobileQuery.matches) introMobileSeq.preloadAll(); else introDesktopSeq.preloadAll();
       feedSeq.preloadAll();
       requestUpdate();
     });
