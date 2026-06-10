@@ -5904,9 +5904,9 @@ nav{
 
   // minimum critical set — Chapter 1 only
   var introDir = isMobile ? 'frames/ch1-intro-mobile' : 'frames/ch1-intro-desktop';
-  var critical = [ introDir + '/0000.webp' ];            // Ch1 first intro frame
+  var critical = [ introDir + '/0000.jpg' ];            // Ch1 first intro frame
   for(var i = 0; i < FEED_FRAMES; i++){                 // Ch1 first feed frames (first 8)
-    critical.push('frames/ch1-feed/' + pad(i) + '.webp');
+    critical.push('frames/ch1-feed/' + pad(i) + '.jpg');
   }
 
   function loadImg(src){
@@ -7571,7 +7571,12 @@ if (phoneTabs.length && phoneViews.length) {
     const dir = canvas.dataset.seq, count = parseInt(canvas.dataset.count, 10);
     const ctx = canvas.getContext('2d');
     const frames = new Array(count);
+<<<<<<< HEAD
+    const preloadRadius = 28;
+    const desktopDecodeConcurrency = 4;
+=======
     const preloadRadius = 16;
+>>>>>>> 82edd060990d18284b37ec9e6185812951f0c975
     const decodeQueue = [];
     let decoding = 0;
     let started = false, sized = false;
@@ -7579,9 +7584,13 @@ if (phoneTabs.length && phoneViews.length) {
     let backgroundStarted = false;
     let lastTargetIdx = -1, lastDrawnIdx = -1;
 
-    const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.webp';
+    const frameSrc = i => dir + '/' + String(i).padStart(4,'0') + '.jpg';
     const progressToIndex = p => clamp(Math.round(p*(count-1)), 0, count-1);
+<<<<<<< HEAD
+    const decodeLimit = () => timelineMobileQuery.matches ? 2 : desktopDecodeConcurrency;
+=======
     const decodeLimit = () => 2;
+>>>>>>> 82edd060990d18284b37ec9e6185812951f0c975
     const frameReady = i => {
       const f = frames[i];
       return !!(f && f.ready && f.img.complete && f.img.naturalWidth > 0);
@@ -7659,7 +7668,11 @@ if (phoneTabs.length && phoneViews.length) {
       return frame.promise;
     }
 
+<<<<<<< HEAD
+    function preloadWindow(idx, direction = 1, radius = preloadRadius, targetPriority = 1200, aheadPriority = 1000, behindPriority = 700){
+=======
     function preloadWindow(idx, direction = 1, aheadCount = preloadRadius, behindCount = Math.ceil(aheadCount / 2), targetPriority = 1200, aheadPriority = 1000, behindPriority = 700){
+>>>>>>> 82edd060990d18284b37ec9e6185812951f0c975
       ensureFrame(0, 1000);
       ensureFrame(idx, targetPriority);
       for(let d=1; d<=aheadCount; d++){
@@ -7684,7 +7697,11 @@ if (phoneTabs.length && phoneViews.length) {
       return -1;
     }
 
+<<<<<<< HEAD
+    function load(radius = preloadRadius){
+=======
     function load(aheadCount = preloadRadius, behindCount = Math.ceil(aheadCount / 2)){
+>>>>>>> 82edd060990d18284b37ec9e6185812951f0c975
       if(started) return;
       started = true;
       ensureFrame(0, 1200).then(() => req());
@@ -7692,7 +7709,11 @@ if (phoneTabs.length && phoneViews.length) {
     }
 
     function prepare(p, radius = 8, priority = 520){
+<<<<<<< HEAD
+      if(!started) load(0);
+=======
       if(!started) load(0, 0);
+>>>>>>> 82edd060990d18284b37ec9e6185812951f0c975
       const idx = progressToIndex(p);
       const direction = lastTargetIdx < 0 || idx >= lastTargetIdx ? 1 : -1;
       preloadWindow(idx, direction, radius, Math.max(4, Math.ceil(radius / 2)), priority + 200, priority, priority - 120);
@@ -7761,6 +7782,10 @@ if (phoneTabs.length && phoneViews.length) {
   const introMobileSeq  = introMobile ? makeSeq(introMobile) : null;
   const sofiaSeq = makeSeq(sofiaCanvas);
   const alexSeq  = makeSeq(alexCanvas);
+<<<<<<< HEAD
+  const chapter3Seqs = [introDesktopSeq, introMobileSeq, sofiaSeq, alexSeq].filter(Boolean);
+=======
+>>>>>>> 82edd060990d18284b37ec9e6185812951f0c975
   const activeIntroSeq = () => introMobileQuery.matches ? introMobileSeq : introDesktopSeq;
   const activeSeqs = () => [activeIntroSeq(), sofiaSeq, alexSeq].filter(Boolean);
   const currentPostersReady = () => activeSeqs().every(seq => seq.posterDrawn);
@@ -8002,17 +8027,28 @@ if (phoneTabs.length && phoneViews.length) {
     if(!timelineMobileQuery.matches) hasRenderedProgress = false;
     req();
   });
+<<<<<<< HEAD
+  const modeChanged = () => { loadSequences(); req(); };
+=======
   const modeChanged = () => {
     allPostersDrawn = currentPostersReady();
     if(chapterStarted) loadSequences();
     hasRenderedProgress = false;
     req();
   };
+>>>>>>> 82edd060990d18284b37ec9e6185812951f0c975
   if(introMobileQuery.addEventListener) introMobileQuery.addEventListener('change', modeChanged);
   else introMobileQuery.addListener?.(modeChanged);
   if(timelineMobileQuery.addEventListener) timelineMobileQuery.addEventListener('change', modeChanged);
   else timelineMobileQuery.addListener?.(modeChanged);
 
+<<<<<<< HEAD
+  // Start Chapter 3 posters/full preload immediately for the stable test-proven path.
+  loadSequences();
+
+  // Keep the observer as a harmless retry if the page is restored from cache or re-entered.
+=======
+>>>>>>> 82edd060990d18284b37ec9e6185812951f0c975
   if('IntersectionObserver' in window){
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => { if(e.isIntersecting){ loadSequences(); req(); } });
@@ -8057,7 +8093,7 @@ if (phoneTabs.length && phoneViews.length) {
   const stops = [0.00, 0.40, 0.55, 0.70, 0.85]; // index.html isIntroFeed stops
   const caps = copy.captions.map((t, i) => [ stops[i] ?? (i / Math.max(copy.captions.length - 1, 1)), String(i + 1).padStart(2, '0'), t ]);
 
-  function framePath(dir, index){ return `${dir}/${String(index).padStart(4, '0')}.webp`; }
+  function framePath(dir, index){ return `${dir}/${String(index).padStart(4, '0')}.jpg`; }
 
   function makeSequence(canvas){
     const dir = canvas.dataset.seq;
@@ -8362,7 +8398,7 @@ if (phoneTabs.length && phoneViews.length) {
   const stops = [0.00, 0.18, 0.38, 0.62, 0.82];
   const caps = copy.captions.map((t, i) => [ stops[i] ?? (i / Math.max(copy.captions.length - 1, 1)), String(i + 1).padStart(2, '0'), t ]);
 
-  function framePath(dir, index){ return `${dir}/${String(index).padStart(4, '0')}.webp`; }
+  function framePath(dir, index){ return `${dir}/${String(index).padStart(4, '0')}.jpg`; }
 
   function makeSequence(canvas){
     const dir = canvas.dataset.seq;
